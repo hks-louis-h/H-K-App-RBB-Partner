@@ -1579,14 +1579,29 @@
     .ms-item-skr.skr03{background:rgba(245,158,11,.16);color:#d97706;}
 
     .beleg-table{background:var(--bg);border-radius:16px;box-shadow:-4px -4px 10px var(--sl,rgba(255,255,255,.9)),4px 4px 10px var(--sd2,rgba(166,171,189,.25));overflow:hidden;}
-    .bt-head{display:grid;grid-template-columns:34px 90px 1fr 110px 88px 60px 72px 78px;gap:12px;padding:14px 20px;font-size:.62rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid rgba(166,171,189,.18);}
-    .bt-row{display:grid;grid-template-columns:34px 90px 1fr 110px 88px 60px 72px 78px;gap:12px;padding:14px 20px;align-items:center;border-bottom:1px solid rgba(166,171,189,.12);font-size:.82rem;cursor:pointer;transition:background .15s;}
+    /* 7 Spalten, mehr Luft */
+    .bt-head{display:grid;grid-template-columns:36px 92px 1fr 120px 80px 84px 70px;gap:14px;padding:16px 22px;font-size:.6rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid rgba(166,171,189,.18);}
+    .bt-row{display:grid;grid-template-columns:36px 92px 1fr 120px 80px 84px 70px;gap:14px;padding:18px 22px;align-items:center;border-bottom:1px solid rgba(166,171,189,.1);font-size:.84rem;cursor:pointer;transition:background .15s;}
 
-    /* Easy-Mode: Sub-Texte ausblenden (Daten bleiben fuers Detail) */
+    /* Easy-Mode: Sub-Texte und BU-Spalte ausblenden (Daten bleiben fuers Detail) */
     .bt-amount-sub,
     .bt-konto-sub,
-    .bt-cf-group { display: none; }
-    .bt-supplier-sub { font-size:.7rem; opacity:.7; margin-top:2px; }
+    .bt-cf-group,
+    .bt-bu-col,
+    .bt-head > div:nth-child(6),
+    .bt-row > div:nth-child(6) { display: none !important; }
+    .bt-supplier-sub { font-size:.7rem; opacity:.55; margin-top:3px; font-weight:400; }
+
+    /* Belegart-Badge einheitlich neutral - dezenter Akzent statt bunte Farben */
+    .bt-type{background:rgba(166,171,189,.15) !important;color:var(--text-2) !important;font-weight:600 !important;letter-spacing:.04em !important;padding:5px 10px !important;font-size:.62rem !important;border-radius:6px !important;}
+    .bt-type.eu{background:rgba(109,122,255,.1) !important;color:var(--acc) !important;}
+    .bt-type.bw, .bt-type.gs{background:rgba(245,158,11,.12) !important;color:#b45309 !important;}
+
+    /* Confidence: nur ein dezenter Indikator */
+    .bt-conf-fields{display:flex;align-items:center;gap:8px;}
+    .bt-cf-warn{font-size:.74rem;font-weight:600;color:var(--text-2) !important;margin-left:0 !important;}
+    .bt-cf-warn.bt-cf-warn-acc{color:#10b981 !important;}
+    .bt-cf-warn:not(.bt-cf-warn-acc){color:#d97706 !important;}
 
     /* Belegart-Badge */
     .bt-type{display:flex;align-items:center;gap:6px;padding:4px 8px;border-radius:7px;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;}
@@ -2292,7 +2307,7 @@
         </div>
 
         <div class="beleg-table">
-          <div class="bt-head"><div></div><div>Belegart</div><div>Lieferant · Beleg</div><div>Betrag</div><div>Buchung (SKR 04)</div><div>St-Schl.</div><div>Confidence</div><div></div></div>
+          <div class="bt-head"><div></div><div>Belegart</div><div>Lieferant · Beleg</div><div>Betrag</div><div>Konto</div><div class="bt-bu-col">St-Schl.</div><div>Confidence</div><div></div></div>
 
           <div class="bt-row" data-state="freigegeben" onclick="navigate('belegedetail')">
             <div class="bt-thumb">PDF</div>
