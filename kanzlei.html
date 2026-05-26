@@ -1623,7 +1623,19 @@
     .bt-status.ready{background:rgba(16,185,129,.12);color:#10b981;}
     .bt-status.review{background:rgba(245,158,11,.14);color:#f59e0b;}
     .bt-status.new{background:rgba(109,122,255,.14);color:var(--acc);}
+    .bt-status.datev{background:rgba(100,116,139,.16);color:#475569;}
+    .bt-status.error{background:rgba(239,68,68,.13);color:#dc2626;}
     .bt-action{font-size:.7rem;font-weight:700;color:var(--acc);text-align:right;}
+    .bt-action.muted{color:var(--text-3);}
+
+    /* Zeile als 'bereits exportiert' visuell schwächer */
+    .bt-row[data-state="datev"]{opacity:.72;}
+    .bt-row[data-state="nicht_lesbar"]{background:rgba(239,68,68,.04);}
+    .bt-row[data-state="nicht_lesbar"] .bt-supplier-sub{color:#dc2626;}
+
+    /* Empty-State wenn Filter nichts zeigt */
+    .bt-empty{padding:48px 24px;text-align:center;font-size:.86rem;color:var(--text-3);}
+    .bt-empty b{display:block;font-family:'Poppins',sans-serif;font-size:1rem;color:var(--text-2);margin-bottom:6px;}
 
     /* Beleg-Detail */
     .buha-detail-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:20px;}
@@ -2194,11 +2206,11 @@
       ════════════════════════════════════════════ -->
       <div class="view active" id="view-belege">
         <div class="pipeline">
-          <div class="pl-stage" onclick="setStageFilter(this,'eingegangen')"><div class="pl-lbl">Eingegangen</div><div class="pl-num">312</div><div class="pl-sub">heute · <b>+41</b> vs. gestern</div></div>
+          <div class="pl-stage active" onclick="setStageFilter(this,'eingegangen')"><div class="pl-lbl">Eingegangen</div><div class="pl-num">312</div><div class="pl-sub">heute · <b>+41</b> vs. gestern</div></div>
           <div class="pl-arrow">›</div>
           <div class="pl-stage" onclick="setStageFilter(this,'erkannt')"><div class="pl-lbl">KI erkannt</div><div class="pl-num">305</div><div class="pl-sub">7 nicht lesbar</div></div>
           <div class="pl-arrow">›</div>
-          <div class="pl-stage active" onclick="setStageFilter(this,'pruefen')"><div class="pl-lbl">Zu prüfen</div><div class="pl-num">147</div><div class="pl-sub">19 mit Rückfragen</div></div>
+          <div class="pl-stage" onclick="setStageFilter(this,'pruefen')"><div class="pl-lbl">Zu prüfen</div><div class="pl-num">147</div><div class="pl-sub">19 mit Rückfragen</div></div>
           <div class="pl-arrow">›</div>
           <div class="pl-stage" onclick="setStageFilter(this,'freigegeben')"><div class="pl-lbl">Freigegeben</div><div class="pl-num">271</div><div class="pl-sub">heute durchgewinkt</div></div>
           <div class="pl-arrow">›</div>
@@ -2240,7 +2252,7 @@
         <div class="beleg-table">
           <div class="bt-head"><div></div><div>Belegart</div><div>Lieferant · Beleg</div><div>Betrag</div><div>Buchung (SKR 04)</div><div>St-Schl.</div><div>Confidence</div><div></div></div>
 
-          <div class="bt-row" onclick="navigate('belegedetail')">
+          <div class="bt-row" data-state="freigegeben" onclick="navigate('belegedetail')">
             <div class="bt-thumb">PDF</div>
             <div><div class="bt-type er">ER Inland</div></div>
             <div><div class="bt-supplier">Bauzentrum Weber GmbH</div><div class="bt-supplier-sub">RG 2026/0418 · 14.05.2026 · Skonto 2 %</div></div>
@@ -2248,21 +2260,21 @@
             <div><div class="bt-konto">5200</div><div class="bt-konto-sub">Wareneingang 19 %</div></div>
             <div><div class="bt-konto">9</div><div class="bt-konto-sub">VSt 19 %</div></div>
             <div class="bt-conf-fields"><div class="bt-cf-group"><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div></div><div class="bt-cf-warn bt-cf-warn-acc">98 %</div></div>
-            <div class="bt-action">Buchen ›</div>
+            <div class="bt-action">Bereit ›</div>
           </div>
 
-          <div class="bt-row" onclick="navigate('belegedetail')">
+          <div class="bt-row" data-state="datev" onclick="navigate('belegedetail')">
             <div class="bt-thumb">PDF</div>
             <div><div class="bt-type er">ER Inland</div></div>
-            <div><div class="bt-supplier">Holz Schäfer KG</div><div class="bt-supplier-sub">R 2026-1142 · 14.05.2026</div></div>
+            <div><div class="bt-supplier">Holz Schäfer KG</div><div class="bt-supplier-sub">R 2026-1142 · 14.05.2026 · Buchung 0142</div></div>
             <div><div class="bt-amount">2.380,00 €</div><div class="bt-amount-sub">2.000,00 € + 380,00 € VSt</div></div>
             <div><div class="bt-konto">5200</div><div class="bt-konto-sub">Wareneingang 19 %</div></div>
             <div><div class="bt-konto">9</div><div class="bt-konto-sub">VSt 19 %</div></div>
             <div class="bt-conf-fields"><div class="bt-cf-group"><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div></div><div class="bt-cf-warn bt-cf-warn-acc">96 %</div></div>
-            <div class="bt-action">Buchen ›</div>
+            <div class="bt-action muted">✓ in DATEV</div>
           </div>
 
-          <div class="bt-row" onclick="navigate('belegedetail')">
+          <div class="bt-row" data-state="pruefen" onclick="navigate('belegedetail')">
             <div class="bt-thumb">PDF</div>
             <div><div class="bt-type eu">EU · §13b</div></div>
             <div><div class="bt-supplier">Knauf AMF Italia S.r.l.</div><div class="bt-supplier-sub">FT/2026/0233 · 13.05.2026 · IT 02 938 412 099</div></div>
@@ -2273,18 +2285,18 @@
             <div class="bt-action">Öffnen ›</div>
           </div>
 
-          <div class="bt-row" onclick="navigate('belegedetail')">
+          <div class="bt-row" data-state="datev" onclick="navigate('belegedetail')">
             <div class="bt-thumb">PDF</div>
             <div><div class="bt-type er">ER Inland</div></div>
-            <div><div class="bt-supplier">Stahlbau Müller AG</div><div class="bt-supplier-sub">2026/RE/0892 · 12.05.2026 · Abschlag 3/4</div></div>
+            <div><div class="bt-supplier">Stahlbau Müller AG</div><div class="bt-supplier-sub">2026/RE/0892 · 12.05.2026 · Abschlag 3/4 · Buchung 0138</div></div>
             <div><div class="bt-amount">14.280,00 €</div><div class="bt-amount-sub">12.000,00 € + 2.280,00 € VSt</div></div>
             <div><div class="bt-konto">5200</div><div class="bt-konto-sub">Wareneingang 19 %</div></div>
             <div><div class="bt-konto">9</div><div class="bt-konto-sub">VSt 19 %</div></div>
             <div class="bt-conf-fields"><div class="bt-cf-group"><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div></div><div class="bt-cf-warn bt-cf-warn-acc">97 %</div></div>
-            <div class="bt-action">Buchen ›</div>
+            <div class="bt-action muted">✓ in DATEV</div>
           </div>
 
-          <div class="bt-row" onclick="navigate('belegedetail')">
+          <div class="bt-row" data-state="pruefen" onclick="navigate('belegedetail')">
             <div class="bt-thumb">JPG</div>
             <div><div class="bt-type bw">Bewirtung</div></div>
             <div><div class="bt-supplier">Café am Markt</div><div class="bt-supplier-sub">Bon 0418 · 12.05.2026 · Anlass fehlt</div></div>
@@ -2295,37 +2307,49 @@
             <div class="bt-action">Öffnen ›</div>
           </div>
 
-          <div class="bt-row" onclick="navigate('belegedetail')">
+          <div class="bt-row" data-state="freigegeben" onclick="navigate('belegedetail')">
             <div class="bt-thumb">JPG</div>
             <div><div class="bt-type kb">Kassenbon</div></div>
             <div><div class="bt-supplier">Aral Tankstelle 12</div><div class="bt-supplier-sub">Bon 0480 · 12.05.2026 · KFZ HD-RB 482</div></div>
             <div><div class="bt-amount">182,40 €</div><div class="bt-amount-sub">153,28 € + 29,12 € VSt</div></div>
-            <div><div class="bt-konto">4530</div><div class="bt-konto-sub">Kfz-Betriebskosten</div></div>
+            <div><div class="bt-konto">6530</div><div class="bt-konto-sub">Kfz-Betriebskosten</div></div>
             <div><div class="bt-konto">9</div><div class="bt-konto-sub">VSt 19 %</div></div>
             <div class="bt-conf-fields"><div class="bt-cf-group"><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div><div class="bt-cf-dot mid"></div></div><div class="bt-cf-warn bt-cf-warn-acc">91 %</div></div>
-            <div class="bt-action">Buchen ›</div>
+            <div class="bt-action">Bereit ›</div>
           </div>
 
-          <div class="bt-row" onclick="navigate('belegedetail')">
+          <div class="bt-row" data-state="datev" onclick="navigate('belegedetail')">
             <div class="bt-thumb">PDF</div>
             <div><div class="bt-type er">ER Inland</div></div>
-            <div><div class="bt-supplier">Würth Industrie GmbH</div><div class="bt-supplier-sub">2026-471138 · 12.05.2026</div></div>
+            <div><div class="bt-supplier">Würth Industrie GmbH</div><div class="bt-supplier-sub">2026-471138 · 12.05.2026 · Buchung 0129</div></div>
             <div><div class="bt-amount">412,50 €</div><div class="bt-amount-sub">346,64 € + 65,86 € VSt</div></div>
             <div><div class="bt-konto">6845</div><div class="bt-konto-sub">Werkzeug/Kleinmat.</div></div>
             <div><div class="bt-konto">9</div><div class="bt-konto-sub">VSt 19 %</div></div>
             <div class="bt-conf-fields"><div class="bt-cf-group"><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div></div><div class="bt-cf-warn bt-cf-warn-acc">95 %</div></div>
-            <div class="bt-action">Buchen ›</div>
+            <div class="bt-action muted">✓ in DATEV</div>
           </div>
 
-          <div class="bt-row" onclick="navigate('belegedetail')">
+          <div class="bt-row" data-state="datev" onclick="navigate('belegedetail')">
             <div class="bt-thumb">PDF</div>
             <div><div class="bt-type gs">Gutschrift</div></div>
-            <div><div class="bt-supplier">Sika Deutschland GmbH</div><div class="bt-supplier-sub">GS 2026-0844 · 11.05.2026 · Storno R 2026-0791</div></div>
+            <div><div class="bt-supplier">Sika Deutschland GmbH</div><div class="bt-supplier-sub">GS 2026-0844 · 11.05.2026 · Storno R 2026-0791 · Buchung 0118</div></div>
             <div><div class="bt-amount" style="color:#dc2626">−714,00 €</div><div class="bt-amount-sub">−600,00 € + −114,00 € VSt</div></div>
             <div><div class="bt-konto">5200</div><div class="bt-konto-sub">Wareneingang 19 %</div></div>
             <div><div class="bt-konto">9</div><div class="bt-konto-sub">VSt 19 %</div></div>
             <div class="bt-conf-fields"><div class="bt-cf-group"><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div></div><div class="bt-cf-warn bt-cf-warn-acc">99 %</div></div>
-            <div class="bt-action">Buchen ›</div>
+            <div class="bt-action muted">✓ in DATEV</div>
+          </div>
+
+          <!-- Nicht-lesbar-Beleg (sichtbar nur in 'Eingegangen') -->
+          <div class="bt-row" data-state="nicht_lesbar" onclick="alert('Beleg unleserlich (Demo) — System fragt nach erneutem Upload')">
+            <div class="bt-thumb" style="background:linear-gradient(180deg,#fee 0%,#fcc 100%);color:#dc2626">⚠</div>
+            <div><div class="bt-type" style="background:rgba(239,68,68,.13);color:#dc2626;padding:4px 8px;border-radius:7px;font-size:.66rem;font-weight:700;text-transform:uppercase">Unleserlich</div></div>
+            <div><div class="bt-supplier">scan_4823.jpg</div><div class="bt-supplier-sub">12.05.2026 09:14 · per E-Mail · Auflösung zu niedrig</div></div>
+            <div><div class="bt-amount" style="color:var(--text-3)">—</div><div class="bt-amount-sub">nicht erkannt</div></div>
+            <div><div class="bt-konto" style="color:var(--text-3)">—</div><div class="bt-konto-sub">—</div></div>
+            <div><div class="bt-konto" style="color:var(--text-3)">—</div><div class="bt-konto-sub">—</div></div>
+            <div class="bt-conf-fields"><div class="bt-cf-group"><div class="bt-cf-dot low"></div><div class="bt-cf-dot low"></div><div class="bt-cf-dot low"></div><div class="bt-cf-dot low"></div></div><div class="bt-cf-warn" style="color:#dc2626">0 %</div></div>
+            <div class="bt-action" style="color:#dc2626">↺ Erneut</div>
           </div>
         </div>
       </div>
@@ -4814,10 +4838,46 @@ const SS_KEY = 'hk_kanzlei_v2';
   // Default-View beim Start: Buchhaltung statt Dashboard
   window._pitchDefaultView = 'belege';
 
-  // Pipeline-Filter (Demo)
+  // Pipeline-Filter — echt filtern nach data-state
+  const STAGE_RULES = {
+    eingegangen: () => true,                                            // alle
+    erkannt:     s => s !== 'nicht_lesbar',                             // alle ausser unleserlich
+    pruefen:     s => s === 'pruefen',                                  // nur zu pruefen
+    freigegeben: s => s === 'freigegeben' || s === 'datev',             // freigegeben + bereits exportiert
+    datev:       s => s === 'datev'                                     // nur in DATEV
+  };
+  const STAGE_EMPTY = {
+    pruefen:     ['Alles geprüft.', 'Es sind aktuell keine Belege offen.'],
+    nicht_lesbar:['Keine Probleme.', 'Alle Belege wurden erkannt.'],
+    datev:       ['Noch nichts exportiert.', 'Belege gehen nach Freigabe in den DATEV-Stapel.']
+  };
   window.setStageFilter = function(el, stage){
     document.querySelectorAll('.pl-stage').forEach(s => s.classList.remove('active'));
     el.classList.add('active');
+    const rule = STAGE_RULES[stage] || (() => true);
+    const rows = document.querySelectorAll('#view-belege .bt-row');
+    let visible = 0;
+    rows.forEach(r => {
+      const st = r.getAttribute('data-state') || 'freigegeben';
+      const show = rule(st);
+      r.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    // Empty-State zeigen wenn nichts uebrig bleibt
+    const tbl = document.querySelector('#view-belege .beleg-table');
+    let empty = document.getElementById('bt-empty-msg');
+    if (visible === 0) {
+      if (!empty) {
+        empty = document.createElement('div');
+        empty.id = 'bt-empty-msg';
+        empty.className = 'bt-empty';
+        tbl.appendChild(empty);
+      }
+      const msg = STAGE_EMPTY[stage] || ['Keine Belege in dieser Phase.', ''];
+      empty.innerHTML = '<b>' + msg[0] + '</b>' + msg[1];
+    } else if (empty) {
+      empty.remove();
+    }
   };
 
   // Mandant-Selector
