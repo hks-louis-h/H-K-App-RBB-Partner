@@ -1533,6 +1533,19 @@
     /* ════════════════════════════════════════════════
        PITCH-MODE — BUCHHALTUNG (RBB & Partner)
     ════════════════════════════════════════════════ */
+
+    /* Workflow-Pipeline */
+    .pipeline{display:flex;align-items:stretch;gap:0;background:var(--bg);border-radius:14px;padding:6px;box-shadow:-4px -4px 10px var(--sl,rgba(255,255,255,.9)),4px 4px 10px var(--sd2,rgba(166,171,189,.25));margin-bottom:22px;}
+    .pl-stage{flex:1;padding:12px 16px;display:flex;flex-direction:column;justify-content:center;border-radius:10px;cursor:pointer;position:relative;transition:.15s;}
+    .pl-stage:hover{background:rgba(109,122,255,.04);}
+    .pl-stage.active{background:rgba(109,122,255,.1);}
+    .pl-stage.active .pl-num{color:var(--acc);}
+    .pl-lbl{font-size:.6rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;}
+    .pl-num{font-family:'Poppins',sans-serif;font-size:1.5rem;font-weight:700;line-height:1;margin-top:4px;}
+    .pl-sub{font-size:.66rem;color:var(--text-3);margin-top:3px;}
+    .pl-sub b{color:#10b981;font-weight:700;}
+    .pl-arrow{align-self:center;color:var(--text-3);font-size:1.1rem;font-weight:300;padding:0 4px;flex-shrink:0;pointer-events:none;}
+
     .buha-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
     .buha-kpi{background:var(--bg);border-radius:14px;padding:14px 18px;box-shadow:-4px -4px 10px var(--sl,rgba(255,255,255,.9)),4px 4px 10px var(--sd2,rgba(166,171,189,.25));}
     .buha-kpi-lbl{font-size:.66rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;}
@@ -1540,15 +1553,56 @@
     .buha-kpi-val span{color:var(--acc);}
     .buha-kpi-sub{font-size:.7rem;color:var(--text-2);margin-top:2px;}
 
-    .buha-section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+    .buha-section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:14px;}
     .buha-section-head h2{font-family:'Poppins',sans-serif;font-size:1rem;font-weight:700;}
     .buha-filter-tabs{display:flex;gap:8px;}
     .buha-filter-tab{padding:6px 14px;border-radius:50px;font-size:.74rem;font-weight:600;color:var(--text-2);cursor:pointer;}
     .buha-filter-tab.active{background:var(--bg);box-shadow:-3px -3px 6px var(--sl,rgba(255,255,255,.9)),3px 3px 6px var(--sd2,rgba(166,171,189,.25));color:var(--acc);}
 
+    /* Mandant-Selector */
+    .mandant-select{position:relative;}
+    .ms-trigger{display:flex;align-items:center;gap:12px;background:var(--bg);border-radius:12px;padding:10px 16px;box-shadow:-3px -3px 8px var(--sl,rgba(255,255,255,.9)),3px 3px 8px var(--sd2,rgba(166,171,189,.25));cursor:pointer;min-width:340px;}
+    .ms-icon{width:34px;height:34px;border-radius:9px;background:rgba(109,122,255,.12);color:var(--acc);display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:700;font-size:.74rem;flex-shrink:0;}
+    .ms-text{flex:1;min-width:0;}
+    .ms-lbl{font-size:.6rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;}
+    .ms-name{font-family:'Poppins',sans-serif;font-size:.88rem;font-weight:700;margin-top:1px;display:flex;align-items:center;gap:8px;}
+    .ms-skr{font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:5px;background:rgba(109,122,255,.12);color:var(--acc);font-family:'JetBrains Mono','SF Mono',monospace;}
+    .ms-skr.skr03{background:rgba(245,158,11,.16);color:#d97706;}
+    .ms-chev{color:var(--text-3);font-size:.9rem;flex-shrink:0;}
+    .ms-dropdown{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--bg);border-radius:14px;box-shadow:0 16px 40px rgba(0,0,0,.18),0 4px 12px rgba(0,0,0,.08);z-index:50;padding:6px;display:none;}
+    .ms-dropdown.open{display:block;}
+    .ms-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;cursor:pointer;}
+    .ms-item:hover{background:rgba(109,122,255,.06);}
+    .ms-item.active{background:rgba(109,122,255,.09);}
+    .ms-item-body{flex:1;}
+    .ms-item-name{font-size:.84rem;font-weight:600;}
+    .ms-item-sub{font-size:.7rem;color:var(--text-3);margin-top:1px;}
+    .ms-item-skr{font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:5px;background:rgba(109,122,255,.12);color:var(--acc);font-family:'JetBrains Mono','SF Mono',monospace;}
+    .ms-item-skr.skr03{background:rgba(245,158,11,.16);color:#d97706;}
+
     .beleg-table{background:var(--bg);border-radius:16px;box-shadow:-4px -4px 10px var(--sl,rgba(255,255,255,.9)),4px 4px 10px var(--sd2,rgba(166,171,189,.25));overflow:hidden;}
-    .bt-head{display:grid;grid-template-columns:32px 1fr 200px 130px 110px 130px 90px;gap:14px;padding:13px 18px;font-size:.66rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid rgba(166,171,189,.18);}
-    .bt-row{display:grid;grid-template-columns:32px 1fr 200px 130px 110px 130px 90px;gap:14px;padding:13px 18px;align-items:center;border-bottom:1px solid rgba(166,171,189,.12);font-size:.8rem;cursor:pointer;transition:background .15s;}
+    .bt-head{display:grid;grid-template-columns:34px 90px 1fr 175px 125px 110px 125px 85px;gap:12px;padding:13px 18px;font-size:.62rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid rgba(166,171,189,.18);}
+    .bt-row{display:grid;grid-template-columns:34px 90px 1fr 175px 125px 110px 125px 85px;gap:12px;padding:13px 18px;align-items:center;border-bottom:1px solid rgba(166,171,189,.12);font-size:.8rem;cursor:pointer;transition:background .15s;}
+
+    /* Belegart-Badge */
+    .bt-type{display:flex;align-items:center;gap:6px;padding:4px 8px;border-radius:7px;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;}
+    .bt-type-icon{width:14px;height:14px;flex-shrink:0;}
+    .bt-type.er{background:rgba(109,122,255,.12);color:var(--acc);}
+    .bt-type.eu{background:rgba(168,85,247,.14);color:#9333ea;}
+    .bt-type.dl{background:rgba(20,184,166,.14);color:#0d9488;}
+    .bt-type.bw{background:rgba(245,158,11,.16);color:#d97706;}
+    .bt-type.kb{background:rgba(100,116,139,.16);color:#475569;}
+    .bt-type.gs{background:rgba(239,68,68,.13);color:#dc2626;}
+
+    /* Confidence pro Feld — Mini-Dots in der Liste */
+    .bt-conf-fields{display:flex;align-items:center;gap:6px;}
+    .bt-cf-group{display:flex;align-items:center;gap:3px;}
+    .bt-cf-dot{width:7px;height:7px;border-radius:50%;}
+    .bt-cf-dot.high{background:#10b981;}
+    .bt-cf-dot.mid{background:#f59e0b;}
+    .bt-cf-dot.low{background:#ef4444;}
+    .bt-cf-warn{font-size:.66rem;font-weight:600;color:#d97706;margin-left:4px;}
+    .bt-cf-warn-acc{color:var(--acc);}
     .bt-row:last-child{border-bottom:none;}
     .bt-row:hover{background:rgba(109,122,255,.04);}
     .bt-thumb{width:32px;height:40px;border-radius:5px;background:linear-gradient(180deg,#fff 0%,#f3f4f8 100%);border:1px solid rgba(166,171,189,.3);display:flex;align-items:center;justify-content:center;font-size:.5rem;color:var(--text-3);font-weight:700;}
@@ -1606,6 +1660,30 @@
     .ap-memory{background:rgba(109,122,255,.07);border-radius:10px;padding:12px 14px;border-left:3px solid var(--acc);font-size:.76rem;line-height:1.55;}
     .ap-memory b{color:var(--acc);}
 
+    /* Confidence pro Feld (Inline-Indikator) */
+    .ap-conf-pct{display:inline-flex;align-items:center;gap:4px;font-size:.66rem;font-weight:700;padding:2px 7px;border-radius:50px;margin-left:6px;vertical-align:middle;}
+    .ap-conf-pct.high{background:rgba(16,185,129,.13);color:#10b981;}
+    .ap-conf-pct.mid{background:rgba(245,158,11,.15);color:#d97706;}
+    .ap-conf-pct.low{background:rgba(239,68,68,.13);color:#dc2626;}
+    .ap-conf-pct::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;}
+
+    /* Buchungssatz-Block (DATEV-konform) */
+    .bs-block{background:rgba(0,0,0,.025);border-radius:10px;padding:14px 16px;font-family:'JetBrains Mono','SF Mono','Courier New',monospace;font-size:.78rem;line-height:1.7;}
+    .bs-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(166,171,189,.25);}
+    .bs-head-l{font-family:'Poppins',sans-serif;font-size:.74rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;}
+    .bs-head-r{font-family:'Inter',sans-serif;font-size:.7rem;color:var(--text-3);}
+    .bs-line{display:grid;grid-template-columns:46px 50px 1fr 110px;gap:8px;align-items:center;}
+    .bs-line.haben{padding-left:14px;}
+    .bs-side{font-weight:700;font-size:.66rem;text-transform:uppercase;color:var(--text-3);letter-spacing:.04em;font-family:'Inter',sans-serif;}
+    .bs-konto{font-weight:700;color:var(--acc);}
+    .bs-text{color:var(--text);}
+    .bs-text small{font-family:'Inter',sans-serif;color:var(--text-3);font-size:.7rem;display:block;margin-top:1px;}
+    .bs-amount{text-align:right;font-weight:700;}
+    .bs-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;margin-top:12px;padding-top:10px;border-top:1px solid rgba(166,171,189,.25);font-family:'Inter',sans-serif;font-size:.74rem;}
+    .bs-meta-row{display:flex;justify-content:space-between;}
+    .bs-meta-lbl{color:var(--text-3);}
+    .bs-meta-val{font-family:'JetBrains Mono','SF Mono',monospace;font-weight:600;color:var(--text);}
+
     /* Lerneffekt-Block */
     .ap-learn{background:linear-gradient(135deg,rgba(16,185,129,.1) 0%,rgba(109,122,255,.08) 100%);border:1px solid rgba(16,185,129,.25);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
     .ap-learn-head{display:flex;align-items:center;gap:8px;}
@@ -1644,15 +1722,27 @@
     .lf-stat-num{font-family:'Poppins',sans-serif;font-size:1.7rem;font-weight:700;}
     .lf-stat-lbl{font-size:.72rem;color:var(--text-2);margin-top:2px;}
     .lf-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
-    .lf-card{background:var(--bg);border-radius:14px;padding:16px 20px;box-shadow:-4px -4px 10px var(--sl,rgba(255,255,255,.9)),4px 4px 10px var(--sd2,rgba(166,171,189,.25));display:flex;flex-direction:column;gap:10px;}
+    .lf-card{background:var(--bg);border-radius:14px;padding:16px 20px;box-shadow:-4px -4px 10px var(--sl,rgba(255,255,255,.9)),4px 4px 10px var(--sd2,rgba(166,171,189,.25));display:flex;flex-direction:column;gap:10px;cursor:pointer;transition:.15s;}
+    .lf-card:hover{transform:translateY(-1px);box-shadow:-5px -5px 12px var(--sl,rgba(255,255,255,.9)),5px 5px 12px var(--sd2,rgba(166,171,189,.3));}
     .lf-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
     .lf-name{font-family:'Poppins',sans-serif;font-size:.92rem;font-weight:700;}
     .lf-name-sub{font-size:.7rem;color:var(--text-3);margin-top:2px;}
     .lf-badge{padding:4px 10px;border-radius:50px;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;background:rgba(16,185,129,.12);color:#10b981;white-space:nowrap;}
-    .lf-rule{background:rgba(109,122,255,.06);border-radius:10px;padding:10px 12px;font-size:.76rem;color:var(--text-2);line-height:1.55;}
-    .lf-rule b{color:var(--acc);font-family:'JetBrains Mono','Courier New',monospace;font-size:.78rem;}
-    .lf-foot{display:flex;justify-content:space-between;font-size:.7rem;color:var(--text-3);margin-top:auto;padding-top:6px;border-top:1px solid rgba(166,171,189,.18);}
-    .lf-foot b{color:var(--text-2);font-weight:600;}
+
+    /* Regel-Block: Wenn → Dann */
+    .lf-rule-grid{display:grid;grid-template-columns:50px 1fr;gap:6px 10px;font-size:.74rem;}
+    .lf-rule-tag{font-family:'Poppins',sans-serif;font-size:.6rem;font-weight:800;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;padding-top:2px;}
+    .lf-rule-tag.dann{color:var(--acc);}
+    .lf-rule-cell{color:var(--text-2);line-height:1.5;}
+    .lf-rule-cell b{color:var(--text);font-family:'JetBrains Mono','SF Mono',monospace;font-size:.74rem;font-weight:700;}
+    .lf-rule-cell .acc{color:var(--acc);}
+
+    /* Statistik-Footer */
+    .lf-stats-row{display:flex;gap:14px;font-size:.7rem;color:var(--text-3);margin-top:auto;padding-top:10px;border-top:1px solid rgba(166,171,189,.18);}
+    .lf-stats-cell{display:flex;flex-direction:column;gap:1px;}
+    .lf-stats-cell b{color:var(--text);font-weight:700;font-size:.86rem;font-family:'Poppins',sans-serif;}
+    .lf-stats-cell.green b{color:#10b981;}
+    .lf-stats-cell.red b{color:#ef4444;}
 
     /* DATEV-Export */
     .export-grid{display:grid;grid-template-columns:1fr 340px;gap:20px;}
@@ -2096,6 +2186,18 @@
            BELEG-EINGANG (Buchhaltung)
       ════════════════════════════════════════════ -->
       <div class="view active" id="view-belege">
+        <div class="pipeline">
+          <div class="pl-stage" onclick="setStageFilter(this,'eingegangen')"><div class="pl-lbl">Eingegangen</div><div class="pl-num">312</div><div class="pl-sub">heute · <b>+41</b> vs. gestern</div></div>
+          <div class="pl-arrow">›</div>
+          <div class="pl-stage" onclick="setStageFilter(this,'erkannt')"><div class="pl-lbl">KI erkannt</div><div class="pl-num">305</div><div class="pl-sub">7 nicht lesbar</div></div>
+          <div class="pl-arrow">›</div>
+          <div class="pl-stage active" onclick="setStageFilter(this,'pruefen')"><div class="pl-lbl">Zu prüfen</div><div class="pl-num">147</div><div class="pl-sub">19 mit Rückfragen</div></div>
+          <div class="pl-arrow">›</div>
+          <div class="pl-stage" onclick="setStageFilter(this,'freigegeben')"><div class="pl-lbl">Freigegeben</div><div class="pl-num">271</div><div class="pl-sub">heute durchgewinkt</div></div>
+          <div class="pl-arrow">›</div>
+          <div class="pl-stage" onclick="setStageFilter(this,'datev')"><div class="pl-lbl">In DATEV</div><div class="pl-num">254</div><div class="pl-sub"><b>↗</b> exportiert</div></div>
+        </div>
+
         <div class="buha-kpi-row">
           <div class="buha-kpi"><div class="buha-kpi-lbl">Heute eingegangen</div><div class="buha-kpi-val">312</div><div class="buha-kpi-sub">+ 41 ggü. gestern</div></div>
           <div class="buha-kpi"><div class="buha-kpi-lbl">Automatisch gebucht</div><div class="buha-kpi-val"><span>87 %</span></div><div class="buha-kpi-sub">Confidence ≥ 95 %</div></div>
@@ -2104,7 +2206,23 @@
         </div>
 
         <div class="buha-section-head">
-          <h2>Eingehende Belege · Mandant Bauträger Müller GmbH</h2>
+          <div class="mandant-select">
+            <div class="ms-trigger" onclick="toggleMandantDropdown(event)">
+              <div class="ms-icon">BM</div>
+              <div class="ms-text">
+                <div class="ms-lbl">Mandant</div>
+                <div class="ms-name" id="ms-current-name">Bauträger Müller GmbH <span class="ms-skr">SKR 04</span></div>
+              </div>
+              <div class="ms-chev">▾</div>
+            </div>
+            <div class="ms-dropdown" id="ms-dropdown">
+              <div class="ms-item active" onclick="selectMandant(this,'BM','Bauträger Müller GmbH','Heilbronn · Bauträger','SKR 04','04')"><div class="ms-icon">BM</div><div class="ms-item-body"><div class="ms-item-name">Bauträger Müller GmbH</div><div class="ms-item-sub">Heilbronn · Bauträger · 312 Belege/Mon.</div></div><div class="ms-item-skr">SKR 04</div></div>
+              <div class="ms-item" onclick="selectMandant(this,'SH','Schneider Hochbau GmbH','Stuttgart · Hochbau','SKR 04','04')"><div class="ms-icon">SH</div><div class="ms-item-body"><div class="ms-item-name">Schneider Hochbau GmbH</div><div class="ms-item-sub">Stuttgart · Hochbau · 428 Belege/Mon.</div></div><div class="ms-item-skr">SKR 04</div></div>
+              <div class="ms-item" onclick="selectMandant(this,'AV','Architekturbüro Vogel','Karlsruhe · Architekt','SKR 03','03')"><div class="ms-icon">AV</div><div class="ms-item-body"><div class="ms-item-name">Architekturbüro Vogel</div><div class="ms-item-sub">Karlsruhe · Architekt · 78 Belege/Mon.</div></div><div class="ms-item-skr skr03">SKR 03</div></div>
+              <div class="ms-item" onclick="selectMandant(this,'IK','Ingenieurbüro Klein KG','Heidelberg · Tragwerksplanung','SKR 04','04')"><div class="ms-icon">IK</div><div class="ms-item-body"><div class="ms-item-name">Ingenieurbüro Klein KG</div><div class="ms-item-sub">Heidelberg · Tragwerksplanung · 142 Belege/Mon.</div></div><div class="ms-item-skr">SKR 04</div></div>
+              <div class="ms-item" onclick="selectMandant(this,'BS','Bauer &amp; Söhne OHG','Reutlingen · Rohbau','SKR 04','04')"><div class="ms-icon">BS</div><div class="ms-item-body"><div class="ms-item-name">Bauer &amp; Söhne OHG</div><div class="ms-item-sub">Reutlingen · Rohbau · 198 Belege/Mon.</div></div><div class="ms-item-skr">SKR 04</div></div>
+            </div>
+          </div>
           <div class="buha-filter-tabs">
             <div class="buha-filter-tab active">Alle (147)</div>
             <div class="buha-filter-tab">Bereit (128)</div>
@@ -2113,77 +2231,93 @@
         </div>
 
         <div class="beleg-table">
-          <div class="bt-head"><div></div><div>Lieferant</div><div>Betrag</div><div>Konto</div><div>Confidence</div><div>Status</div><div></div></div>
+          <div class="bt-head"><div></div><div>Belegart</div><div>Lieferant · Beleg</div><div>Betrag</div><div>Buchung (SKR 04)</div><div>St-Schl.</div><div>Confidence</div><div></div></div>
+
           <div class="bt-row" onclick="navigate('belegedetail')">
             <div class="bt-thumb">PDF</div>
-            <div><div class="bt-supplier">Bauzentrum Weber GmbH</div><div class="bt-supplier-sub">RG 2026/0418 · 14.05.2026</div></div>
-            <div><div class="bt-amount">5.462,10 €</div><div class="bt-amount-sub">netto 4.590,00 €</div></div>
-            <div><div class="bt-konto">3400</div><div class="bt-konto-sub">Wareneingang</div></div>
-            <div class="bt-confidence"><div class="bt-conf-bar"><div class="bt-conf-fill high" style="width:98%"></div></div><div class="bt-conf-pct">98 %</div></div>
-            <div><div class="bt-status ready">Bereit</div></div>
+            <div><div class="bt-type er">ER Inland</div></div>
+            <div><div class="bt-supplier">Bauzentrum Weber GmbH</div><div class="bt-supplier-sub">RG 2026/0418 · 14.05.2026 · Skonto 2 %</div></div>
+            <div><div class="bt-amount">5.462,10 €</div><div class="bt-amount-sub">4.590,00 € + 872,10 € VSt</div></div>
+            <div><div class="bt-konto">5200</div><div class="bt-konto-sub">Wareneingang 19 %</div></div>
+            <div><div class="bt-konto">9</div><div class="bt-konto-sub">VSt 19 %</div></div>
+            <div class="bt-conf-fields"><div class="bt-cf-group"><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div></div><div class="bt-cf-warn bt-cf-warn-acc">98 %</div></div>
             <div class="bt-action">Buchen ›</div>
           </div>
+
           <div class="bt-row" onclick="navigate('belegedetail')">
             <div class="bt-thumb">PDF</div>
+            <div><div class="bt-type er">ER Inland</div></div>
             <div><div class="bt-supplier">Holz Schäfer KG</div><div class="bt-supplier-sub">R 2026-1142 · 14.05.2026</div></div>
-            <div><div class="bt-amount">2.380,00 €</div><div class="bt-amount-sub">netto 2.000,00 €</div></div>
-            <div><div class="bt-konto">3400</div><div class="bt-konto-sub">Wareneingang</div></div>
-            <div class="bt-confidence"><div class="bt-conf-bar"><div class="bt-conf-fill high" style="width:96%"></div></div><div class="bt-conf-pct">96 %</div></div>
-            <div><div class="bt-status ready">Bereit</div></div>
+            <div><div class="bt-amount">2.380,00 €</div><div class="bt-amount-sub">2.000,00 € + 380,00 € VSt</div></div>
+            <div><div class="bt-konto">5200</div><div class="bt-konto-sub">Wareneingang 19 %</div></div>
+            <div><div class="bt-konto">9</div><div class="bt-konto-sub">VSt 19 %</div></div>
+            <div class="bt-conf-fields"><div class="bt-cf-group"><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div></div><div class="bt-cf-warn bt-cf-warn-acc">96 %</div></div>
             <div class="bt-action">Buchen ›</div>
           </div>
+
           <div class="bt-row" onclick="navigate('belegedetail')">
             <div class="bt-thumb">PDF</div>
-            <div><div class="bt-supplier">Sika Deutschland GmbH</div><div class="bt-supplier-sub">INV 2026-08144 · 13.05.2026</div></div>
-            <div><div class="bt-amount">1.844,90 €</div><div class="bt-amount-sub">netto 1.550,00 €</div></div>
-            <div><div class="bt-konto">3400</div><div class="bt-konto-sub">Wareneingang</div></div>
-            <div class="bt-confidence"><div class="bt-conf-bar"><div class="bt-conf-fill high" style="width:99%"></div></div><div class="bt-conf-pct">99 %</div></div>
-            <div><div class="bt-status ready">Bereit</div></div>
-            <div class="bt-action">Buchen ›</div>
-          </div>
-          <div class="bt-row" onclick="navigate('belegedetail')">
-            <div class="bt-thumb">PDF</div>
-            <div><div class="bt-supplier">Knauf AMF Italia S.r.l.</div><div class="bt-supplier-sub">FT/2026/0233 · 13.05.2026 · IT</div></div>
-            <div><div class="bt-amount">3.210,00 €</div><div class="bt-amount-sub">Reverse Charge</div></div>
-            <div><div class="bt-konto">3425</div><div class="bt-konto-sub">§ 13b UStG</div></div>
-            <div class="bt-confidence"><div class="bt-conf-bar"><div class="bt-conf-fill mid" style="width:74%"></div></div><div class="bt-conf-pct">74 %</div></div>
-            <div><div class="bt-status review">Prüfen</div></div>
+            <div><div class="bt-type eu">EU · §13b</div></div>
+            <div><div class="bt-supplier">Knauf AMF Italia S.r.l.</div><div class="bt-supplier-sub">FT/2026/0233 · 13.05.2026 · IT 02 938 412 099</div></div>
+            <div><div class="bt-amount">3.210,00 €</div><div class="bt-amount-sub">Reverse Charge · 0 % USt</div></div>
+            <div><div class="bt-konto">5425</div><div class="bt-konto-sub">EG-Erwerb 19 %</div></div>
+            <div><div class="bt-konto">94</div><div class="bt-konto-sub">§13b UStG</div></div>
+            <div class="bt-conf-fields"><div class="bt-cf-group"><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div><div class="bt-cf-dot mid"></div><div class="bt-cf-dot mid"></div></div><div class="bt-cf-warn">Konto?</div></div>
             <div class="bt-action">Öffnen ›</div>
           </div>
+
           <div class="bt-row" onclick="navigate('belegedetail')">
             <div class="bt-thumb">PDF</div>
-            <div><div class="bt-supplier">Stahlbau Müller AG</div><div class="bt-supplier-sub">2026/RE/0892 · 12.05.2026</div></div>
-            <div><div class="bt-amount">14.280,00 €</div><div class="bt-amount-sub">netto 12.000,00 €</div></div>
-            <div><div class="bt-konto">3400</div><div class="bt-konto-sub">Wareneingang</div></div>
-            <div class="bt-confidence"><div class="bt-conf-bar"><div class="bt-conf-fill high" style="width:97%"></div></div><div class="bt-conf-pct">97 %</div></div>
-            <div><div class="bt-status ready">Bereit</div></div>
+            <div><div class="bt-type er">ER Inland</div></div>
+            <div><div class="bt-supplier">Stahlbau Müller AG</div><div class="bt-supplier-sub">2026/RE/0892 · 12.05.2026 · Abschlag 3/4</div></div>
+            <div><div class="bt-amount">14.280,00 €</div><div class="bt-amount-sub">12.000,00 € + 2.280,00 € VSt</div></div>
+            <div><div class="bt-konto">5200</div><div class="bt-konto-sub">Wareneingang 19 %</div></div>
+            <div><div class="bt-konto">9</div><div class="bt-konto-sub">VSt 19 %</div></div>
+            <div class="bt-conf-fields"><div class="bt-cf-group"><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div></div><div class="bt-cf-warn bt-cf-warn-acc">97 %</div></div>
             <div class="bt-action">Buchen ›</div>
           </div>
+
           <div class="bt-row" onclick="navigate('belegedetail')">
             <div class="bt-thumb">JPG</div>
-            <div><div class="bt-supplier">Café am Markt · Bewirtung</div><div class="bt-supplier-sub">Bon 0418 · 12.05.2026</div></div>
-            <div><div class="bt-amount">94,80 €</div><div class="bt-amount-sub">netto 79,66 €</div></div>
-            <div><div class="bt-konto">4650</div><div class="bt-konto-sub">Bewirtung 70 %</div></div>
-            <div class="bt-confidence"><div class="bt-conf-bar"><div class="bt-conf-fill mid" style="width:82%"></div></div><div class="bt-conf-pct">82 %</div></div>
-            <div><div class="bt-status review">Anlass?</div></div>
+            <div><div class="bt-type bw">Bewirtung</div></div>
+            <div><div class="bt-supplier">Café am Markt</div><div class="bt-supplier-sub">Bon 0418 · 12.05.2026 · Anlass fehlt</div></div>
+            <div><div class="bt-amount">94,80 €</div><div class="bt-amount-sub">79,66 € + 15,14 € VSt</div></div>
+            <div><div class="bt-konto">6640</div><div class="bt-konto-sub">Bewirtung 70 %</div></div>
+            <div><div class="bt-konto">9</div><div class="bt-konto-sub">VSt 19 %</div></div>
+            <div class="bt-conf-fields"><div class="bt-cf-group"><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div><div class="bt-cf-dot mid"></div><div class="bt-cf-dot low"></div></div><div class="bt-cf-warn">Anlass?</div></div>
             <div class="bt-action">Öffnen ›</div>
           </div>
+
           <div class="bt-row" onclick="navigate('belegedetail')">
-            <div class="bt-thumb">PDF</div>
-            <div><div class="bt-supplier">Würth Industrie GmbH</div><div class="bt-supplier-sub">2026-471138 · 12.05.2026</div></div>
-            <div><div class="bt-amount">412,50 €</div><div class="bt-amount-sub">netto 346,64 €</div></div>
-            <div><div class="bt-konto">4980</div><div class="bt-konto-sub">Werkzeug/Kleinmat.</div></div>
-            <div class="bt-confidence"><div class="bt-conf-bar"><div class="bt-conf-fill high" style="width:95%"></div></div><div class="bt-conf-pct">95 %</div></div>
-            <div><div class="bt-status ready">Bereit</div></div>
+            <div class="bt-thumb">JPG</div>
+            <div><div class="bt-type kb">Kassenbon</div></div>
+            <div><div class="bt-supplier">Aral Tankstelle 12</div><div class="bt-supplier-sub">Bon 0480 · 12.05.2026 · KFZ HD-RB 482</div></div>
+            <div><div class="bt-amount">182,40 €</div><div class="bt-amount-sub">153,28 € + 29,12 € VSt</div></div>
+            <div><div class="bt-konto">4530</div><div class="bt-konto-sub">Kfz-Betriebskosten</div></div>
+            <div><div class="bt-konto">9</div><div class="bt-konto-sub">VSt 19 %</div></div>
+            <div class="bt-conf-fields"><div class="bt-cf-group"><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div><div class="bt-cf-dot mid"></div></div><div class="bt-cf-warn bt-cf-warn-acc">91 %</div></div>
             <div class="bt-action">Buchen ›</div>
           </div>
+
           <div class="bt-row" onclick="navigate('belegedetail')">
             <div class="bt-thumb">PDF</div>
-            <div><div class="bt-supplier">Caterpillar Vermietung</div><div class="bt-supplier-sub">M 2026/04 · 11.05.2026</div></div>
-            <div><div class="bt-amount">2.975,00 €</div><div class="bt-amount-sub">netto 2.500,00 €</div></div>
-            <div><div class="bt-konto">4830</div><div class="bt-konto-sub">Mietleasing</div></div>
-            <div class="bt-confidence"><div class="bt-conf-bar"><div class="bt-conf-fill high" style="width:96%"></div></div><div class="bt-conf-pct">96 %</div></div>
-            <div><div class="bt-status ready">Bereit</div></div>
+            <div><div class="bt-type er">ER Inland</div></div>
+            <div><div class="bt-supplier">Würth Industrie GmbH</div><div class="bt-supplier-sub">2026-471138 · 12.05.2026</div></div>
+            <div><div class="bt-amount">412,50 €</div><div class="bt-amount-sub">346,64 € + 65,86 € VSt</div></div>
+            <div><div class="bt-konto">6845</div><div class="bt-konto-sub">Werkzeug/Kleinmat.</div></div>
+            <div><div class="bt-konto">9</div><div class="bt-konto-sub">VSt 19 %</div></div>
+            <div class="bt-conf-fields"><div class="bt-cf-group"><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div></div><div class="bt-cf-warn bt-cf-warn-acc">95 %</div></div>
+            <div class="bt-action">Buchen ›</div>
+          </div>
+
+          <div class="bt-row" onclick="navigate('belegedetail')">
+            <div class="bt-thumb">PDF</div>
+            <div><div class="bt-type gs">Gutschrift</div></div>
+            <div><div class="bt-supplier">Sika Deutschland GmbH</div><div class="bt-supplier-sub">GS 2026-0844 · 11.05.2026 · Storno R 2026-0791</div></div>
+            <div><div class="bt-amount" style="color:#dc2626">−714,00 €</div><div class="bt-amount-sub">−600,00 € + −114,00 € VSt</div></div>
+            <div><div class="bt-konto">5200</div><div class="bt-konto-sub">Wareneingang 19 %</div></div>
+            <div><div class="bt-konto">9</div><div class="bt-konto-sub">VSt 19 %</div></div>
+            <div class="bt-conf-fields"><div class="bt-cf-group"><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div><div class="bt-cf-dot high"></div></div><div class="bt-cf-warn bt-cf-warn-acc">99 %</div></div>
             <div class="bt-action">Buchen ›</div>
           </div>
         </div>
@@ -2228,41 +2362,63 @@
             <div class="ap-fact">
               <div class="ap-fact-icon ok">✓</div>
               <div class="ap-fact-body">
-                <div class="ap-fact-lbl">Lieferant</div>
+                <div class="ap-fact-lbl">Lieferant <span class="ap-conf-pct high">99 %</span></div>
                 <div class="ap-fact-val">Bauzentrum Weber GmbH, Heilbronn</div>
-                <div class="ap-fact-note">Bekannt seit Januar 2024 · 47 Vorbelege</div>
+                <div class="ap-fact-note">Bekannt seit Januar 2024 · 47 Vorbelege · Kreditor 70042</div>
               </div>
             </div>
 
             <div class="ap-fact">
               <div class="ap-fact-icon ok">✓</div>
               <div class="ap-fact-body">
-                <div class="ap-fact-lbl">USt-IdNr.</div>
-                <div class="ap-fact-val">DE 138 472 851 <span style="color:#10b981;font-size:.74rem">· validiert</span></div>
+                <div class="ap-fact-lbl">USt-IdNr. <span class="ap-conf-pct high">100 %</span></div>
+                <div class="ap-fact-val">DE 138 472 851 <span style="color:#10b981;font-size:.74rem">· validiert via BZSt</span></div>
+              </div>
+            </div>
+
+            <div class="ap-fact">
+              <div class="ap-fact-icon ok">✓</div>
+              <div class="ap-fact-body">
+                <div class="ap-fact-lbl">Beträge <span class="ap-conf-pct high">100 %</span></div>
+                <div class="ap-fact-val">4.590,00 € netto · 872,10 € VSt (19 %) · 5.462,10 € brutto</div>
+                <div class="ap-fact-note">Rechnerisch geprüft · netto × 1,19 = brutto ✓</div>
               </div>
             </div>
 
             <div class="ap-fact">
               <div class="ap-fact-icon warn">!</div>
               <div class="ap-fact-body">
-                <div class="ap-fact-lbl">Steuerlicher Hinweis</div>
-                <div class="ap-fact-val"><b>2 % Skonto</b> · Vorsteuerkorrektur nötig, falls Skonto gezogen wird</div>
+                <div class="ap-fact-lbl">Skonto-Klausel <span class="ap-conf-pct mid">87 %</span></div>
+                <div class="ap-fact-val"><b>2 % Skonto bei Zahlung binnen 10 Tagen</b> erkannt</div>
+                <div class="ap-fact-note">Vorsteuerkorrektur § 17 UStG vorbereitet · greift bei Zahlung bis 24.05.2026</div>
               </div>
             </div>
 
             <div class="ap-fact">
               <div class="ap-fact-icon ok">✓</div>
               <div class="ap-fact-body">
-                <div class="ap-fact-lbl">Betrag</div>
-                <div class="ap-fact-val">4.590,00 € netto + 872,10 € USt</div>
+                <div class="ap-fact-lbl">Kontierung <span class="ap-conf-pct high">96 %</span></div>
+                <div class="ap-fact-val">SKR 04 · <b>5200</b> Wareneingang 19 % gegen <b>70042</b> Kreditor</div>
+                <div class="ap-fact-note">Steuerschlüssel 9 · DATEV-Periode 05/2026</div>
               </div>
             </div>
 
-            <div class="ap-fact">
-              <div class="ap-fact-icon info">→</div>
-              <div class="ap-fact-body">
-                <div class="ap-fact-lbl">Buchungsvorschlag</div>
-                <div class="ap-fact-val">Konto <b>3400</b> Wareneingang an Konto <b>1576</b> Vorsteuer 19 %</div>
+            <!-- Buchungssatz im DATEV-Format -->
+            <div class="bs-block">
+              <div class="bs-head">
+                <div class="bs-head-l">Buchungssatz · DATEV</div>
+                <div class="bs-head-r">SKR 04 · Mandant 88421 · Bauträger Müller GmbH</div>
+              </div>
+              <div class="bs-line"><div class="bs-side">Soll</div><div class="bs-konto">5200</div><div class="bs-text">Wareneingang 19 % VSt<small>Transportbeton, Bewehrung, Schalung, Anfuhr</small></div><div class="bs-amount">4.590,00</div></div>
+              <div class="bs-line"><div class="bs-side">Soll</div><div class="bs-konto">1406</div><div class="bs-text">Abziehbare Vorsteuer 19 %</div><div class="bs-amount">872,10</div></div>
+              <div class="bs-line haben"><div class="bs-side">Haben</div><div class="bs-konto">70042</div><div class="bs-text">Bauzentrum Weber GmbH<small>Kreditor · Personenkonto</small></div><div class="bs-amount">5.462,10</div></div>
+              <div class="bs-meta">
+                <div class="bs-meta-row"><span class="bs-meta-lbl">Steuerschlüssel</span><span class="bs-meta-val">9 · VSt 19 %</span></div>
+                <div class="bs-meta-row"><span class="bs-meta-lbl">Belegfeld 1</span><span class="bs-meta-val">RG 2026/0418</span></div>
+                <div class="bs-meta-row"><span class="bs-meta-lbl">Beleg­datum</span><span class="bs-meta-val">14.05.2026</span></div>
+                <div class="bs-meta-row"><span class="bs-meta-lbl">Buchungs­periode</span><span class="bs-meta-val">05/2026</span></div>
+                <div class="bs-meta-row"><span class="bs-meta-lbl">Buchungs­text</span><span class="bs-meta-val">ER Bauzentrum Weber 04/18</span></div>
+                <div class="bs-meta-row"><span class="bs-meta-lbl">Fälligkeit</span><span class="bs-meta-val">13.06.2026</span></div>
               </div>
             </div>
 
@@ -2323,35 +2479,100 @@
         </div>
 
         <div class="lf-grid">
-          <div class="lf-card">
-            <div class="lf-card-head"><div><div class="lf-name">Bauzentrum Weber GmbH</div><div class="lf-name-sub">Heilbronn · DE 138 472 851</div></div><div class="lf-badge">Auto · 100 %</div></div>
-            <div class="lf-rule">Bucht automatisch auf <b>3400</b> Wareneingang gegen <b>1576</b> Vorsteuer 19 % · Skonto-Klausel typisch, Korrektur vorbereitet</div>
-            <div class="lf-foot"><span><b>47</b> Belege gelernt</span><span>Letzter Beleg: heute</span></div>
+          <div class="lf-card" onclick="alert('Regel-Editor (Demo)')">
+            <div class="lf-card-head"><div><div class="lf-name">Bauzentrum Weber GmbH</div><div class="lf-name-sub">Heilbronn · DE 138 472 851 · Kreditor 70042</div></div><div class="lf-badge">Auto · 100 %</div></div>
+            <div class="lf-rule-grid">
+              <div class="lf-rule-tag">Wenn</div>
+              <div class="lf-rule-cell">Lieferant <b>"Bauzentrum Weber"</b> oder USt-ID <b>DE 138 472 851</b> · Belegart <b>ER Inland</b></div>
+              <div class="lf-rule-tag dann">Dann</div>
+              <div class="lf-rule-cell">Soll <b class="acc">5200</b> Wareneingang · Haben <b class="acc">70042</b> · Steuerschl. <b class="acc">9</b><br/>+ Skonto-Klausel automatisch erkennen, §17 UStG-Korrektur vorbereiten</div>
+            </div>
+            <div class="lf-stats-row">
+              <div class="lf-stats-cell green"><b>47×</b> bestätigt</div>
+              <div class="lf-stats-cell"><b>0×</b> korrigiert</div>
+              <div class="lf-stats-cell"><b>99,5 %</b> Confidence</div>
+              <div class="lf-stats-cell" style="margin-left:auto;text-align:right"><b style="font-size:.74rem">heute</b>letzter Beleg</div>
+            </div>
           </div>
-          <div class="lf-card">
-            <div class="lf-card-head"><div><div class="lf-name">Holz Schäfer KG</div><div class="lf-name-sub">Stuttgart · DE 813 994 122</div></div><div class="lf-badge">Auto · 100 %</div></div>
-            <div class="lf-rule">Bucht automatisch auf <b>3400</b> Wareneingang gegen <b>1576</b> Vorsteuer 19 %</div>
-            <div class="lf-foot"><span><b>32</b> Belege gelernt</span><span>Letzter Beleg: heute</span></div>
+
+          <div class="lf-card" onclick="alert('Regel-Editor (Demo)')">
+            <div class="lf-card-head"><div><div class="lf-name">Holz Schäfer KG</div><div class="lf-name-sub">Stuttgart · DE 813 994 122 · Kreditor 70128</div></div><div class="lf-badge">Auto · 100 %</div></div>
+            <div class="lf-rule-grid">
+              <div class="lf-rule-tag">Wenn</div>
+              <div class="lf-rule-cell">Lieferant <b>"Holz Schäfer"</b> · Belegart <b>ER Inland</b></div>
+              <div class="lf-rule-tag dann">Dann</div>
+              <div class="lf-rule-cell">Soll <b class="acc">5200</b> Wareneingang · Haben <b class="acc">70128</b> · Steuerschl. <b class="acc">9</b></div>
+            </div>
+            <div class="lf-stats-row">
+              <div class="lf-stats-cell green"><b>32×</b> bestätigt</div>
+              <div class="lf-stats-cell"><b>0×</b> korrigiert</div>
+              <div class="lf-stats-cell"><b>99,2 %</b> Confidence</div>
+              <div class="lf-stats-cell" style="margin-left:auto;text-align:right"><b style="font-size:.74rem">heute</b>letzter Beleg</div>
+            </div>
           </div>
-          <div class="lf-card">
-            <div class="lf-card-head"><div><div class="lf-name">Knauf AMF Italia S.r.l.</div><div class="lf-name-sub">Mailand, IT · IT 02 938 412 099</div></div><div class="lf-badge" style="background:rgba(245,158,11,.14);color:#f59e0b">§ 13b · gelernt</div></div>
-            <div class="lf-rule">Reverse Charge erkannt · bucht auf <b>3425</b> gegen <b>1577 / 1407</b> nach § 13b UStG · ausländische Rechnung ohne USt</div>
-            <div class="lf-foot"><span><b>9</b> Belege gelernt</span><span>seit Februar 2026</span></div>
+
+          <div class="lf-card" onclick="alert('Regel-Editor (Demo)')">
+            <div class="lf-card-head"><div><div class="lf-name">Knauf AMF Italia S.r.l.</div><div class="lf-name-sub">Mailand, IT · IT 02 938 412 099 · Kreditor 70217</div></div><div class="lf-badge" style="background:rgba(245,158,11,.14);color:#d97706">§ 13b · lernt noch</div></div>
+            <div class="lf-rule-grid">
+              <div class="lf-rule-tag">Wenn</div>
+              <div class="lf-rule-cell">USt-ID beginnt mit <b>"IT"</b> · Belegart <b>ER EU</b> · Hinweis "Reverse Charge" oder "soggetto a inversione contabile"</div>
+              <div class="lf-rule-tag dann">Dann</div>
+              <div class="lf-rule-cell">Soll <b class="acc">5425</b> EG-Erwerb 19 % · Haben <b class="acc">70217</b> · Steuerschl. <b class="acc">94</b> (§13b UStG)<br/>+ Gegenbuchung VSt/USt automatisch erzeugen</div>
+            </div>
+            <div class="lf-stats-row">
+              <div class="lf-stats-cell green"><b>9×</b> bestätigt</div>
+              <div class="lf-stats-cell red"><b>1×</b> korrigiert</div>
+              <div class="lf-stats-cell"><b>89 %</b> Confidence</div>
+              <div class="lf-stats-cell" style="margin-left:auto;text-align:right"><b style="font-size:.74rem">Feb 26</b>seit</div>
+            </div>
           </div>
-          <div class="lf-card">
-            <div class="lf-card-head"><div><div class="lf-name">Sika Deutschland GmbH</div><div class="lf-name-sub">Stuttgart · DE 147 819 522</div></div><div class="lf-badge">Auto · 100 %</div></div>
-            <div class="lf-rule">Bucht automatisch auf <b>3400</b> Wareneingang gegen <b>1576</b> Vorsteuer 19 %</div>
-            <div class="lf-foot"><span><b>28</b> Belege gelernt</span><span>Letzter Beleg: heute</span></div>
+
+          <div class="lf-card" onclick="alert('Regel-Editor (Demo)')">
+            <div class="lf-card-head"><div><div class="lf-name">Sika Deutschland GmbH</div><div class="lf-name-sub">Stuttgart · DE 147 819 522 · Kreditor 70044</div></div><div class="lf-badge">Auto · 100 %</div></div>
+            <div class="lf-rule-grid">
+              <div class="lf-rule-tag">Wenn</div>
+              <div class="lf-rule-cell">Lieferant <b>"Sika Deutschland"</b> · Belegart <b>ER Inland</b> oder <b>Gutschrift</b></div>
+              <div class="lf-rule-tag dann">Dann</div>
+              <div class="lf-rule-cell">Soll <b class="acc">5200</b> · Haben <b class="acc">70044</b> · Steuerschl. <b class="acc">9</b><br/>+ Bei Gutschrift: Beträge automatisch negativ</div>
+            </div>
+            <div class="lf-stats-row">
+              <div class="lf-stats-cell green"><b>28×</b> bestätigt</div>
+              <div class="lf-stats-cell"><b>0×</b> korrigiert</div>
+              <div class="lf-stats-cell"><b>99,8 %</b> Confidence</div>
+              <div class="lf-stats-cell" style="margin-left:auto;text-align:right"><b style="font-size:.74rem">heute</b>letzter Beleg</div>
+            </div>
           </div>
-          <div class="lf-card">
-            <div class="lf-card-head"><div><div class="lf-name">Stahlbau Müller AG</div><div class="lf-name-sub">Karlsruhe · DE 226 711 408</div></div><div class="lf-badge">Auto · 100 %</div></div>
-            <div class="lf-rule">Bucht automatisch auf <b>3400</b> Wareneingang gegen <b>1576</b> Vorsteuer 19 % · Abschlagsrechnungen werden separat erkannt</div>
-            <div class="lf-foot"><span><b>18</b> Belege gelernt</span><span>Letzter Beleg: 12.05.2026</span></div>
+
+          <div class="lf-card" onclick="alert('Regel-Editor (Demo)')">
+            <div class="lf-card-head"><div><div class="lf-name">Stahlbau Müller AG</div><div class="lf-name-sub">Karlsruhe · DE 226 711 408 · Kreditor 70091</div></div><div class="lf-badge">Auto · 100 %</div></div>
+            <div class="lf-rule-grid">
+              <div class="lf-rule-tag">Wenn</div>
+              <div class="lf-rule-cell">Lieferant <b>"Stahlbau Müller"</b> · Belegart <b>ER Inland</b></div>
+              <div class="lf-rule-tag dann">Dann</div>
+              <div class="lf-rule-cell">Soll <b class="acc">5200</b> · Haben <b class="acc">70091</b> · Steuerschl. <b class="acc">9</b><br/>+ Abschlagsrechnungen separat: <b class="acc">1518</b> Anzahlungen erkennen</div>
+            </div>
+            <div class="lf-stats-row">
+              <div class="lf-stats-cell green"><b>18×</b> bestätigt</div>
+              <div class="lf-stats-cell"><b>0×</b> korrigiert</div>
+              <div class="lf-stats-cell"><b>99,1 %</b> Confidence</div>
+              <div class="lf-stats-cell" style="margin-left:auto;text-align:right"><b style="font-size:.74rem">12.05.</b>letzter Beleg</div>
+            </div>
           </div>
-          <div class="lf-card">
-            <div class="lf-card-head"><div><div class="lf-name">Würth Industrie GmbH</div><div class="lf-name-sub">Künzelsau · DE 145 871 309</div></div><div class="lf-badge">Auto · 100 %</div></div>
-            <div class="lf-rule">Bucht automatisch auf <b>4980</b> Werkzeug/Kleinmaterial gegen <b>1576</b> Vorsteuer 19 %</div>
-            <div class="lf-foot"><span><b>54</b> Belege gelernt</span><span>Letzter Beleg: heute</span></div>
+
+          <div class="lf-card" onclick="alert('Regel-Editor (Demo)')">
+            <div class="lf-card-head"><div><div class="lf-name">Würth Industrie GmbH</div><div class="lf-name-sub">Künzelsau · DE 145 871 309 · Kreditor 70402</div></div><div class="lf-badge">Auto · 100 %</div></div>
+            <div class="lf-rule-grid">
+              <div class="lf-rule-tag">Wenn</div>
+              <div class="lf-rule-cell">Lieferant <b>"Würth Industrie"</b> · Belegart <b>ER Inland</b> · Kleinmaterial-Position</div>
+              <div class="lf-rule-tag dann">Dann</div>
+              <div class="lf-rule-cell">Soll <b class="acc">6845</b> Werkzeug/Kleinmat. · Haben <b class="acc">70402</b> · Steuerschl. <b class="acc">9</b></div>
+            </div>
+            <div class="lf-stats-row">
+              <div class="lf-stats-cell green"><b>54×</b> bestätigt</div>
+              <div class="lf-stats-cell"><b>0×</b> korrigiert</div>
+              <div class="lf-stats-cell"><b>99,4 %</b> Confidence</div>
+              <div class="lf-stats-cell" style="margin-left:auto;text-align:right"><b style="font-size:.74rem">heute</b>letzter Beleg</div>
+            </div>
           </div>
         </div>
       </div>
@@ -4463,6 +4684,66 @@ const SS_KEY = 'hk_kanzlei_v2';
 
   // Default-View beim Start: Buchhaltung statt Dashboard
   window._pitchDefaultView = 'belege';
+
+  // Pipeline-Filter (Demo)
+  window.setStageFilter = function(el, stage){
+    document.querySelectorAll('.pl-stage').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+  };
+
+  // Mandant-Selector
+  window.toggleMandantDropdown = function(ev){
+    ev.stopPropagation();
+    const dd = document.getElementById('ms-dropdown');
+    dd.classList.toggle('open');
+  };
+  document.addEventListener('click', () => {
+    const dd = document.getElementById('ms-dropdown');
+    if (dd) dd.classList.remove('open');
+  });
+
+  // Konten-Mapping SKR 04 → SKR 03
+  const SKR_MAP = {
+    '5200': '3400',  // Wareneingang 19 %
+    '5425': '3425',  // EG-Erwerb
+    '6845': '4985',  // Werkzeug
+    '6640': '4650',  // Bewirtung
+    '4530': '4530',  // Kfz (bleibt gleich)
+    '1406': '1576'   // Vorsteuer 19 %
+  };
+
+  function applySkrToList(skrCode){
+    // Spaltenüberschrift
+    const head = document.querySelector('#view-belege .bt-head');
+    if (head) {
+      const cells = head.children;
+      if (cells[4]) cells[4].textContent = 'Buchung (SKR ' + skrCode + ')';
+    }
+    // Konten umschalten
+    document.querySelectorAll('#view-belege .bt-row .bt-konto').forEach(el => {
+      const cur = el.textContent.trim();
+      if (skrCode === '03') {
+        if (SKR_MAP[cur]) el.textContent = SKR_MAP[cur];
+      } else if (skrCode === '04') {
+        // reverse
+        for (const k in SKR_MAP) {
+          if (SKR_MAP[k] === cur && k !== '4530') { el.textContent = k; break; }
+        }
+      }
+    });
+  }
+
+  window.selectMandant = function(el, code, name, sub, skrLabel, skrCode){
+    document.querySelectorAll('.ms-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+    const trigger = document.querySelector('.ms-trigger');
+    if (trigger){
+      trigger.querySelector('.ms-icon').textContent = code;
+      trigger.querySelector('#ms-current-name').innerHTML = name + ' <span class="ms-skr' + (skrCode==='03'?' skr03':'') + '">' + skrLabel + '</span>';
+    }
+    applySkrToList(skrCode);
+    document.getElementById('ms-dropdown').classList.remove('open');
+  };
 
   // Lerneffekt-Bestätigung: Toast zeigen, dann zurück zur Inbox
   window.confirmBookingAndLearn = function(){
