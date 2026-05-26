@@ -1534,17 +1534,15 @@
        PITCH-MODE — BUCHHALTUNG (RBB & Partner)
     ════════════════════════════════════════════════ */
 
-    /* Workflow-Pipeline */
-    .pipeline{display:flex;align-items:stretch;gap:0;background:var(--bg);border-radius:14px;padding:6px;box-shadow:-4px -4px 10px var(--sl,rgba(255,255,255,.9)),4px 4px 10px var(--sd2,rgba(166,171,189,.25));margin-bottom:22px;}
-    .pl-stage{flex:1;padding:12px 16px;display:flex;flex-direction:column;justify-content:center;border-radius:10px;cursor:pointer;position:relative;transition:.15s;}
+    /* Workflow-Pipeline — ruhiger */
+    .pipeline{display:flex;align-items:stretch;gap:0;background:var(--bg);border-radius:14px;padding:6px;box-shadow:-4px -4px 10px var(--sl,rgba(255,255,255,.9)),4px 4px 10px var(--sd2,rgba(166,171,189,.25));margin-bottom:18px;}
+    .pl-stage{flex:1;padding:10px 14px;display:flex;flex-direction:column;justify-content:center;border-radius:10px;cursor:pointer;position:relative;transition:.15s;}
     .pl-stage:hover{background:rgba(109,122,255,.04);}
     .pl-stage.active{background:rgba(109,122,255,.1);}
     .pl-stage.active .pl-num{color:var(--acc);}
     .pl-lbl{font-size:.6rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;}
-    .pl-num{font-family:'Poppins',sans-serif;font-size:1.5rem;font-weight:700;line-height:1;margin-top:4px;}
-    .pl-sub{font-size:.66rem;color:var(--text-3);margin-top:3px;}
-    .pl-sub b{color:#10b981;font-weight:700;}
-    .pl-arrow{align-self:center;color:var(--text-3);font-size:1.1rem;font-weight:300;padding:0 4px;flex-shrink:0;pointer-events:none;}
+    .pl-num{font-family:'Poppins',sans-serif;font-size:1.35rem;font-weight:700;line-height:1;margin-top:3px;}
+    .pl-arrow{align-self:center;color:var(--text-3);font-size:1.1rem;font-weight:300;padding:0 4px;flex-shrink:0;pointer-events:none;opacity:.55;}
 
     .buha-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
     .buha-kpi{background:var(--bg);border-radius:14px;padding:14px 18px;box-shadow:-4px -4px 10px var(--sl,rgba(255,255,255,.9)),4px 4px 10px var(--sd2,rgba(166,171,189,.25));}
@@ -1581,8 +1579,14 @@
     .ms-item-skr.skr03{background:rgba(245,158,11,.16);color:#d97706;}
 
     .beleg-table{background:var(--bg);border-radius:16px;box-shadow:-4px -4px 10px var(--sl,rgba(255,255,255,.9)),4px 4px 10px var(--sd2,rgba(166,171,189,.25));overflow:hidden;}
-    .bt-head{display:grid;grid-template-columns:34px 90px 1fr 175px 125px 110px 125px 85px;gap:12px;padding:13px 18px;font-size:.62rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid rgba(166,171,189,.18);}
-    .bt-row{display:grid;grid-template-columns:34px 90px 1fr 175px 125px 110px 125px 85px;gap:12px;padding:13px 18px;align-items:center;border-bottom:1px solid rgba(166,171,189,.12);font-size:.8rem;cursor:pointer;transition:background .15s;}
+    .bt-head{display:grid;grid-template-columns:34px 90px 1fr 110px 88px 60px 72px 78px;gap:12px;padding:14px 20px;font-size:.62rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid rgba(166,171,189,.18);}
+    .bt-row{display:grid;grid-template-columns:34px 90px 1fr 110px 88px 60px 72px 78px;gap:12px;padding:14px 20px;align-items:center;border-bottom:1px solid rgba(166,171,189,.12);font-size:.82rem;cursor:pointer;transition:background .15s;}
+
+    /* Easy-Mode: Sub-Texte ausblenden (Daten bleiben fuers Detail) */
+    .bt-amount-sub,
+    .bt-konto-sub,
+    .bt-cf-group { display: none; }
+    .bt-supplier-sub { font-size:.7rem; opacity:.7; margin-top:2px; }
 
     /* Belegart-Badge */
     .bt-type{display:flex;align-items:center;gap:6px;padding:4px 8px;border-radius:7px;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;}
@@ -2256,15 +2260,15 @@
       ════════════════════════════════════════════ -->
       <div class="view active" id="view-belege">
         <div class="pipeline">
-          <div class="pl-stage active" onclick="setStageFilter(this,'eingegangen')"><div class="pl-lbl">Eingegangen</div><div class="pl-num">312</div><div class="pl-sub">heute · <b>+41</b> vs. gestern</div></div>
+          <div class="pl-stage active" onclick="setStageFilter(this,'eingegangen')"><div class="pl-lbl">Eingegangen</div><div class="pl-num">312</div></div>
           <div class="pl-arrow">›</div>
-          <div class="pl-stage" onclick="setStageFilter(this,'erkannt')"><div class="pl-lbl">KI erkannt</div><div class="pl-num">305</div><div class="pl-sub">7 nicht lesbar</div></div>
+          <div class="pl-stage" onclick="setStageFilter(this,'erkannt')"><div class="pl-lbl">KI erkannt</div><div class="pl-num">305</div></div>
           <div class="pl-arrow">›</div>
-          <div class="pl-stage" onclick="setStageFilter(this,'pruefen')"><div class="pl-lbl">Zu prüfen</div><div class="pl-num">147</div><div class="pl-sub">19 mit Rückfragen</div></div>
+          <div class="pl-stage" onclick="setStageFilter(this,'pruefen')"><div class="pl-lbl">Zu prüfen</div><div class="pl-num">147</div></div>
           <div class="pl-arrow">›</div>
-          <div class="pl-stage" onclick="setStageFilter(this,'freigegeben')"><div class="pl-lbl">Freigegeben</div><div class="pl-num">271</div><div class="pl-sub">heute durchgewinkt</div></div>
+          <div class="pl-stage" onclick="setStageFilter(this,'freigegeben')"><div class="pl-lbl">Freigegeben</div><div class="pl-num">271</div></div>
           <div class="pl-arrow">›</div>
-          <div class="pl-stage" onclick="setStageFilter(this,'datev')"><div class="pl-lbl">In DATEV</div><div class="pl-num">254</div><div class="pl-sub"><b>↗</b> exportiert</div></div>
+          <div class="pl-stage" onclick="setStageFilter(this,'datev')"><div class="pl-lbl">In DATEV</div><div class="pl-num">254</div></div>
         </div>
 
         <div class="buha-section-head">
@@ -2284,11 +2288,6 @@
               <div class="ms-item" onclick="selectMandant(this,'IK','Ingenieurbüro Klein KG','Heidelberg · Tragwerksplanung','SKR 04','04')"><div class="ms-icon">IK</div><div class="ms-item-body"><div class="ms-item-name">Ingenieurbüro Klein KG</div><div class="ms-item-sub">Heidelberg · Tragwerksplanung · 142 Belege/Mon.</div></div><div class="ms-item-skr">SKR 04</div></div>
               <div class="ms-item" onclick="selectMandant(this,'BS','Bauer &amp; Söhne OHG','Reutlingen · Rohbau','SKR 04','04')"><div class="ms-icon">BS</div><div class="ms-item-body"><div class="ms-item-name">Bauer &amp; Söhne OHG</div><div class="ms-item-sub">Reutlingen · Rohbau · 198 Belege/Mon.</div></div><div class="ms-item-skr">SKR 04</div></div>
             </div>
-          </div>
-          <div class="buha-filter-tabs">
-            <div class="buha-filter-tab active">Alle (147)</div>
-            <div class="buha-filter-tab">Bereit (128)</div>
-            <div class="buha-filter-tab">Prüfen (19)</div>
           </div>
         </div>
 
