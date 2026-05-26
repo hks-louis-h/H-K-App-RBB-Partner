@@ -1605,7 +1605,34 @@
     .ap-fact-note{font-size:.72rem;color:var(--text-2);margin-top:3px;font-style:italic;}
     .ap-memory{background:rgba(109,122,255,.07);border-radius:10px;padding:12px 14px;border-left:3px solid var(--acc);font-size:.76rem;line-height:1.55;}
     .ap-memory b{color:var(--acc);}
+
+    /* Lerneffekt-Block */
+    .ap-learn{background:linear-gradient(135deg,rgba(16,185,129,.1) 0%,rgba(109,122,255,.08) 100%);border:1px solid rgba(16,185,129,.25);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
+    .ap-learn-head{display:flex;align-items:center;gap:8px;}
+    .ap-learn-pulse{width:10px;height:10px;border-radius:50%;background:#10b981;position:relative;flex-shrink:0;animation:pulseDot 1.8s ease-in-out infinite;}
+    .ap-learn-pulse::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:2px solid rgba(16,185,129,.4);animation:pulseRing 1.8s ease-out infinite;}
+    @keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.6}}
+    @keyframes pulseRing{0%{transform:scale(.8);opacity:1}100%{transform:scale(1.6);opacity:0}}
+    .ap-learn-title{font-family:'Poppins',sans-serif;font-size:.76rem;font-weight:700;color:#0d8866;text-transform:uppercase;letter-spacing:.06em;}
+    .ap-learn-body{font-size:.78rem;line-height:1.5;color:var(--text);}
+    .ap-learn-body b{color:var(--acc);font-weight:600;}
+    .ap-learn-list{display:flex;flex-direction:column;gap:5px;margin-top:4px;}
+    .ap-learn-li{display:flex;align-items:flex-start;gap:8px;font-size:.74rem;color:var(--text-2);}
+    .ap-learn-li::before{content:'→';color:#10b981;font-weight:700;flex-shrink:0;}
+    .ap-learn-li b{color:var(--text);font-weight:600;}
+
     .ap-actions{margin-top:auto;display:flex;gap:10px;padding-top:14px;}
+
+    /* Buchungs-Bestätigungs-Toast / Lern-Modal */
+    #learnToast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(180%);background:var(--bg);border-radius:16px;padding:20px 28px;display:flex;align-items:center;gap:18px;box-shadow:0 24px 60px rgba(0,0,0,.25),0 4px 12px rgba(0,0,0,.1);z-index:99999;min-width:520px;transition:transform .45s cubic-bezier(.18,.89,.32,1.28);border:1px solid rgba(16,185,129,.3);}
+    #learnToast.visible{transform:translateX(-50%) translateY(0);}
+    .lt-check{width:46px;height:46px;border-radius:50%;background:#10b981;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700;flex-shrink:0;box-shadow:0 4px 14px rgba(16,185,129,.4);animation:checkPop .5s cubic-bezier(.18,.89,.32,1.28) .15s both;}
+    @keyframes checkPop{0%{transform:scale(0)}100%{transform:scale(1)}}
+    .lt-body{flex:1;}
+    .lt-title{font-family:'Poppins',sans-serif;font-size:.92rem;font-weight:700;color:var(--text);}
+    .lt-rule{font-size:.78rem;color:var(--text-2);margin-top:4px;line-height:1.45;}
+    .lt-rule b{color:var(--acc);font-family:'JetBrains Mono','Courier New',monospace;}
+    .lt-counter{font-family:'Poppins',sans-serif;font-size:.7rem;color:#10b981;font-weight:700;margin-top:6px;text-transform:uppercase;letter-spacing:.06em;}
     .ap-btn{flex:1;padding:11px 14px;border-radius:10px;font-size:.78rem;font-weight:700;text-align:center;cursor:pointer;}
     .ap-btn.primary{background:var(--acc);color:#fff;box-shadow:0 4px 14px rgba(109,122,255,.35);}
     .ap-btn.ghost{background:var(--bg);box-shadow:-3px -3px 6px var(--sl,rgba(255,255,255,.9)),3px 3px 6px var(--sd2,rgba(166,171,189,.25));color:var(--text-2);}
@@ -2247,11 +2274,36 @@
               <b>Aus eurer Wissensdatenbank:</b> Bauzentrum Weber wurde 47 Mal auf Konto 3400 gebucht, immer mit 19 % VSt. Layout 100 % bekannt, auch der Skonto-Hinweis ist immer an dieser Stelle.
             </div>
 
+            <div class="ap-learn">
+              <div class="ap-learn-head">
+                <div class="ap-learn-pulse"></div>
+                <div class="ap-learn-title">Wenn du jetzt bestätigst, lernt das System dazu</div>
+              </div>
+              <div class="ap-learn-body">
+                Diese Regel wird dauerhaft gespeichert und automatisch auf alle künftigen Belege dieses Lieferanten angewendet:
+              </div>
+              <div class="ap-learn-list">
+                <div class="ap-learn-li"><span><b>Bauzentrum Weber GmbH</b> → immer Konto <b>3400</b> Wareneingang gegen <b>1576</b> Vorsteuer 19 %</span></div>
+                <div class="ap-learn-li"><span>Skonto-Klausel wird ab sofort auch ohne Rückfrage erkannt und vorgemerkt</span></div>
+                <div class="ap-learn-li"><span>Confidence steigt von <b>98 %</b> auf <b>99,5 %</b> · ab Beleg 50 läuft der Lieferant vollautomatisch</span></div>
+              </div>
+            </div>
+
             <div class="ap-actions">
               <div class="ap-btn ghost" onclick="navigate('belege')">Korrigieren</div>
-              <div class="ap-btn primary" onclick="navigate('belege')">Buchen &amp; nächster Beleg ›</div>
+              <div class="ap-btn primary" onclick="confirmBookingAndLearn()">Bestätigen &amp; Regel speichern ›</div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Lern-Toast -->
+      <div id="learnToast">
+        <div class="lt-check">✓</div>
+        <div class="lt-body">
+          <div class="lt-title">Gebucht und gelernt.</div>
+          <div class="lt-rule">Neue Regel gespeichert: <b>Bauzentrum Weber GmbH</b> → künftig automatisch auf <b>3400 / 1576</b></div>
+          <div class="lt-counter">48× bestätigt · ab Beleg 50 vollautomatisch</div>
         </div>
       </div>
 
@@ -4415,6 +4467,17 @@ const SS_KEY = 'hk_kanzlei_v2';
 
   // Default-View beim Start: Buchhaltung statt Dashboard
   window._pitchDefaultView = 'belege';
+
+  // Lerneffekt-Bestätigung: Toast zeigen, dann zurück zur Inbox
+  window.confirmBookingAndLearn = function(){
+    const t = document.getElementById('learnToast');
+    if (!t) { if (typeof navigate === 'function') navigate('belege'); return; }
+    t.classList.add('visible');
+    setTimeout(() => {
+      t.classList.remove('visible');
+      setTimeout(() => { if (typeof navigate === 'function') navigate('belege'); }, 250);
+    }, 2400);
+  };
 })();
 function getToken()      { try { return JSON.parse(localStorage.getItem(SS_KEY)||'null')?.token||null; } catch { return null; } }
 function saveToken(t)    { localStorage.setItem(SS_KEY, JSON.stringify({ token:t })); _token = t; }
