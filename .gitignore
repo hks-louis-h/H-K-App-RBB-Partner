@@ -1,0 +1,15 @@
+.env
+node_modules/
+.DS_Store
+H&K Automation.app/
+Salespitch/bescheid_docs/
+Salespitch/demo_docs/
+*.icns
+__pycache__/
+*.pyc
+agents/email-agent/data/
+hk.db
+dist/
+fix-demo-files.js
+Contents/
+Salespitch/

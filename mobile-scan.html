@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>H&K Dokumentenscanner</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --acc: #6d7aff;
+    --acc2: #5563ee;
+    --bg: #f0f2f8;
+    --card: #e8eaf2;
+    --text: #1a1d2e;
+    --text-2: #4a4f6a;
+    --text-3: #8890b0;
+    --border: rgba(166,171,189,.25);
+    --sl: rgba(255,255,255,.85);
+    --sd: rgba(166,171,189,.45);
+    --green: #22c55e;
+    --red: #ef4444;
+    --shadow: 0 4px 20px rgba(0,0,0,.08);
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .screen { display: none; flex-direction: column; align-items: center; width: 100%; min-height: 100dvh; padding: 0 0 env(safe-area-inset-bottom); }
+  .screen.active { display: flex; }
+
+  /* Header */
+  .header {
+    width: 100%;
+    background: var(--card);
+    box-shadow: 0 2px 12px rgba(0,0,0,.06);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .header-logo {
+    width: 34px; height: 34px;
+    background: var(--acc);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .header-logo svg { fill: #fff; }
+  .header-title { font-size: .95rem; font-weight: 700; color: var(--text); }
+  .header-sub { font-size: .72rem; color: var(--text-3); margin-top: 1px; }
+
+  /* Neumorphic card */
+  .neo-card {
+    background: var(--bg);
+    border-radius: 20px;
+    box-shadow: -6px -6px 14px var(--sl), 6px 6px 14px var(--sd);
+    padding: 28px 24px;
+  }
+
+  /* ─── PIN SCREEN ─── */
+  #screen-pin { justify-content: flex-start; gap: 0; }
+  .pin-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 24px; gap: 24px; width: 100%; }
+  .pin-title { font-size: 1.05rem; font-weight: 700; text-align: center; }
+  .pin-sub { font-size: .8rem; color: var(--text-3); text-align: center; }
+  .pin-dots { display: flex; gap: 14px; margin: 8px 0; }
+  .pin-dot { width: 18px; height: 18px; border-radius: 50%; background: var(--border); box-shadow: inset 2px 2px 4px var(--sd), inset -2px -2px 4px var(--sl); transition: background .15s; }
+  .pin-dot.filled { background: var(--acc); box-shadow: 0 0 0 3px rgba(109,122,255,.2); }
+  .pin-error { font-size: .78rem; color: var(--red); text-align: center; min-height: 18px; }
+  .pin-keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; max-width: 280px; }
+  .pin-key {
+    aspect-ratio: 1;
+    border: none;
+    background: var(--bg);
+    border-radius: 16px;
+    box-shadow: -4px -4px 10px var(--sl), 4px 4px 10px var(--sd);
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    transition: box-shadow .1s, transform .1s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .pin-key:active { box-shadow: inset 2px 2px 6px var(--sd), inset -2px -2px 6px var(--sl); transform: scale(.96); }
+  .pin-key.del { font-size: 1.1rem; color: var(--text-3); }
+  .pin-key.enter { background: var(--acc); color: #fff; box-shadow: 0 4px 14px rgba(109,122,255,.4); }
+  .pin-key.enter:active { box-shadow: inset 2px 2px 6px rgba(0,0,0,.2); }
+
+  /* ─── KAMERA SCREEN ─── */
+  #screen-camera { justify-content: flex-start; }
+  .cam-body { flex: 1; display: flex; flex-direction: column; padding: 16px; gap: 12px; width: 100%; }
+  .cam-doc-label { font-size: .78rem; font-weight: 700; color: var(--acc); text-transform: uppercase; letter-spacing: .06em; }
+  .cam-preview-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .cam-thumb {
+    width: 72px; height: 72px;
+    border-radius: 10px;
+    object-fit: cover;
+    box-shadow: 0 2px 8px rgba(0,0,0,.12);
+    position: relative;
+  }
+  .cam-thumb-wrap { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
+  .cam-thumb { width: 100%; height: 100%; border-radius: 10px; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,.12); display: block; }
+  .cam-thumb-del {
+    position: absolute; top: 4px; right: 4px;
+    width: 22px; height: 22px;
+    background: var(--red); color: #fff;
+    border: none;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 1px 6px rgba(0,0,0,.3);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .cam-empty { color: var(--text-3); font-size: .82rem; text-align: center; padding: 24px 0; width: 100%; }
+
+  .cam-capture-btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 14px;
+    background: var(--bg);
+    box-shadow: -4px -4px 10px var(--sl), 4px 4px 10px var(--sd);
+    font-size: .88rem; font-weight: 700;
+    color: var(--acc);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: box-shadow .1s, transform .1s;
+  }
+  .cam-capture-btn:active { box-shadow: inset 2px 2px 6px var(--sd), inset -2px -2px 6px var(--sl); transform: scale(.98); }
+
+  .cam-actions { display: flex; gap: 10px; margin-top: auto; }
+  .btn-primary {
+    flex: 1; padding: 14px;
+    border: none; border-radius: 14px;
+    background: var(--acc); color: #fff;
+    font-size: .88rem; font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(109,122,255,.35);
+    transition: background .15s, transform .1s;
+  }
+  .btn-primary:active { transform: scale(.97); }
+  .btn-primary:disabled { background: var(--text-3); box-shadow: none; cursor: not-allowed; }
+  .btn-ghost {
+    flex: 1; padding: 14px;
+    border: 1.5px solid var(--border); border-radius: 14px;
+    background: transparent; color: var(--text-2);
+    font-size: .88rem; font-weight: 600;
+    cursor: pointer;
+    transition: border-color .15s, transform .1s;
+  }
+  .btn-ghost:active { transform: scale(.97); }
+
+  input[type=file] { display: none; }
+
+  /* ─── DOKUMENTE SCREEN ─── */
+  #screen-docs { justify-content: flex-start; }
+  .docs-body { flex: 1; display: flex; flex-direction: column; padding: 16px; gap: 14px; width: 100%; overflow-y: auto; }
+  .doc-card {
+    background: var(--bg);
+    border-radius: 16px;
+    box-shadow: -4px -4px 10px var(--sl), 4px 4px 10px var(--sd);
+    padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .doc-card-icon {
+    width: 44px; height: 44px; flex-shrink: 0;
+    background: rgba(109,122,255,.1); border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--acc);
+  }
+  .doc-card-info { flex: 1; min-width: 0; }
+  .doc-card-name { font-size: .84rem; font-weight: 700; }
+  .doc-card-pages { font-size: .72rem; color: var(--text-3); margin-top: 2px; }
+  .doc-card-del { color: var(--red); background: none; border: none; cursor: pointer; padding: 6px; font-size: 1.1rem; }
+
+  .docs-actions { display: flex; flex-direction: column; gap: 10px; padding: 0 16px 20px; flex-shrink: 0; }
+
+  /* ─── ERFOLG SCREEN ─── */
+  #screen-success { justify-content: center; align-items: center; padding: 40px 24px; gap: 20px; }
+  .success-icon { width: 80px; height: 80px; background: rgba(34,197,94,.12); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .success-title { font-size: 1.15rem; font-weight: 800; text-align: center; }
+  .success-sub { font-size: .82rem; color: var(--text-3); text-align: center; }
+  .success-count { font-size: 2rem; font-weight: 900; color: var(--green); }
+
+  /* Upload-Overlay */
+  .upload-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(240,242,248,.85);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+  .upload-overlay.active { display: flex; }
+  .spinner {
+    width: 48px; height: 48px;
+    border: 4px solid rgba(109,122,255,.2);
+    border-top-color: var(--acc);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .upload-overlay-text { font-size: .88rem; font-weight: 600; color: var(--text-2); }
+</style>
+</head>
+<body>
+
+<!-- PIN -->
+<div class="screen active" id="screen-pin">
+  <div class="header">
+    <div class="header-logo">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    </div>
+    <div>
+      <div class="header-title">H&amp;K Dokumentenscanner</div>
+      <div class="header-sub">Sicherer Dokumenten-Upload</div>
+    </div>
+  </div>
+  <div class="pin-body">
+    <div class="neo-card" style="width:100%;max-width:340px;display:flex;flex-direction:column;align-items:center;gap:20px;">
+      <div>
+        <div class="pin-title">Scanner-PIN eingeben</div>
+        <div class="pin-sub" style="margin-top:6px">Bitte geben Sie den 4-stelligen PIN ein</div>
+      </div>
+      <div class="pin-dots">
+        <div class="pin-dot" id="dot0"></div>
+        <div class="pin-dot" id="dot1"></div>
+        <div class="pin-dot" id="dot2"></div>
+        <div class="pin-dot" id="dot3"></div>
+      </div>
+      <div class="pin-error" id="pinError"></div>
+      <div class="pin-keypad">
+        <button class="pin-key" onclick="pinKey('1')">1</button>
+        <button class="pin-key" onclick="pinKey('2')">2</button>
+        <button class="pin-key" onclick="pinKey('3')">3</button>
+        <button class="pin-key" onclick="pinKey('4')">4</button>
+        <button class="pin-key" onclick="pinKey('5')">5</button>
+        <button class="pin-key" onclick="pinKey('6')">6</button>
+        <button class="pin-key" onclick="pinKey('7')">7</button>
+        <button class="pin-key" onclick="pinKey('8')">8</button>
+        <button class="pin-key" onclick="pinKey('9')">9</button>
+        <button class="pin-key del" onclick="pinDel()">⌫</button>
+        <button class="pin-key" onclick="pinKey('0')">0</button>
+        <button class="pin-key enter" id="pinEnter" onclick="pinSubmit()">✓</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- KAMERA -->
+<div class="screen" id="screen-camera">
+  <div class="header">
+    <div class="header-logo">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    </div>
+    <div>
+      <div class="header-title">Dokument fotografieren</div>
+      <div class="header-sub" id="camDocLabel">Dokument 1</div>
+    </div>
+  </div>
+  <div class="cam-body">
+    <div class="cam-doc-label" id="camPageCount">0 Seiten</div>
+    <div class="cam-preview-grid" id="camPreviewGrid">
+      <div class="cam-empty" id="camEmpty">Noch keine Fotos — tippen Sie unten auf Foto machen</div>
+    </div>
+    <button class="cam-capture-btn" onclick="document.getElementById('cameraInput').click()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      Foto machen
+    </button>
+    <input type="file" id="cameraInput" accept="image/*" capture="environment" multiple onchange="onPhotosAdded(this)">
+    <div class="cam-actions">
+      <button class="btn-ghost" onclick="cancelCurrentDoc()">Abbrechen</button>
+      <button class="btn-primary" id="btnDocDone" onclick="finishDocument()" disabled>Dokument abschließen</button>
+    </div>
+  </div>
+</div>
+
+<!-- DOKUMENTEN-LISTE -->
+<div class="screen" id="screen-docs">
+  <div class="header">
+    <div class="header-logo">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    </div>
+    <div>
+      <div class="header-title">Dokumente</div>
+      <div class="header-sub" id="docsCountLabel">0 Dokumente bereit</div>
+    </div>
+  </div>
+  <div class="docs-body" id="docsBody"></div>
+  <div class="docs-actions">
+    <button class="btn-ghost" onclick="newDocument()">
+      <span style="font-size:1.1rem">+</span>&nbsp; Neues Dokument
+    </button>
+    <button class="btn-primary" id="btnUploadAll" onclick="uploadAll()">Hochladen</button>
+  </div>
+</div>
+
+<!-- ERFOLG -->
+<div class="screen" id="screen-success">
+  <div class="success-icon">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+  </div>
+  <div class="success-count" id="successCount">1</div>
+  <div class="success-title">Erfolgreich hochgeladen!</div>
+  <div class="success-sub">Die KI klassifiziert die Dokumente jetzt<br>und sie erscheinen im Scanner.</div>
+  <button onclick="resetAll()" style="margin-top:8px;padding:11px 28px;border:none;border-radius:12px;background:var(--acc);color:#fff;font-size:.85rem;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(109,122,255,.35);display:inline-flex;align-items:center;gap:8px;transition:transform .1s" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+    Weiteres Dokument scannen
+  </button>
+</div>
+
+<!-- Upload-Overlay -->
+<div class="upload-overlay" id="uploadOverlay">
+  <div class="spinner"></div>
+  <div class="upload-overlay-text" id="uploadOverlayText">Dokumente werden hochgeladen…</div>
+</div>
+
+<script>
+const SERVER = '';  // gleiche Origin
+
+// ─── Zustand ───────────────────────────────────────────────────────────────
+let pin = '';
+let currentDocPhotos = [];   // { blob, url } — aktuelle Fotos für das laufende Dokument
+let documents = [];          // [{ photos: [{blob, url}], label }]
+
+// ─── PIN ───────────────────────────────────────────────────────────────────
+function pinKey(d) {
+  if (pin.length >= 4) return;
+  pin += d;
+  updatePinDots();
+  if (pin.length === 4) setTimeout(pinSubmit, 120);
+}
+function pinDel() {
+  pin = pin.slice(0, -1);
+  updatePinDots();
+  document.getElementById('pinError').textContent = '';
+}
+function updatePinDots() {
+  for (let i = 0; i < 4; i++) {
+    document.getElementById('dot' + i).classList.toggle('filled', i < pin.length);
+  }
+}
+async function pinSubmit() {
+  if (pin.length < 4) return;
+  const res = await fetch(SERVER + '/api/mobile/verify-pin', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ pin })
+  });
+  const data = await res.json();
+  if (data.ok) {
+    showScreen('camera');
+  } else {
+    document.getElementById('pinError').textContent = 'Falscher PIN. Bitte erneut versuchen.';
+    pin = '';
+    updatePinDots();
+  }
+}
+
+// ─── Kamera ────────────────────────────────────────────────────────────────
+function onPhotosAdded(input) {
+  const files = Array.from(input.files);
+  files.forEach(file => {
+    const url = URL.createObjectURL(file);
+    currentDocPhotos.push({ blob: file, url });
+  });
+  input.value = '';
+  renderCamPreviews();
+}
+
+function renderCamPreviews() {
+  const grid = document.getElementById('camPreviewGrid');
+  const empty = document.getElementById('camEmpty');
+  const count = document.getElementById('camPageCount');
+  const btn = document.getElementById('btnDocDone');
+
+  empty.style.display = currentDocPhotos.length ? 'none' : 'block';
+  btn.disabled = currentDocPhotos.length === 0;
+  count.textContent = currentDocPhotos.length + (currentDocPhotos.length === 1 ? ' Seite' : ' Seiten');
+
+  // Vorhandene Thumbs löschen (außer camEmpty)
+  grid.querySelectorAll('.cam-thumb-wrap').forEach(el => el.remove());
+
+  currentDocPhotos.forEach((p, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'cam-thumb-wrap';
+
+    const img = document.createElement('img');
+    img.className = 'cam-thumb';
+    img.src = p.url;
+
+    const del = document.createElement('button');
+    del.className = 'cam-thumb-del';
+    del.type = 'button';
+    del.dataset.idx = i;
+    del.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+
+    wrap.appendChild(img);
+    wrap.appendChild(del);
+    grid.appendChild(wrap);
+  });
+}
+
+function deletePhoto(i) {
+  URL.revokeObjectURL(currentDocPhotos[i].url);
+  currentDocPhotos.splice(i, 1);
+  renderCamPreviews();
+}
+
+function finishDocument() {
+  if (currentDocPhotos.length === 0) return;
+  const idx = documents.length;
+  documents.push({ photos: [...currentDocPhotos], label: 'Dokument ' + (idx + 1) });
+  currentDocPhotos = [];
+  renderDocsList();
+  showScreen('docs');
+}
+
+function cancelCurrentDoc() {
+  if (documents.length > 0) {
+    currentDocPhotos = [];
+    renderCamPreviews();
+    showScreen('docs');
+  } else {
+    currentDocPhotos = [];
+    renderCamPreviews();
+  }
+}
+
+// ─── Dokumente-Liste ────────────────────────────────────────────────────────
+function renderDocsList() {
+  const body = document.getElementById('docsBody');
+  const label = document.getElementById('docsCountLabel');
+  label.textContent = documents.length + (documents.length === 1 ? ' Dokument bereit' : ' Dokumente bereit');
+  body.innerHTML = '';
+
+  documents.forEach((doc, i) => {
+    const card = document.createElement('div');
+    card.className = 'doc-card';
+    card.innerHTML = `
+      <div class="doc-card-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      </div>
+      <div class="doc-card-info">
+        <div class="doc-card-name">${doc.label}</div>
+        <div class="doc-card-pages">${doc.photos.length} ${doc.photos.length === 1 ? 'Seite' : 'Seiten'}</div>
+      </div>
+      <button class="doc-card-del" onclick="deleteDoc(${i})" title="Entfernen"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+    `;
+    body.appendChild(card);
+  });
+}
+
+function deleteDoc(i) {
+  documents[i].photos.forEach(p => URL.revokeObjectURL(p.url));
+  documents.splice(i, 1);
+  renderDocsList();
+  if (documents.length === 0) showScreen('camera');
+}
+
+function newDocument() {
+  const docNum = documents.length + 1;
+  document.getElementById('camDocLabel').textContent = 'Dokument ' + docNum;
+  currentDocPhotos = [];
+  renderCamPreviews();
+  showScreen('camera');
+}
+
+// ─── Upload ─────────────────────────────────────────────────────────────────
+async function uploadAll() {
+  if (documents.length === 0) return;
+
+  document.getElementById('uploadOverlayText').textContent = 'Dokumente werden hochgeladen…';
+  document.getElementById('uploadOverlay').classList.add('active');
+
+  const form = new FormData();
+  form.append('pin', pin);
+
+  const groupMap = [];
+  documents.forEach((doc, gi) => {
+    doc.photos.forEach((p, pi) => {
+      const ext = p.blob.type === 'image/png' ? '.png' : '.jpg';
+      form.append(`foto_${gi}_${pi}`, p.blob, `foto_${gi}_${pi}${ext}`);
+    });
+    groupMap.push(doc.photos.map((_, pi) => `foto_${gi}_${pi}`));
+  });
+  form.append('documents', JSON.stringify(groupMap));
+
+  try {
+    const res = await fetch(SERVER + '/api/mobile/upload', { method: 'POST', body: form });
+    const data = await res.json();
+
+    document.getElementById('uploadOverlay').classList.remove('active');
+
+    if (data.ok) {
+      document.getElementById('successCount').textContent = data.count;
+      showScreen('success');
+    } else {
+      alert('Fehler beim Hochladen: ' + (data.error || 'Unbekannt'));
+    }
+  } catch(e) {
+    document.getElementById('uploadOverlay').classList.remove('active');
+    alert('Netzwerkfehler. Bitte erneut versuchen.');
+  }
+}
+
+// ─── Reset ──────────────────────────────────────────────────────────────────
+function resetAll() {
+  documents = [];
+  currentDocPhotos = [];
+  document.getElementById('camDocLabel').textContent = 'Dokument 1';
+  renderCamPreviews();
+  showScreen('camera');
+}
+
+// ─── Screen-Navigation ──────────────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+}
+
+// Event-Delegation für Foto-Löschen (iOS-kompatibel)
+document.getElementById('camPreviewGrid').addEventListener('click', function(e) {
+  const btn = e.target.closest('.cam-thumb-del');
+  if (!btn) return;
+  const i = parseInt(btn.dataset.idx, 10);
+  if (!isNaN(i)) { URL.revokeObjectURL(currentDocPhotos[i].url); currentDocPhotos.splice(i, 1); renderCamPreviews(); }
+});
+</script>
+</body>
+</html>

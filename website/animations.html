@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>H&K App Animationen</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ── EXAKTE APP-VARIABLEN (1:1 aus kanzlei.html) ── */
+    :root {
+      --bg:     #ecedf1;
+      --acc:    #6d7aff;
+      --acc-d:  #5c6ae8;
+      --text:   #050505;
+      --text-2: #6b7280;
+      --text-3: #9ca3af;
+      --sl:     rgba(255,255,255,.85);
+      --sd:     rgba(166,171,189,.45);
+      --sd2:    rgba(166,171,189,.25);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      background: var(--bg);
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      font-size: 14px;
+      display: flex; flex-direction: column;
+      align-items: center; padding: 48px 24px 60px;
+      gap: 48px;
+    }
+
+    h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.8rem; font-weight: 800;
+      color: var(--text); letter-spacing: -.03em;
+    }
+    h1 span { color: var(--acc); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      width: 100%; max-width: 880px;
+    }
+
+    /* ── Karte Hülle ── */
+    .card {
+      background: var(--bg);
+      border-radius: 20px;
+      padding: 24px 22px 22px;
+      box-shadow: -6px -6px 16px var(--sl), 6px 6px 16px var(--sd);
+      min-height: 300px;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .card-visual {
+      flex: 1; display: flex; align-items: flex-start; justify-content: center;
+      margin-bottom: 16px; overflow: hidden;
+    }
+    .card-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: .92rem; font-weight: 700;
+      color: var(--text); margin-bottom: 5px;
+    }
+    .card-sub { font-size: .78rem; color: var(--text-2); line-height: 1.55; }
+
+    /* ══════════════════════════════════════════════════
+       KARTE 1 — Sidebar (exakt wie #sidebar + .sb-item)
+    ══════════════════════════════════════════════════ */
+    .anim-sidebar {
+      width: 100%;
+      background: var(--bg);
+      display: flex; flex-direction: column;
+      padding: 8px 0;
+    }
+    .anim-sb-logo {
+      padding: 4px 12px 12px;
+      font-family: 'Poppins', sans-serif;
+      font-size: .88rem; font-weight: 700;
+      color: var(--text); letter-spacing: -.01em;
+    }
+    .anim-sb-logo span { color: var(--acc); }
+    .anim-sb-lbl {
+      font-size: .6rem; font-weight: 700;
+      color: var(--text-3); text-transform: uppercase;
+      letter-spacing: .1em; padding: 8px 12px 4px;
+    }
+    /* Exakt .sb-item */
+    .anim-sb-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: 10px; cursor: pointer;
+      color: var(--text-2); font-size: .82rem; font-weight: 500;
+      transition: all .15s; position: relative;
+      opacity: 0; transform: translateY(-10px);
+    }
+    .anim-sb-item.visible { opacity: 1; transform: none; }
+    /* Exakt .sb-item.active */
+    .anim-sb-item.active {
+      background: var(--bg);
+      box-shadow: -4px -4px 10px var(--sl), 4px 4px 10px var(--sd2);
+      color: var(--acc); font-weight: 600;
+    }
+    .anim-sb-item.active::before {
+      content: ''; position: absolute; left: 0; top: 20%; bottom: 20%;
+      width: 3px; border-radius: 0 3px 3px 0; background: var(--acc);
+    }
+    .sb-badge {
+      margin-left: auto; background: var(--acc); color: #fff;
+      font-size: .6rem; font-weight: 700;
+      padding: 1px 6px; border-radius: 10px; line-height: 1.6;
+    }
+
+    /* ══════════════════════════════════════════════════
+       KARTE 2 — KanzleiGPT (exakt wie .ai-* styles)
+    ══════════════════════════════════════════════════ */
+    .anim-gpt {
+      width: 100%; display: flex; flex-direction: column; height: 100%;
+      background: var(--bg); border-radius: 14px;
+      box-shadow: -6px -6px 16px var(--sl), 6px 6px 16px var(--sd2);
+      overflow: hidden;
+    }
+    /* Exakt .ai-header */
+    .anim-ai-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(166,171,189,.2);
+      background: rgba(109,122,255,.03);
+      display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+    }
+    .anim-ai-icon {
+      width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+      background: linear-gradient(135deg, #7c88ff, #5a68f0);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 3px 10px rgba(109,122,255,.4);
+    }
+    .anim-ai-title { font-family: 'Poppins', sans-serif; font-size: .82rem; font-weight: 700; }
+    .anim-ai-sub   { font-size: .66rem; color: var(--text-3); margin-top: 1px; }
+    /* Exakt .ai-messages */
+    .anim-ai-msgs {
+      flex: 1; padding: 14px 16px;
+      display: flex; flex-direction: column; gap: 12px; overflow: hidden;
+    }
+    /* Exakt .ai-bubble */
+    .anim-bubble { display: flex; gap: 8px; max-width: 90%; }
+    .anim-bubble.user { align-self: flex-end; flex-direction: row-reverse; opacity: 0; transform: translateY(6px); transition: opacity .3s, transform .3s; }
+    .anim-bubble.ai   { align-self: flex-start; opacity: 0; transform: translateY(6px); transition: opacity .3s, transform .3s; }
+    .anim-bubble.show { opacity: 1; transform: none; }
+    /* Exakt .ai-avatar */
+    .anim-avatar {
+      width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .6rem; font-weight: 700; margin-top: 2px;
+    }
+    .anim-bubble.user .anim-avatar { background: var(--acc); color: #fff; box-shadow: 0 3px 8px rgba(109,122,255,.35); }
+    .anim-bubble.ai  .anim-avatar { background: linear-gradient(135deg,#7c88ff,#5a68f0); color: #fff; box-shadow: 0 3px 8px rgba(109,122,255,.35); }
+    /* Exakt .ai-text */
+    .anim-text { padding: 10px 13px; border-radius: 14px; font-size: .78rem; line-height: 1.6; }
+    .anim-bubble.user .anim-text { background: var(--acc); color: #fff; border-top-right-radius: 3px; }
+    .anim-bubble.ai  .anim-text  { background: var(--bg); color: var(--text); box-shadow: -4px -4px 10px var(--sl), 4px 4px 10px var(--sd2); border-top-left-radius: 3px; }
+    .anim-bubble.ai .anim-text strong { color: var(--acc); font-weight: 700; }
+    /* Exakt .ai-stream-cursor */
+    .ai-cursor { display: inline-block; width: 2px; height: 11px; background: var(--acc); margin-left: 1px; vertical-align: text-bottom; animation: blink .7s step-end infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    /* Typing dots */
+    .typing-dots { display: flex; gap: 4px; padding: 10px 13px; border-radius: 14px 14px 14px 3px; background: var(--bg); box-shadow: -4px -4px 10px var(--sl), 4px 4px 10px var(--sd2); align-self: flex-start; opacity: 0; transition: opacity .25s; }
+    .typing-dots.show { opacity: 1; }
+    .td { width: 6px; height: 6px; border-radius: 50%; background: var(--acc); animation: tdot 1.2s ease-in-out infinite; }
+    .td:nth-child(2) { animation-delay: .2s; }
+    .td:nth-child(3) { animation-delay: .4s; }
+    @keyframes tdot { 0%,80%,100%{transform:scale(.75);opacity:.35} 40%{transform:scale(1.1);opacity:1} }
+    /* Input row */
+    .anim-ai-input {
+      padding: 10px 14px 14px; border-top: 1px solid rgba(166,171,189,.15);
+      display: flex; gap: 8px; align-items: center; flex-shrink: 0;
+    }
+    .anim-ai-inp {
+      flex: 1; background: var(--bg); border: none;
+      box-shadow: inset 3px 3px 7px var(--sd2), inset -3px -3px 7px var(--sl);
+      border-radius: 50px; padding: 8px 14px;
+      font-size: .75rem; color: var(--text-3); font-family: 'Inter', sans-serif;
+    }
+    .anim-ai-btn {
+      width: 32px; height: 32px; border-radius: 50%; border: none;
+      background: var(--acc); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 3px 10px rgba(109,122,255,.4);
+      flex-shrink: 0;
+    }
+
+    /* ══════════════════════════════════════════════════
+       KARTE 3 — Scanner (exakt wie .view-scanner)
+    ══════════════════════════════════════════════════ */
+    .anim-scanner { width: 100%; }
+    .doc-card {
+      background: var(--bg); border-radius: 14px;
+      box-shadow: -4px -4px 10px var(--sl), 4px 4px 10px var(--sd2);
+      padding: 14px; position: relative; overflow: hidden;
+    }
+    .doc-header {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 12px; padding-bottom: 10px;
+      border-bottom: 1px solid rgba(166,171,189,.2);
+    }
+    .doc-icon {
+      width: 28px; height: 28px; border-radius: 7px;
+      background: rgba(109,122,255,.1);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .doc-fname { font-size: .74rem; font-weight: 600; color: var(--text); }
+    .doc-ftype { font-size: .64rem; color: var(--text-3); }
+    .doc-lines { display: flex; flex-direction: column; gap: 7px; }
+    .doc-line {
+      height: 8px; border-radius: 4px; background: rgba(166,171,189,.25);
+      position: relative; overflow: hidden;
+    }
+    .doc-line.w-full { width: 100%; }
+    .doc-line.w-75   { width: 75%; }
+    .doc-line.w-55   { width: 55%; }
+    .doc-line.w-85   { width: 85%; }
+    .doc-line.w-40   { width: 40%; }
+    .doc-line.w-65   { width: 65%; }
+    .doc-line.scanned { background: rgba(109,122,255,.18); }
+    .scan-beam {
+      position: absolute; left: -100%; right: 0; height: 100%;
+      background: linear-gradient(90deg, transparent 0%, rgba(109,122,255,.6) 50%, transparent 100%);
+    }
+    .doc-line.scanning .scan-beam { animation: beam .5s ease forwards; }
+    @keyframes beam { from{left:-100%} to{left:100%} }
+    .scan-overlay {
+      position: absolute; inset: 0;
+      background: rgba(109,122,255,.03);
+      border: 1.5px solid rgba(109,122,255,.2); border-radius: 14px;
+      opacity: 0; transition: opacity .3s;
+    }
+    .scan-overlay.active { opacity: 1; }
+    .scan-progress {
+      position: absolute; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, #6d7aff 50%, transparent);
+      box-shadow: 0 0 8px rgba(109,122,255,.7);
+      top: 0; transition: top .04s linear;
+      opacity: 0;
+    }
+    .scan-progress.active { opacity: 1; }
+    .scan-badge {
+      margin-top: 12px; display: flex; align-items: center; gap: 8px;
+      padding: 9px 12px; border-radius: 10px;
+      background: rgba(109,122,255,.08);
+      box-shadow: -3px -3px 7px var(--sl), 3px 3px 7px var(--sd2);
+      font-size: .74rem; font-weight: 600; color: var(--acc);
+      opacity: 0; transform: translateY(5px);
+      transition: opacity .4s, transform .4s;
+    }
+    .scan-badge.show { opacity: 1; transform: none; }
+
+    /* ══════════════════════════════════════════════════
+       KARTE 4 — Mandanten (exakt wie .mand-* styles)
+    ══════════════════════════════════════════════════ */
+    .anim-mand { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+    .mand-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 12px;
+      background: var(--bg);
+      box-shadow: -4px -4px 10px var(--sl), 4px 4px 10px var(--sd2);
+      opacity: 0; transform: translateX(-10px);
+      transition: opacity .4s ease, transform .4s ease;
+    }
+    .mand-row.show { opacity: 1; transform: none; }
+    .mand-av {
+      width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .68rem; font-weight: 700; color: #fff;
+    }
+    .mand-info { flex: 1; min-width: 0; }
+    .mand-name { font-size: .78rem; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .mand-type { font-size: .66rem; color: var(--text-3); }
+    .mand-bar-track { width: 60px; height: 5px; border-radius: 3px; background: rgba(166,171,189,.25); overflow: hidden; flex-shrink: 0; }
+    .mand-bar-fill  { height: 100%; border-radius: 3px; width: 0; transition: width 1s cubic-bezier(.4,0,.2,1); }
+    .mand-pct { font-family: 'Poppins', sans-serif; font-size: .8rem; font-weight: 800; color: var(--acc); min-width: 34px; text-align: right; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+<h1>H&amp;K <span>automation</span> — App Animationen</h1>
+
+<div class="grid">
+
+  <!-- ── KARTE 1: Sidebar ── -->
+  <div class="card">
+    <div class="card-visual">
+      <div class="anim-sidebar" id="anim-sidebar">
+        <div class="anim-sb-logo">H&amp;K <span>automation</span></div>
+
+        <div class="anim-sb-lbl">KanzleiGPT</div>
+        <div class="anim-sb-item" data-idx="0">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          KanzleiGPT
+        </div>
+
+        <div class="anim-sb-lbl">Übersicht</div>
+        <div class="anim-sb-item" data-idx="1">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </div>
+
+        <div class="anim-sb-lbl">Verwaltung</div>
+        <div class="anim-sb-item" data-idx="2">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          Mandanten
+        </div>
+        <div class="anim-sb-item" data-idx="3">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Fristen
+          <span class="sb-badge">2</span>
+        </div>
+        <div class="anim-sb-item" data-idx="4">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Kalender
+        </div>
+
+        <div class="anim-sb-lbl">Finanzen</div>
+        <div class="anim-sb-item" data-idx="5">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Rechnungen
+        </div>
+
+        <div class="anim-sb-lbl">Team</div>
+        <div class="anim-sb-item" data-idx="6">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Teamchat
+        </div>
+      </div>
+    </div>
+    <div class="card-label">Alle Tools. Eine Oberfläche.</div>
+    <div class="card-sub">KanzleiGPT, Mandanten, Fristen, Kalender und mehr — alles in einer Software für Ihre Kanzlei.</div>
+  </div>
+
+  <!-- ── KARTE 2: KanzleiGPT Chat ── -->
+  <div class="card" style="padding:0; overflow:hidden; border-radius:20px;">
+    <div class="anim-gpt">
+      <div class="anim-ai-header">
+        <div class="anim-ai-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div>
+          <div class="anim-ai-title">KanzleiGPT</div>
+          <div class="anim-ai-sub">Spezialisiert · Präzise · Kanzlei-exklusiv</div>
+        </div>
+      </div>
+      <div class="anim-ai-msgs" id="gpt-msgs">
+        <div class="anim-bubble user" id="gb-user">
+          <div class="anim-avatar">LH</div>
+          <div class="anim-text">Grundfreibetrag 2025 für Ledige?</div>
+        </div>
+        <div class="typing-dots" id="gb-typing">
+          <div class="td"></div><div class="td"></div><div class="td"></div>
+        </div>
+        <div class="anim-bubble ai" id="gb-ai">
+          <div class="anim-avatar">KI</div>
+          <div class="anim-text" id="gb-ai-text"></div>
+        </div>
+      </div>
+      <div class="anim-ai-input">
+        <div class="anim-ai-inp">Frage stellen oder Auftrag eingeben…</div>
+        <button class="anim-ai-btn">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+    <div style="padding:14px 20px 18px">
+      <div class="card-label">KanzleiGPT</div>
+      <div class="card-sub">Antwortet mit exakten §-Zitaten aus allen 26 deutschen Steuergesetzen — sofort, immer mit Quelle.</div>
+    </div>
+  </div>
+
+  <!-- ── KARTE 3: Scanner ── -->
+  <div class="card">
+    <div class="card-visual" style="align-items:flex-start">
+      <div class="anim-scanner">
+        <div class="doc-card" id="doc-card">
+          <div class="scan-overlay" id="scan-overlay"></div>
+          <div class="scan-progress" id="scan-progress"></div>
+          <div class="doc-header">
+            <div class="doc-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div>
+              <div class="doc-fname">Steuerbescheid_2024.pdf</div>
+              <div class="doc-ftype">PDF · 2.4 MB</div>
+            </div>
+          </div>
+          <div class="doc-lines" id="doc-lines">
+            <div class="doc-line w-full"><div class="scan-beam"></div></div>
+            <div class="doc-line w-75"><div class="scan-beam"></div></div>
+            <div class="doc-line w-full"><div class="scan-beam"></div></div>
+            <div class="doc-line w-55"><div class="scan-beam"></div></div>
+            <div class="doc-line w-85"><div class="scan-beam"></div></div>
+            <div class="doc-line w-40"><div class="scan-beam"></div></div>
+            <div class="doc-line w-65"><div class="scan-beam"></div></div>
+          </div>
+        </div>
+        <div class="scan-badge" id="scan-badge">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Erkannt: Steuerbescheid · Alexander Bauer · 2024
+        </div>
+      </div>
+    </div>
+    <div class="card-label">Dokumenten-Scanner</div>
+    <div class="card-sub">Bescheide, Belege und Verträge hochladen — die KI liest, erkennt und ordnet automatisch zu.</div>
+  </div>
+
+  <!-- ── KARTE 4: Mandantenverwaltung ── -->
+  <div class="card">
+    <div class="card-visual">
+      <div class="anim-mand" id="anim-mand">
+        <div class="mand-row" data-w="89">
+          <div class="mand-av" style="background:#6d7aff">AB</div>
+          <div class="mand-info">
+            <div class="mand-name">Alexander Bauer</div>
+            <div class="mand-type">GmbH-Geschäftsführer</div>
+          </div>
+          <div class="mand-bar-track"><div class="mand-bar-fill" style="background:#6d7aff"></div></div>
+          <div class="mand-pct">89%</div>
+        </div>
+        <div class="mand-row" data-w="74">
+          <div class="mand-av" style="background:#5563e8">MH</div>
+          <div class="mand-info">
+            <div class="mand-name">Dr. M. Huber</div>
+            <div class="mand-type">Freiberufler · Arzt</div>
+          </div>
+          <div class="mand-bar-track"><div class="mand-bar-fill" style="background:#5563e8"></div></div>
+          <div class="mand-pct">74%</div>
+        </div>
+        <div class="mand-row" data-w="95">
+          <div class="mand-av" style="background:#7c8bff">JV</div>
+          <div class="mand-info">
+            <div class="mand-name">Julia Vogel</div>
+            <div class="mand-type">Selbstständig</div>
+          </div>
+          <div class="mand-bar-track"><div class="mand-bar-fill" style="background:#7c8bff"></div></div>
+          <div class="mand-pct">95%</div>
+        </div>
+        <div class="mand-row" data-w="61">
+          <div class="mand-av" style="background:#4a52c8">FK</div>
+          <div class="mand-info">
+            <div class="mand-name">Felix Kramer</div>
+            <div class="mand-type">Einzelunternehmer</div>
+          </div>
+          <div class="mand-bar-track"><div class="mand-bar-fill" style="background:#4a52c8"></div></div>
+          <div class="mand-pct">61%</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-label">Mandantenverwaltung</div>
+    <div class="card-sub">Vollständige Akte digital. Jeder Mandant mit Status, Fristen und Dokumenten auf einen Blick.</div>
+  </div>
+
+</div>
+
+<script>
+  // ══ KARTE 1: Sidebar Items nacheinander von oben nach unten ══
+  function runSidebar() {
+    const items = document.querySelectorAll('.anim-sb-item');
+    items.forEach(el => { el.classList.remove('visible', 'active'); });
+
+    items.forEach((el, i) => {
+      // Einblenden
+      setTimeout(() => el.classList.add('visible'), i * 250);
+      // Kurz highlighten
+      setTimeout(() => {
+        el.classList.add('active');
+        setTimeout(() => el.classList.remove('active'), 500);
+      }, i * 250 + 80);
+    });
+
+    // Loop
+    setTimeout(runSidebar, items.length * 250 + 2000);
+  }
+
+  // ══ KARTE 2: KanzleiGPT Typewriter ══
+  const AI_ANTWORT = 'Nach **§ 32a Abs. 1 EStG** beträgt der Grundfreibetrag 2025 **12.096 €**. Darunter fällt keine Einkommensteuer an.';
+
+  function runChat() {
+    const userBubble = document.getElementById('gb-user');
+    const typing     = document.getElementById('gb-typing');
+    const aiBubble   = document.getElementById('gb-ai');
+    const aiText     = document.getElementById('gb-ai-text');
+
+    userBubble.classList.remove('show');
+    typing.classList.remove('show');
+    aiBubble.classList.remove('show');
+    aiText.innerHTML = '';
+
+    // 1. User-Bubble einblenden
+    setTimeout(() => userBubble.classList.add('show'), 400);
+
+    // 2. Typing-Indikator
+    setTimeout(() => typing.classList.add('show'), 1100);
+
+    // 3. Tippen
+    setTimeout(() => {
+      typing.classList.remove('show');
+      aiBubble.classList.add('show');
+      aiText.innerHTML = '<span class="ai-cursor"></span>';
+      let i = 0;
+      function tick() {
+        if (i <= AI_ANTWORT.length) {
+          aiText.innerHTML = AI_ANTWORT.slice(0, i).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') + '<span class="ai-cursor"></span>';
+          i++;
+          setTimeout(tick, 22 + Math.random() * 14);
+        } else {
+          aiText.innerHTML = AI_ANTWORT.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+          setTimeout(runChat, 3000);
+        }
+      }
+      tick();
+    }, 2200);
+  }
+
+  // ══ KARTE 3: Scanner ══
+  function runScanner() {
+    const lines    = document.querySelectorAll('.doc-line');
+    const progress = document.getElementById('scan-progress');
+    const overlay  = document.getElementById('scan-overlay');
+    const badge    = document.getElementById('scan-badge');
+    const card     = document.getElementById('doc-card');
+
+    // Reset
+    badge.classList.remove('show');
+    overlay.classList.remove('active');
+    progress.classList.remove('active');
+    lines.forEach(l => l.classList.remove('scanned', 'scanning'));
+    progress.style.top = '0px';
+
+    const cardH = card.offsetHeight;
+    let startTime = null;
+    const duration = 1600;
+
+    setTimeout(() => {
+      overlay.classList.add('active');
+      progress.classList.add('active');
+
+      function frame(now) {
+        if (!startTime) startTime = now;
+        const pct = Math.min((now - startTime) / duration, 1);
+        const top = pct * cardH;
+        progress.style.top = top + 'px';
+
+        lines.forEach(line => {
+          const lt = line.offsetTop - card.offsetTop;
+          if (top > lt + 4 && !line.classList.contains('scanned')) {
+            line.classList.add('scanning');
+            setTimeout(() => {
+              line.classList.remove('scanning');
+              line.classList.add('scanned');
+            }, 500);
+          }
+        });
+
+        if (pct < 1) {
+          requestAnimationFrame(frame);
+        } else {
+          progress.classList.remove('active');
+          overlay.classList.remove('active');
+          setTimeout(() => {
+            badge.classList.add('show');
+            setTimeout(runScanner, 2800);
+          }, 300);
+        }
+      }
+      requestAnimationFrame(frame);
+    }, 500);
+  }
+
+  // ══ KARTE 4: Mandanten einblenden ══
+  function runMand() {
+    const rows = document.querySelectorAll('.mand-row');
+    rows.forEach(r => {
+      r.classList.remove('show');
+      r.querySelector('.mand-bar-fill').style.width = '0';
+    });
+
+    rows.forEach((row, i) => {
+      setTimeout(() => {
+        row.classList.add('show');
+        setTimeout(() => {
+          row.querySelector('.mand-bar-fill').style.width = row.dataset.w + '%';
+        }, 120);
+      }, i * 300);
+    });
+
+    setTimeout(runMand, rows.length * 300 + 2800);
+  }
+
+  // ══ START ══
+  setTimeout(runSidebar,  100);
+  setTimeout(runChat,     300);
+  setTimeout(runScanner,  500);
+  setTimeout(runMand,     700);
+</script>
+</body>
+</html>

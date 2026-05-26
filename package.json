@@ -1,0 +1,12 @@
+{
+  "name": "hk-rbb-partner",
+  "version": "1.0.0",
+  "productName": "H&K Automation – RBB & Partner",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^33.0.0"
+  }
+}

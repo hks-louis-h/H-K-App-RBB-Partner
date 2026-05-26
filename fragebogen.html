@@ -1,0 +1,3554 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>H&K Automation – Mandanten-Fragebogen</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <style>
+    :root {
+      --bg:     #ecedf1;
+      --card:   #ecedf1;
+      --acc:    #6d7aff;
+      --acc-d:  #4f5ce0;
+      --text:   #050505;
+      --sub:    #6b7280;
+      --sl:     #fafbff;
+      --sd:     rgba(166,171,189,.55);
+      --sd2:    rgba(166,171,189,.28);
+      --green:  #22c55e;
+      --red:    #ef4444;
+      --orange: #f59e0b;
+    }
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+    html,body { width:100%; min-height:100%; background:var(--bg); font-family:'Poppins',sans-serif; color:var(--text); -webkit-font-smoothing:antialiased; }
+
+    /* ── Layout ────────────────────────────────────── */
+    #app { min-height:100vh; display:flex; flex-direction:column; visibility:hidden; }
+
+    header {
+      position:sticky; top:0; z-index:100;
+      background:var(--bg);
+      padding:16px 28px 12px;
+      box-shadow: 0 4px 20px rgba(166,171,189,.2);
+    }
+    .hdr-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+    .logo { display:flex; align-items:center; gap:10px; }
+    .logo-c { width:36px; height:36px; border-radius:50%; background:var(--acc); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:.85rem; box-shadow:0 4px 12px rgba(109,122,255,.4); }
+    .logo-t { font-size:.82rem; font-weight:700; }
+    .step-info { font-size:.78rem; color:var(--sub); font-family:'Inter',sans-serif; }
+
+    .progress-wrap { width:100%; height:6px; background:rgba(109,122,255,.1); border-radius:3px; overflow:hidden; }
+    .progress-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,var(--acc),#a78bfa); transition:width .4s cubic-bezier(.4,0,.2,1); }
+
+    main { flex:1; display:flex; align-items:center; justify-content:center; padding:32px 20px 100px; }
+
+    .screen { width:100%; max-width:680px; display:none; flex-direction:column; gap:28px; }
+    .screen.active { display:flex; animation: fadeUp .35s cubic-bezier(.4,0,.2,1); }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+
+    /* ── Cards / neu ───────────────────────────────── */
+    .card { background:var(--card); border-radius:22px; box-shadow:-10px -10px 22px var(--sl), 10px 10px 22px var(--sd); }
+    .card-sm { background:var(--card); border-radius:14px; box-shadow:-6px -6px 14px var(--sl), 6px 6px 14px var(--sd); }
+    .inset { background:var(--card); border-radius:12px; box-shadow:inset -4px -4px 8px var(--sl), inset 4px 4px 8px var(--sd2); }
+
+    /* ── Screen header ─────────────────────────────── */
+    .sc-head { padding:32px 32px 0; }
+    .sc-tag { display:inline-flex; align-items:center; gap:6px; background:var(--acc); color:#fff; border-radius:50px; padding:5px 14px; font-size:.7rem; font-weight:600; letter-spacing:.07em; text-transform:uppercase; margin-bottom:12px; box-shadow:0 4px 12px rgba(109,122,255,.35); }
+    .sc-title { font-size:clamp(1.3rem,3vw,1.8rem); font-weight:700; line-height:1.2; margin-bottom:6px; }
+    .sc-sub { font-size:.88rem; color:var(--sub); font-family:'Inter',sans-serif; line-height:1.55; }
+
+    /* ── Fields ────────────────────────────────────── */
+    .fields { padding:24px 32px 32px; display:flex; flex-direction:column; gap:22px; }
+
+    .field-group { display:flex; flex-direction:column; gap:8px; }
+    .field-label { font-size:.83rem; font-weight:600; display:flex; align-items:center; gap:6px; }
+    .field-required { color:var(--acc); }
+    .field-hint { font-size:.72rem; color:var(--sub); font-family:'Inter',sans-serif; }
+
+    /* text / email / tel / number / date */
+    .f-input {
+      width:100%; padding:13px 16px; border-radius:12px; border:none; outline:none;
+      background:var(--card); font-family:'Inter',sans-serif; font-size:.9rem; color:var(--text);
+      box-shadow:inset -4px -4px 8px var(--sl), inset 4px 4px 8px var(--sd2);
+      transition:box-shadow .2s;
+    }
+    .f-input::placeholder { color:rgba(107,114,128,.5); }
+    .f-input:focus { box-shadow:inset -2px -2px 5px var(--sl), inset 2px 2px 5px var(--sd2), 0 0 0 2px rgba(109,122,255,.25); }
+
+    textarea.f-input { resize:vertical; min-height:90px; }
+
+    /* select dropdown */
+    .f-select {
+      width:100%; padding:13px 16px; border-radius:12px; border:none; outline:none;
+      background:var(--card); font-family:'Inter',sans-serif; font-size:.9rem; color:var(--text);
+      box-shadow:inset -4px -4px 8px var(--sl), inset 4px 4px 8px var(--sd2);
+      cursor:pointer; appearance:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat:no-repeat; background-position:right 16px center;
+      padding-right:40px;
+    }
+    .f-select:focus { box-shadow:inset -2px -2px 5px var(--sl), inset 2px 2px 5px var(--sd2), 0 0 0 2px rgba(109,122,255,.25); }
+
+    /* card-select (visual options) */
+    .card-options { display:flex; flex-direction:column; gap:10px; }
+    .card-options.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .card-options.grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+
+    .opt-card {
+      padding:16px 18px; border-radius:16px; cursor:pointer;
+      background:var(--card);
+      box-shadow:-6px -6px 14px var(--sl), 6px 6px 14px var(--sd);
+      display:flex; align-items:center; gap:14px;
+      transition:box-shadow .18s, transform .18s;
+      border:2px solid transparent;
+      user-select:none;
+    }
+    .opt-card:hover { transform:translateY(-2px); box-shadow:-4px -4px 10px var(--sl), 8px 8px 18px var(--sd); }
+    .opt-card.selected { border-color:var(--acc); box-shadow:0 0 0 2px rgba(109,122,255,.18), -4px -4px 10px var(--sl), 6px 6px 14px var(--sd); }
+    .opt-card.selected .opt-radio { background:var(--acc); border-color:var(--acc); }
+    .opt-card.selected .opt-radio::after { display:block; }
+
+    .opt-emoji { font-size:1.6rem; flex-shrink:0; }
+    .opt-card.grid-style { flex-direction:column; align-items:flex-start; gap:8px; padding:18px 16px; }
+    .opt-card.grid-style .opt-emoji { font-size:2rem; }
+
+    .opt-radio {
+      width:20px; height:20px; border-radius:50%; border:2px solid var(--sd); flex-shrink:0;
+      position:relative; margin-left:auto;
+      box-shadow:-2px -2px 5px var(--sl), 2px 2px 5px var(--sd2);
+    }
+    .opt-radio::after { content:''; display:none; width:10px; height:10px; border-radius:50%; background:#fff; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); }
+
+    .opt-label { font-size:.88rem; font-weight:600; }
+    .opt-desc { font-size:.75rem; color:var(--sub); font-family:'Inter',sans-serif; margin-top:2px; }
+
+    /* repeater */
+    .repeater-wrap { display:flex; flex-direction:column; gap:8px; }
+    .rep-item { display:flex; gap:8px; align-items:center; }
+    .rep-item .f-input { flex:1; }
+    .btn-rep-remove { background:none; border:1px solid rgba(166,171,189,.3); border-radius:50%; width:32px; height:32px; cursor:pointer; color:var(--sub); font-size:1.1rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background .15s,color .15s,border-color .15s; }
+    .btn-rep-remove:hover { background:rgba(255,80,80,.1); color:#e55; border-color:#e55; }
+    .btn-rep-add { background:none; border:1px dashed var(--acc); border-radius:50px; padding:8px 18px; color:var(--acc); font-size:.82rem; font-weight:600; cursor:pointer; margin-top:2px; align-self:flex-start; transition:background .15s; }
+    .btn-rep-add:hover { background:rgba(109,122,255,.08); }
+
+    /* checkbox-group */
+    .check-options { display:flex; flex-direction:column; gap:8px; }
+    .check-item {
+      display:flex; align-items:center; gap:12px;
+      padding:12px 16px; border-radius:12px; cursor:pointer;
+      background:var(--card); box-shadow:-5px -5px 12px var(--sl), 5px 5px 12px var(--sd);
+      user-select:none; transition:border .18s;
+      border:2px solid transparent;
+    }
+    .check-item.selected { border-color:var(--acc); }
+    .check-box {
+      width:20px; height:20px; border-radius:6px; border:2px solid var(--sd); flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:-2px -2px 5px var(--sl), 2px 2px 5px var(--sd2);
+    }
+    .check-item.selected .check-box { background:var(--acc); border-color:var(--acc); }
+    .check-box .tick { display:none; color:#fff; font-size:.75rem; font-weight:700; }
+    .check-item.selected .check-box .tick { display:block; }
+    .check-label { font-size:.85rem; font-weight:500; }
+    .check-emoji { font-size:1.1rem; }
+
+    /* yes-no */
+    .yn-wrap { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .yn-btn {
+      padding:14px; border-radius:14px; cursor:pointer; text-align:center;
+      font-weight:700; font-size:.9rem; border:2px solid transparent;
+      box-shadow:-6px -6px 14px var(--sl), 6px 6px 14px var(--sd);
+      transition:all .18s; user-select:none;
+    }
+    .yn-btn.yes.selected { background:rgba(34,197,94,.08); border-color:var(--green); color:var(--green); }
+    .yn-btn.no.selected  { background:rgba(239,68,68,.08); border-color:var(--red);   color:var(--red); }
+    .yn-btn:not(.selected):hover { transform:translateY(-2px); }
+
+    /* two-col layout for short fields */
+    .fields-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+
+    /* error */
+    .field-error { font-size:.72rem; color:var(--red); font-family:'Inter',sans-serif; display:none; }
+    .field-group.has-error .f-input,
+    .field-group.has-error .f-select { box-shadow:inset -4px -4px 8px var(--sl), inset 4px 4px 8px var(--sd2), 0 0 0 2px rgba(239,68,68,.3); }
+    .field-group.has-error .field-error { display:block; }
+
+    /* ── Footer nav ────────────────────────────────── */
+    footer {
+      position:fixed; bottom:0; left:0; right:0;
+      background:var(--bg); padding:14px 24px 20px;
+      box-shadow:0 -4px 20px rgba(166,171,189,.2);
+      display:flex; align-items:center; gap:12px;
+      z-index:100;
+    }
+    .btn-back {
+      padding:12px 22px; border-radius:50px; border:none; cursor:pointer;
+      background:var(--card); font-family:'Poppins',sans-serif; font-size:.88rem; font-weight:600; color:var(--sub);
+      box-shadow:-5px -5px 12px var(--sl), 5px 5px 12px var(--sd);
+      transition:transform .15s; flex-shrink:0;
+    }
+    .btn-back:hover { transform:scale(1.03); }
+    .btn-next {
+      flex:1; padding:14px; border-radius:50px; border:none; cursor:pointer;
+      background:var(--acc); color:#fff; font-family:'Poppins',sans-serif; font-size:.95rem; font-weight:700;
+      box-shadow:0 6px 20px rgba(109,122,255,.4);
+      transition:transform .15s, box-shadow .15s;
+    }
+    .btn-next:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(109,122,255,.5); }
+    .btn-next:active { transform:translateY(0); }
+
+    /* ── Welcome screen ────────────────────────────── */
+    #sc-welcome { text-align:center; align-items:center; }
+    #sc-welcome .wlc-icon { font-size:4rem; margin-bottom:4px; }
+    #sc-welcome .wlc-title { font-size:clamp(1.6rem,4vw,2.2rem); font-weight:800; line-height:1.15; margin-bottom:12px; }
+    #sc-welcome .wlc-title span { background:linear-gradient(135deg,var(--acc),#a78bfa); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    #sc-welcome .wlc-sub { font-size:.92rem; color:var(--sub); font-family:'Inter',sans-serif; line-height:1.6; max-width:480px; margin-bottom:28px; }
+    .wlc-features { display:flex; flex-direction:column; gap:10px; width:100%; max-width:420px; }
+    .wlc-feat { display:flex; align-items:center; gap:12px; padding:13px 18px; border-radius:14px; background:var(--card); box-shadow:-5px -5px 12px var(--sl), 5px 5px 12px var(--sd); text-align:left; }
+    .wlc-feat .fi { font-size:1.2rem; }
+    .wlc-feat .ft { font-size:.83rem; font-weight:600; }
+    .wlc-feat .fs { font-size:.72rem; color:var(--sub); font-family:'Inter',sans-serif; }
+
+    /* ── Summary screen ────────────────────────────── */
+    #sc-summary { gap:0; }
+    .sum-head { padding:28px 28px 20px; }
+    .sum-check { width:60px; height:60px; border-radius:50%; background:rgba(34,197,94,.1); border:3px solid var(--green); display:flex; align-items:center; justify-content:center; font-size:1.6rem; margin-bottom:14px; }
+    .sum-title { font-size:1.5rem; font-weight:700; margin-bottom:6px; }
+    .sum-sub { font-size:.85rem; color:var(--sub); font-family:'Inter',sans-serif; }
+
+    .sum-section { border-top:1px solid rgba(109,122,255,.1); padding:20px 28px; }
+    .sum-sec-title { font-size:.7rem; font-weight:700; color:var(--acc); letter-spacing:.08em; text-transform:uppercase; margin-bottom:12px; }
+    .sum-items { display:flex; flex-direction:column; gap:8px; }
+    .sum-item { display:flex; justify-content:space-between; align-items:baseline; gap:12px; font-size:.83rem; }
+    .sum-item .si-label { color:var(--sub); font-family:'Inter',sans-serif; flex-shrink:0; }
+    .sum-item .si-val { font-weight:600; text-align:right; }
+
+    .docs-section { padding:0 20px 28px; }
+    .docs-banner {
+      background:linear-gradient(135deg,#6d7aff 0%,#a78bfa 100%);
+      border-radius:16px; padding:20px 22px 18px; margin-bottom:16px;
+    }
+    .docs-banner-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; }
+    .docs-title { font-size:1.05rem; font-weight:700; color:#fff; display:flex; align-items:center; gap:8px; }
+    .docs-count { background:rgba(255,255,255,.22); color:#fff; font-size:.72rem; font-weight:700; padding:3px 10px; border-radius:50px; }
+    .docs-banner-sub { font-size:.78rem; color:rgba(255,255,255,.8); font-family:'Inter',sans-serif; line-height:1.5; }
+    .docs-list { display:flex; flex-direction:column; gap:8px; }
+    .doc-item { display:flex; align-items:center; gap:10px; padding:11px 14px; border-radius:11px; background:var(--card); box-shadow:-4px -4px 10px var(--sl), 4px 4px 10px var(--sd2); font-size:.82rem; }
+    .doc-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .doc-dot.must { background:var(--acc); }
+    .doc-dot.nice { background:var(--orange); }
+
+    .sum-actions { padding:0 28px 28px; display:flex; gap:12px; }
+    .btn-print { flex:1; padding:13px; border-radius:50px; border:none; cursor:pointer; font-family:'Poppins',sans-serif; font-size:.88rem; font-weight:600; background:var(--card); color:var(--acc); box-shadow:-5px -5px 12px var(--sl), 5px 5px 12px var(--sd); transition:transform .15s; }
+    .btn-print:hover { transform:scale(1.02); }
+    .btn-restart { flex:1; padding:13px; border-radius:50px; border:none; cursor:pointer; font-family:'Poppins',sans-serif; font-size:.88rem; font-weight:600; background:var(--acc); color:#fff; box-shadow:0 5px 16px rgba(109,122,255,.4); transition:transform .15s; }
+    .btn-restart:hover { transform:scale(1.02); }
+
+    /* ── Email status banner ── */
+    #email-status {
+      margin: 0 28px 20px; padding: 14px 18px; border-radius: 14px;
+      font-size: .85rem; font-family: 'Inter', sans-serif; font-weight: 500;
+      display: none; align-items: center; gap: 10px;
+    }
+    #email-status.sending {
+      display: flex; background: rgba(109,122,255,.08);
+      box-shadow: -4px -4px 10px var(--sl), 4px 4px 10px var(--sd2);
+      color: var(--acc);
+    }
+    #email-status.success {
+      display: flex; background: rgba(34,197,94,.08);
+      box-shadow: -4px -4px 10px var(--sl), 4px 4px 10px var(--sd2);
+      color: var(--green);
+    }
+    #email-status.error {
+      display: flex; background: rgba(239,68,68,.08);
+      box-shadow: -4px -4px 10px var(--sl), 4px 4px 10px var(--sd2);
+      color: var(--red);
+    }
+    .spin { display: inline-block; animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media print {
+      * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      body { background:#fff !important; }
+      header, footer, .sum-actions, .portal-cta, #email-status, .btn-print, .btn-restart { display:none !important; }
+      #app { display:block; max-width:100%; padding:0; box-shadow:none; }
+      main { padding:0; }
+      #sc-summary { display:flex !important; box-shadow:none !important; border:none !important; }
+      .screen:not(#sc-summary) { display:none !important; }
+      .card { box-shadow:none !important; border:1px solid #e0e0e0 !important; }
+      .sum-head { border-bottom:2px solid #6d7aff; padding-bottom:12px; }
+      .sum-check { background:#6d7aff !important; }
+      .doc-item { break-inside:avoid; }
+      .docs-list { column-count:2; column-gap:12px; }
+      .sum-title::before { content:"H&K Automation – Steuererklärung 2024"; display:block; font-size:.75rem; color:#888; font-weight:400; margin-bottom:4px; }
+    }
+
+    @media (max-width: 520px) {
+      .fields { padding:16px 18px 24px; }
+      .sc-head { padding:22px 18px 0; }
+      .card-options.grid-3 { grid-template-columns:1fr; }
+      .fields-row { grid-template-columns:1fr; }
+      footer { padding:12px 16px 16px; }
+    }
+
+    /* ── Auth Screen ────────────────────────────── */
+    #sc-auth { text-align:center; align-items:center; }
+    .auth-card { width:100%; max-width:420px; padding:32px 32px 28px; }
+    .auth-icon { font-size:2.8rem; margin-bottom:10px; }
+    .auth-title { font-size:1.6rem; font-weight:800; margin-bottom:6px; }
+    .auth-title span { background:linear-gradient(135deg,var(--acc),#a78bfa); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .auth-sub { font-size:.85rem; color:var(--sub); font-family:'Inter',sans-serif; line-height:1.55; margin-bottom:22px; }
+    .auth-tabs { display:flex; background:var(--card); border-radius:50px; padding:4px; box-shadow:inset -3px -3px 6px var(--sl), inset 3px 3px 6px var(--sd2); margin-bottom:22px; }
+    .auth-tab { flex:1; padding:10px 16px; border-radius:50px; border:none; cursor:pointer; font-family:'Poppins',sans-serif; font-size:.85rem; font-weight:600; color:var(--sub); background:transparent; transition:all .2s; }
+    .auth-tab.active { background:var(--acc); color:#fff; box-shadow:0 4px 12px rgba(109,122,255,.4); }
+    .auth-form-panel { display:none; flex-direction:column; gap:16px; }
+    .auth-form-panel.active { display:flex; }
+    .pwd-wrap { position:relative; }
+    .pwd-wrap .f-input { padding-right:44px; }
+    .pwd-toggle { position:absolute; right:13px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:1rem; color:var(--sub); padding:0; line-height:1; }
+    .auth-error { font-size:.8rem; color:var(--red); font-family:'Inter',sans-serif; display:none; padding:10px 14px; background:rgba(239,68,68,.07); border-radius:10px; text-align:left; }
+    .auth-error.visible { display:block; }
+    .btn-auth { width:100%; padding:14px; border-radius:50px; border:none; cursor:pointer; background:var(--acc); color:#fff; font-family:'Poppins',sans-serif; font-size:.95rem; font-weight:700; box-shadow:0 6px 20px rgba(109,122,255,.4); transition:transform .15s, box-shadow .15s; margin-top:4px; }
+    .btn-auth:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(109,122,255,.5); }
+    .btn-auth:disabled { opacity:.6; cursor:default; transform:none; }
+    .auth-dsgvo { font-size:.7rem; color:var(--sub); font-family:'Inter',sans-serif; line-height:1.5; margin-top:6px; text-align:center; }
+    .forgot-link { background:none; border:none; color:var(--acc); font-size:.78rem; cursor:pointer; text-decoration:underline; margin-top:6px; padding:0; display:inline-block; }
+    .reset-back { background:none; border:none; color:var(--sub); font-size:.82rem; cursor:pointer; margin-bottom:14px; padding:0; display:flex; align-items:center; gap:4px; }
+    .reset-step { display:none; }
+    .reset-step.active { display:block; }
+
+    /* ── Bestätigungs-Modal ─────────────────────── */
+    .confirm-overlay {
+      display:none; position:fixed; inset:0; z-index:999;
+      background:rgba(5,5,5,.45); backdrop-filter:blur(4px);
+      align-items:center; justify-content:center; padding:20px;
+    }
+    .confirm-overlay.active { display:flex; animation:fadeIn .2s ease; }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    .confirm-box {
+      background:var(--card); border-radius:22px; padding:32px 28px; max-width:420px; width:100%;
+      box-shadow:-12px -12px 24px var(--sl), 12px 12px 24px var(--sd);
+      animation:scaleIn .25s cubic-bezier(.4,0,.2,1);
+    }
+    @keyframes scaleIn { from{opacity:0;transform:scale(.94)} to{opacity:1;transform:scale(1)} }
+    .confirm-icon { font-size:2rem; margin-bottom:12px; }
+    .confirm-title { font-size:1.2rem; font-weight:700; color:var(--text); margin-bottom:8px; }
+    .confirm-sub { font-size:.85rem; color:var(--sub); font-family:'Inter',sans-serif; line-height:1.55; margin-bottom:24px; }
+    .confirm-actions { display:flex; gap:12px; }
+    .confirm-cancel { flex:1; padding:13px; border-radius:50px; border:none; cursor:pointer; background:var(--card); font-family:'Poppins',sans-serif; font-size:.88rem; font-weight:600; color:var(--sub); box-shadow:-4px -4px 10px var(--sl), 4px 4px 10px var(--sd); transition:transform .15s; }
+    .confirm-cancel:hover { transform:scale(1.02); }
+    .confirm-ok { flex:2; padding:13px; border-radius:50px; border:none; cursor:pointer; background:linear-gradient(135deg,var(--acc),#a78bfa); color:#fff; font-family:'Poppins',sans-serif; font-size:.88rem; font-weight:700; box-shadow:0 6px 20px rgba(109,122,255,.4); transition:transform .15s, box-shadow .15s; }
+    .confirm-ok:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(109,122,255,.5); }
+    .reset-code-sent { font-size:.85rem; color:var(--sub); margin-bottom:16px; font-family:'Inter',sans-serif; }
+    .reset-code-sent strong { color:var(--text); }
+    #user-badge { display:none; align-items:center; gap:8px; position:relative; }
+    .user-btn { display:flex; align-items:center; gap:8px; padding:5px 12px 5px 5px; border-radius:50px; border:none; cursor:pointer; background:var(--card); font-family:'Poppins',sans-serif; font-size:.78rem; font-weight:600; color:var(--text); box-shadow:-3px -3px 6px var(--sl), 3px 3px 6px var(--sd); transition:transform .15s; }
+    .user-btn:hover { transform:scale(1.02); }
+    .user-avatar { width:26px; height:26px; border-radius:50%; background:linear-gradient(135deg,#6366f1,#818cf8); display:flex; align-items:center; justify-content:center; font-size:.7rem; font-weight:700; color:#fff; flex-shrink:0; }
+    .user-btn-name { max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .user-dropdown { position:absolute; top:calc(100% + 8px); right:0; background:var(--card); border-radius:14px; box-shadow:0 8px 30px rgba(0,0,0,.12); min-width:160px; overflow:hidden; z-index:999; display:none; }
+    .user-dropdown.open { display:block; }
+    .user-dd-item { display:flex; align-items:center; gap:9px; padding:11px 16px; font-size:.8rem; font-weight:500; color:var(--text); cursor:pointer; transition:background .15s; white-space:nowrap; }
+    .user-dd-item:hover { background:rgba(99,102,241,.07); }
+    .user-dd-item.danger { color:#ef4444; }
+    .user-dd-sep { height:1px; background:var(--border,#e5e7eb); margin:4px 0; }
+    /* Profile modal */
+    .profile-overlay { position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:1000; display:none; align-items:center; justify-content:center; }
+    .profile-overlay.open { display:flex; }
+    .profile-modal { background:var(--card); border-radius:20px; padding:28px 24px; width:min(420px,92vw); box-shadow:0 20px 60px rgba(0,0,0,.18); max-height:90vh; overflow-y:auto; }
+    .profile-modal h3 { margin:0 0 20px; font-size:1rem; font-weight:700; color:var(--text); }
+    .profile-field { margin-bottom:14px; }
+    .profile-field label { display:block; font-size:.75rem; font-weight:600; color:var(--sub); margin-bottom:5px; }
+    .profile-field input { width:100%; box-sizing:border-box; padding:10px 14px; border-radius:10px; border:1.5px solid var(--border,#e5e7eb); background:var(--bg); font-size:.85rem; color:var(--text); font-family:'Inter',sans-serif; outline:none; transition:border-color .2s; }
+    .profile-field input:focus { border-color:#6366f1; }
+    .profile-hint { font-size:.72rem; color:var(--sub); margin-top:4px; }
+    .profile-actions { display:flex; gap:10px; margin-top:20px; }
+    .profile-save { flex:1; padding:11px; border-radius:50px; border:none; background:linear-gradient(135deg,#6366f1,#818cf8); color:#fff; font-weight:700; font-size:.85rem; cursor:pointer; }
+    .profile-cancel { padding:11px 20px; border-radius:50px; border:none; background:var(--card); color:var(--sub); font-weight:600; font-size:.85rem; cursor:pointer; box-shadow:-3px -3px 6px var(--sl), 3px 3px 6px var(--sd); }
+    .profile-msg { font-size:.78rem; margin-top:10px; text-align:center; min-height:18px; }
+    .profile-sep { border:none; border-top:1px solid var(--border,#e5e7eb); margin:18px 0 14px; }
+    .profile-section-title { font-size:.72rem; font-weight:700; color:var(--sub); text-transform:uppercase; letter-spacing:.05em; margin-bottom:10px; }
+    .profile-toggle-btn { width:100%; padding:9px 14px; border-radius:10px; border:1.5px solid var(--border,#e5e7eb); background:transparent; color:var(--text); font-size:.82rem; font-weight:600; cursor:pointer; text-align:left; display:flex; align-items:center; gap:8px; transition:border-color .2s; }
+    .profile-toggle-btn:hover { border-color:#6366f1; color:#6366f1; }
+    .profile-pwd-section { margin-top:12px; display:none; }
+    .profile-pwd-save { padding:9px 20px; border-radius:50px; border:none; background:linear-gradient(135deg,#6366f1,#818cf8); color:#fff; font-weight:700; font-size:.82rem; cursor:pointer; }
+    .profile-danger-sep { border:none; border-top:2px solid #fee2e2; margin:20px 0 14px; }
+    .profile-del-btn { width:100%; padding:10px; border-radius:10px; border:1.5px solid #fca5a5; background:transparent; color:#ef4444; font-size:.85rem; font-weight:600; cursor:pointer; transition:background .2s, color .2s; }
+    .profile-del-btn:hover { background:#fef2f2; }
+    .profile-del-confirm { display:none; background:#fef2f2; border-radius:12px; padding:14px; margin-top:10px; }
+    .profile-del-confirm p { margin:0 0 12px; font-size:.82rem; color:#b91c1c; line-height:1.5; }
+    .profile-del-confirm strong { color:#7f1d1d; }
+    .profile-del-final { flex:1; padding:10px; border-radius:50px; border:none; background:#ef4444; color:#fff; font-weight:700; font-size:.82rem; cursor:pointer; }
+    .profile-del-final:hover { background:#dc2626; }
+
+    /* ── Portal Screen ──────────────────────────── */
+    #sc-portal { gap:0; }
+    .portal-cta { padding:0 28px 24px; }
+    .btn-portal { width:100%; padding:16px; border-radius:50px; border:none; cursor:pointer; background:linear-gradient(135deg,var(--acc),#a78bfa); color:#fff; font-family:'Poppins',sans-serif; font-size:.95rem; font-weight:700; box-shadow:0 6px 24px rgba(109,122,255,.45); transition:transform .15s, box-shadow .15s; display:flex; align-items:center; justify-content:center; gap:10px; }
+    .btn-portal:hover { transform:translateY(-2px); box-shadow:0 9px 28px rgba(109,122,255,.55); }
+    .portal-cta-hint { text-align:center; font-size:.74rem; color:var(--sub); font-family:'Inter',sans-serif; margin-top:10px; }
+    .portal-prog-wrap { padding:0 28px 20px; }
+    .portal-prog-bar { height:8px; background:rgba(109,122,255,.1); border-radius:4px; overflow:hidden; }
+    .portal-prog-fill { height:100%; border-radius:4px; background:linear-gradient(90deg,var(--acc),#22c55e); transition:width .4s cubic-bezier(.4,0,.2,1); }
+    .portal-prog-text { font-size:.75rem; color:var(--sub); font-family:'Inter',sans-serif; margin-top:8px; }
+    .portal-global-zone { margin:0 20px 24px; padding:26px 20px; border:2px dashed rgba(109,122,255,.3); border-radius:18px; text-align:center; cursor:pointer; background:rgba(109,122,255,.02); transition:all .2s; }
+    .portal-global-zone:hover, .portal-global-zone.drag-over { border-color:var(--acc); background:rgba(109,122,255,.07); transform:scale(1.01); }
+    .pgz-icon { font-size:2.2rem; margin-bottom:6px; }
+    .pgz-text { font-size:.88rem; font-weight:600; margin-bottom:4px; }
+    .pgz-hint { font-size:.72rem; color:var(--sub); font-family:'Inter',sans-serif; }
+    .portal-docs-list { padding:0 20px 16px; display:flex; flex-direction:column; gap:11px; }
+    .pdc { background:var(--card); border-radius:16px; box-shadow:-6px -6px 14px var(--sl), 6px 6px 14px var(--sd); overflow:hidden; }
+    .pdc-top { display:flex; align-items:center; gap:10px; padding:13px 16px; }
+    .pdc-indicator { width:9px; height:9px; border-radius:50%; flex-shrink:0; transition:background .3s; }
+    .pdc-indicator.must { background:var(--acc); }
+    .pdc-indicator.nice { background:var(--orange); }
+    .pdc-indicator.done { background:var(--green); }
+    .pdc-name { font-size:.82rem; font-weight:600; flex:1; line-height:1.35; }
+    .pdc-badge { font-size:.67rem; font-weight:700; padding:4px 10px; border-radius:50px; flex-shrink:0; white-space:nowrap; }
+    .pdc-badge.s-must { background:rgba(109,122,255,.1); color:var(--acc); }
+    .pdc-badge.s-nice { background:rgba(245,158,11,.1); color:var(--orange); }
+    .pdc-badge.s-done { background:rgba(34,197,94,.1); color:var(--green); }
+    .pdc-body { border-top:1px solid rgba(109,122,255,.07); padding:10px 14px 12px; }
+    .pdc-zone { border:1.5px dashed rgba(109,122,255,.22); border-radius:10px; padding:11px; text-align:center; cursor:pointer; font-size:.78rem; color:var(--sub); font-family:'Inter',sans-serif; transition:all .2s; }
+    .pdc-zone:hover, .pdc-zone.drag-over { border-color:var(--acc); background:rgba(109,122,255,.05); color:var(--acc); }
+    .pdc-files { display:flex; flex-direction:column; gap:5px; margin-top:8px; }
+    .pdc-file { display:flex; align-items:center; gap:8px; padding:6px 9px; border-radius:8px; background:rgba(34,197,94,.05); border:1px solid rgba(34,197,94,.18); font-size:.77rem; font-family:'Inter',sans-serif; }
+    .pdc-fname { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:500; }
+    .pdc-fsize { color:var(--sub); font-size:.68rem; flex-shrink:0; }
+    .pdc-fdel { background:none; border:none; cursor:pointer; color:var(--red); font-size:.85rem; padding:0; line-height:1; flex-shrink:0; opacity:.7; transition:opacity .15s; }
+    .pdc-fdel:hover { opacity:1; }
+    .portal-actions { padding:4px 20px 28px; display:flex; gap:12px; }
+    .btn-p-back { padding:13px 22px; border-radius:50px; border:none; cursor:pointer; background:var(--card); font-family:'Poppins',sans-serif; font-size:.88rem; font-weight:600; color:var(--sub); box-shadow:-5px -5px 12px var(--sl), 5px 5px 12px var(--sd); transition:transform .15s; }
+    .btn-p-back:hover { transform:scale(1.03); }
+    .btn-p-send { flex:1; padding:14px; border-radius:50px; border:none; cursor:pointer; background:var(--acc); color:#fff; font-family:'Poppins',sans-serif; font-size:.92rem; font-weight:700; box-shadow:0 6px 20px rgba(109,122,255,.4); transition:transform .15s, box-shadow .15s, background .3s; }
+    .btn-p-send:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 8px 24px rgba(109,122,255,.5); }
+    .btn-p-send:disabled { opacity:.55; cursor:default; transform:none; }
+    .portal-sent-banner { margin:0 20px 16px; padding:16px 18px; border-radius:14px; background:rgba(34,197,94,.07); border:1.5px solid rgba(34,197,94,.25); font-family:'Inter',sans-serif; display:none; }
+    .portal-sent-banner.visible { display:block; }
+    .psb-title { font-weight:700; color:var(--green); margin-bottom:4px; font-size:.9rem; }
+    .psb-sub { font-size:.78rem; color:var(--sub); }
+
+    /* ── Rückkehr-Portal ────────────────────────── */
+    #sc-return { gap:0; }
+    .return-doc-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px 16px; border-radius:13px; background:var(--card); box-shadow:-4px -4px 10px var(--sl),4px 4px 10px var(--sd2); margin-bottom:10px; }
+    .return-doc-row.rdr-done { opacity:.55; }
+    .rdr-name { font-size:.85rem; font-weight:600; color:var(--text); }
+    .rdr-badge { display:inline-block; margin-left:6px; padding:2px 8px; border-radius:50px; background:rgba(109,122,255,.12); color:var(--acc); font-size:.65rem; font-weight:700; text-transform:uppercase; vertical-align:middle; }
+    .rdr-files { font-size:.72rem; color:var(--sub); margin-top:3px; }
+    .btn-rdr-upload { padding:7px 14px; border-radius:50px; background:var(--acc); color:#fff; font-size:.75rem; font-weight:700; cursor:pointer; white-space:nowrap; box-shadow:0 3px 10px rgba(109,122,255,.35); }
+    .btn-rdr-upload.has-file { background:var(--green); box-shadow:0 3px 10px rgba(34,197,94,.3); }
+    .return-success { margin:0 20px 16px; padding:16px 18px; border-radius:14px; background:rgba(34,197,94,.07); border:1.5px solid rgba(34,197,94,.25); display:none; }
+    .return-success.visible { display:block; }
+    .return-progress { margin:0 20px 12px; }
+    .rp-bar { height:6px; border-radius:3px; background:rgba(109,122,255,.1); overflow:hidden; }
+    .rp-fill { height:100%; border-radius:3px; background:var(--acc); transition:width .4s; }
+
+    /* ── Vollmacht / Unterschrift ───────────────── */
+    .sig-section { margin:0 20px 20px; padding:22px; background:var(--card); border-radius:18px; box-shadow:-6px -6px 14px var(--sl), 6px 6px 14px var(--sd); }
+    .sig-head { display:flex; align-items:center; gap:14px; margin-bottom:16px; }
+    .sig-icon-wrap { width:52px; height:52px; border-radius:14px; flex-shrink:0; background:rgba(109,122,255,.1); display:flex; align-items:center; justify-content:center; font-size:1.5rem; box-shadow:-4px -4px 10px var(--sl), 4px 4px 10px var(--sd2); }
+    .sig-title { font-size:1rem; font-weight:700; margin-bottom:2px; }
+    .sig-subtitle { font-size:.75rem; color:var(--sub); font-family:'Inter',sans-serif; }
+    .sig-pad-wrap { position:relative; background:var(--card); border-radius:14px; box-shadow:inset -4px -4px 8px var(--sl), inset 4px 4px 8px var(--sd2); margin-bottom:10px; overflow:hidden; }
+    #sig-canvas { display:block; width:100%; cursor:crosshair; touch-action:none; }
+    .sig-line { position:absolute; bottom:36px; left:8%; right:8%; height:0; border-top:1.5px dashed rgba(109,122,255,.28); pointer-events:none; }
+    .sig-line-hint { position:absolute; bottom:9px; right:14px; font-size:.68rem; color:rgba(107,114,128,.45); font-family:'Inter',sans-serif; pointer-events:none; }
+    .sig-clear { position:absolute; top:9px; right:9px; padding:5px 12px; border-radius:50px; border:none; cursor:pointer; background:rgba(239,68,68,.08); color:var(--red); font-family:'Poppins',sans-serif; font-size:.7rem; font-weight:600; transition:background .15s; display:none; }
+    .sig-clear:hover { background:rgba(239,68,68,.15); }
+    .sig-clear.visible { display:block; }
+    .sig-confirm { width:100%; margin-top:10px; padding:13px; border-radius:50px; border:none; cursor:pointer; background:var(--acc); color:#fff; font-family:'Poppins',sans-serif; font-size:.9rem; font-weight:700; box-shadow:0 5px 16px rgba(109,122,255,.4); transition:transform .15s, background .3s; display:none; }
+    .sig-confirm:hover { transform:translateY(-2px); }
+    .sig-confirm.visible { display:block; }
+    .sig-confirm.confirmed { background:var(--green); box-shadow:0 5px 16px rgba(34,197,94,.4); pointer-events:none; }
+    .sig-vl-list { display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }
+    .sig-vl-item { display:flex; align-items:center; gap:12px; padding:11px 14px; background:var(--card); border-radius:12px; box-shadow:-4px -4px 10px var(--sl), 4px 4px 10px var(--sd2); }
+    .sig-vl-icon { font-size:1.2rem; flex-shrink:0; }
+    .sig-vl-info { flex:1; min-width:0; }
+    .sig-vl-name { font-size:.82rem; font-weight:600; }
+    .sig-vl-desc { font-size:.71rem; color:var(--sub); font-family:'Inter',sans-serif; margin-top:1px; }
+    .sig-vl-status { font-size:.74rem; font-weight:700; flex-shrink:0; color:var(--sub); white-space:nowrap; }
+    .sig-vl-status.signed { color:var(--green); }
+    .sig-info { padding:11px 14px; border-radius:12px; background:rgba(109,122,255,.05); font-size:.77rem; font-family:'Inter',sans-serif; color:var(--sub); line-height:1.55; }
+    .sig-error { margin-top:10px; padding:10px 14px; border-radius:10px; background:rgba(239,68,68,.07); color:var(--red); font-size:.8rem; font-family:'Inter',sans-serif; display:none; }
+    .sig-error.visible { display:block; }
+
+    /* ── Inline-Unterschrift in Return-Portal ─── */
+    .rdr-sig-wrap { margin-top:10px; }
+    .rdr-canvas { display:block; width:100%; height:80px; cursor:crosshair; touch-action:none; border-radius:10px; box-shadow:inset -3px -3px 7px var(--sl), inset 3px 3px 7px var(--sd2); }
+    .rdr-sig-hint { font-size:.68rem; color:rgba(107,114,128,.5); font-family:'Inter',sans-serif; margin-top:4px; }
+    .rdr-sig-actions { display:flex; gap:8px; margin-top:8px; }
+    .rdr-sig-clear { padding:6px 16px; border-radius:50px; border:none; cursor:pointer; background:rgba(239,68,68,.08); color:var(--red); font-family:'Poppins',sans-serif; font-size:.72rem; font-weight:600; }
+    .rdr-sig-btn { flex:1; padding:8px; border-radius:50px; border:none; cursor:pointer; background:var(--acc); color:#fff; font-family:'Poppins',sans-serif; font-size:.78rem; font-weight:700; box-shadow:0 4px 12px rgba(109,122,255,.35); }
+
+    /* ── KI-Check Badge ─────────────────────────── */
+    .ai-badge { display:flex; align-items:center; gap:7px; margin-top:9px; padding:8px 12px; border-radius:9px; font-size:.74rem; font-family:'Inter',sans-serif; line-height:1.4; }
+    .ai-badge.checking { background:rgba(109,122,255,.07); color:var(--acc); }
+    .ai-badge.ok       { background:rgba(34,197,94,.08);   color:var(--green); }
+    .ai-badge.warn     { background:rgba(245,158,11,.09);  color:var(--orange); }
+    .ai-badge .ai-sp   { display:inline-block; animation:spin .8s linear infinite; }
+
+    /* ── Format-Fehler ──────────────────────────── */
+    .field-group.has-fmt-error .f-input { box-shadow:inset -4px -4px 8px var(--sl), inset 4px 4px 8px var(--sd2), 0 0 0 2px rgba(245,158,11,.35); }
+    .field-group.has-fmt-error .field-error { display:block; color:var(--orange); }
+
+    @media (max-width:520px) {
+      .portal-global-zone { margin:0 12px 16px; }
+      .portal-docs-list { padding:0 12px 14px; }
+      .portal-actions { padding:4px 12px 24px; }
+      .sig-section { margin:0 12px 16px; padding:16px; }
+    }
+
+    /* ── DATEV Export ────────────────────────── */
+    .datev-preview { padding:0 28px 20px; }
+    .datev-field-table { width:100%; border-collapse:collapse; }
+    .datev-field-table td { padding:7px 4px; border-bottom:1px solid rgba(109,122,255,.06); font-size:.8rem; font-family:'Inter',sans-serif; vertical-align:middle; }
+    .datev-field-table td:first-child { color:var(--sub); width:46%; }
+    .datev-field-table td:last-child { font-weight:600; }
+    .datev-field-table tr:last-child td { border-bottom:none; }
+    .datev-actions { padding:0 20px 16px; display:flex; flex-direction:column; gap:10px; }
+    .btn-datev { width:100%; padding:15px 20px; border-radius:16px; border:none; cursor:pointer; font-family:'Poppins',sans-serif; display:flex; align-items:center; gap:14px; transition:transform .15s, box-shadow .15s; text-align:left; }
+    .btn-datev:disabled { opacity:.55; cursor:default; transform:none !important; }
+    .btn-datev-primary   { background:var(--acc); color:#fff; box-shadow:0 6px 20px rgba(109,122,255,.4); }
+    .btn-datev-primary:hover:not(:disabled)   { transform:translateY(-2px); box-shadow:0 8px 24px rgba(109,122,255,.5); }
+    .btn-datev-secondary { background:var(--card); color:var(--text); box-shadow:-5px -5px 12px var(--sl), 5px 5px 12px var(--sd); }
+    .btn-datev-secondary:hover:not(:disabled) { transform:translateY(-2px); }
+    .btn-datev-icon  { font-size:1.4rem; flex-shrink:0; }
+    .btn-datev-info  { flex:1; }
+    .btn-datev-label { font-size:.88rem; font-weight:700; display:block; }
+    .btn-datev-sub   { font-size:.71rem; opacity:.7; font-family:'Inter',sans-serif; font-weight:400; }
+    .btn-datev-arrow { font-size:1rem; flex-shrink:0; }
+    .datev-success { margin:0 20px 16px; padding:14px 18px; border-radius:14px; background:rgba(34,197,94,.07); border:1.5px solid rgba(34,197,94,.25); font-family:'Inter',sans-serif; display:none; }
+    .datev-success.visible { display:block; }
+    .datev-success-title { font-weight:700; color:var(--green); margin-bottom:3px; font-size:.88rem; }
+    .datev-success-sub   { font-size:.75rem; color:var(--sub); }
+    .btn-datev-export { flex:1; padding:13px; border-radius:50px; border:none; cursor:pointer; font-family:'Poppins',sans-serif; font-size:.85rem; font-weight:600; background:var(--card); color:var(--acc); box-shadow:-5px -5px 12px var(--sl), 5px 5px 12px var(--sd); transition:transform .15s; margin-top:8px; }
+    .btn-datev-export:hover { transform:scale(1.02); }
+
+    @media (max-width:520px) {
+      .datev-preview  { padding:0 12px 16px; }
+      .datev-actions  { padding:0 12px 16px; }
+      .datev-success  { margin:0 12px 16px; }
+    }
+
+    /* ── Kanzlei Dashboard ───────────────────── */
+    #sc-kanzlei { gap:0; }
+    .km-nav { display:flex; gap:4px; padding:20px 20px 0; border-bottom:1px solid rgba(109,122,255,.1); margin-bottom:0; }
+    .km-nav-tab { padding:10px 20px; border-radius:12px 12px 0 0; border:none; cursor:pointer; font-family:'Poppins',sans-serif; font-size:.82rem; font-weight:600; color:var(--sub); background:transparent; transition:all .2s; position:relative; bottom:-1px; border-bottom:2px solid transparent; }
+    .km-nav-tab:hover { color:var(--acc); background:rgba(109,122,255,.06); }
+    .km-nav-tab.active { color:var(--acc); background:var(--card); box-shadow:-4px -4px 8px var(--sl), 4px -4px 8px var(--sl); border-bottom:2px solid var(--card); }
+    .km-tab-panel { display:none; }
+    .km-tab-panel.active { display:contents; }
+    .km-belege-panel { display:none; padding:48px 20px; text-align:center; color:var(--sub); font-family:'Inter',sans-serif; font-size:.88rem; }
+    .km-belege-panel.active { display:block; }
+    .km-actions-bar { padding:0 28px 20px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+    .km-stats { display:flex; gap:10px; }
+    .km-stat { padding:10px 18px; border-radius:12px; background:var(--card); box-shadow:-4px -4px 10px var(--sl), 4px 4px 10px var(--sd2); text-align:center; min-width:72px; }
+    .km-stat-num { font-size:1.5rem; font-weight:800; color:var(--acc); line-height:1.1; }
+    .km-stat-lbl { font-size:.65rem; color:var(--sub); font-family:'Inter',sans-serif; text-transform:uppercase; letter-spacing:.04em; }
+    .km-bar-btns { display:flex; gap:8px; }
+    .btn-km-action { padding:9px 16px; border-radius:50px; border:none; cursor:pointer; font-family:'Poppins',sans-serif; font-size:.78rem; font-weight:600; box-shadow:-4px -4px 10px var(--sl), 4px 4px 10px var(--sd); transition:transform .15s; background:var(--card); }
+    .btn-km-action:hover { transform:scale(1.02); }
+    .btn-km-action.danger { color:var(--red); }
+    .km-list { padding:0 20px 28px; display:flex; flex-direction:column; gap:10px; }
+    .km-empty { text-align:center; padding:48px 20px; color:var(--sub); font-family:'Inter',sans-serif; font-size:.88rem; }
+    .km-empty-icon { font-size:2.5rem; margin-bottom:10px; }
+    .km-row { background:var(--card); border-radius:16px; box-shadow:-6px -6px 14px var(--sl), 6px 6px 14px var(--sd); padding:14px 16px; display:flex; align-items:center; gap:12px; }
+    .km-avatar { width:38px; height:38px; border-radius:50%; background:var(--acc); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:.85rem; flex-shrink:0; box-shadow:0 3px 10px rgba(109,122,255,.35); }
+    .km-info { flex:1; min-width:0; }
+    .km-name  { font-size:.85rem; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .km-meta  { font-size:.71rem; color:var(--sub); font-family:'Inter',sans-serif; margin-top:1px; }
+    .km-badge-wrap { flex-shrink:0; }
+    .btn-km-datev { padding:9px 15px; border-radius:50px; border:none; cursor:pointer; background:var(--acc); color:#fff; font-family:'Poppins',sans-serif; font-size:.75rem; font-weight:700; box-shadow:0 4px 12px rgba(109,122,255,.4); transition:transform .15s, background .2s; flex-shrink:0; white-space:nowrap; }
+    .btn-km-datev:hover:not(:disabled) { transform:translateY(-2px); }
+    .btn-km-datev:disabled { opacity:.6; cursor:default; transform:none; }
+    .btn-km-datev.done { background:var(--green); box-shadow:0 4px 12px rgba(34,197,94,.35); }
+
+    @media (max-width:520px) {
+      .km-actions-bar { padding:0 16px 16px; }
+      .km-list { padding:0 12px 24px; }
+      .km-meta { display:none; }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <header>
+    <div class="hdr-top">
+      <div class="logo" id="logo-area">
+        <div class="logo-c">H&K</div>
+        <span class="logo-t">Automation</span>
+      </div>
+      <span class="step-info" id="step-info"></span>
+      <div id="user-badge" style="display:none">
+        <button class="user-btn" onclick="toggleUserDropdown(event)" id="user-btn">
+          <div class="user-avatar" id="user-avatar">?</div>
+          <span class="user-btn-name" id="user-badge-name"></span>
+        </button>
+        <div class="user-dropdown" id="user-dropdown">
+          <div class="user-dd-item" onclick="openProfileModal()">Profil bearbeiten</div>
+          <div class="user-dd-sep"></div>
+          <div class="user-dd-item danger" onclick="doLogout()">← &nbsp;Abmelden</div>
+        </div>
+      </div>
+
+      <!-- Profile Modal -->
+      <div class="profile-overlay" id="profile-overlay" onclick="closeProfileOnBg(event)">
+        <div class="profile-modal">
+          <h3>Profil bearbeiten</h3>
+          <div class="profile-field">
+            <label>Name</label>
+            <input type="text" id="pf-name" placeholder="Ihr Name" />
+          </div>
+          <div class="profile-field">
+            <label>E-Mail-Adresse</label>
+            <input type="email" id="pf-email" placeholder="ihre@email.de" oninput="onProfileEmailChange()" />
+          </div>
+          <div class="profile-field" id="pf-pw-wrap" style="display:none">
+            <label>Aktuelles Passwort <span style="color:#ef4444">*</span></label>
+            <input type="password" id="pf-pw" placeholder="Zur Bestätigung bei E-Mail-Änderung" />
+            <div class="profile-hint">Für eine E-Mail-Änderung ist Ihr aktuelles Passwort erforderlich.</div>
+          </div>
+          <div class="profile-actions">
+            <button class="profile-cancel" onclick="closeProfileModal()">Abbrechen</button>
+            <button class="profile-save" onclick="saveProfile()">Speichern</button>
+          </div>
+          <div class="profile-msg" id="pf-msg"></div>
+
+          <!-- Passwort ändern -->
+          <hr class="profile-sep"/>
+          <button class="profile-toggle-btn" onclick="togglePwdChange()">
+            🔑 Passwort ändern
+          </button>
+          <div class="profile-pwd-section" id="pf-pwd-section">
+            <div class="profile-field" style="margin-top:12px">
+              <label>Aktuelles Passwort</label>
+              <input type="password" id="pf-cur-pw" placeholder="Aktuelles Passwort" />
+            </div>
+            <div class="profile-field">
+              <label>Neues Passwort</label>
+              <input type="password" id="pf-new-pw" placeholder="Mindestens 8 Zeichen" />
+            </div>
+            <div class="profile-field">
+              <label>Neues Passwort bestätigen</label>
+              <input type="password" id="pf-new-pw2" placeholder="Wiederholen" />
+            </div>
+            <div style="display:flex; gap:10px; align-items:center; margin-top:4px">
+              <button class="profile-pwd-save" onclick="savePwdChange()">Passwort speichern</button>
+              <span id="pf-pwd-msg" style="font-size:.75rem; min-height:16px"></span>
+            </div>
+          </div>
+
+          <!-- Konto löschen -->
+          <hr class="profile-danger-sep"/>
+          <div id="pf-del-normal">
+            <button class="profile-del-btn" onclick="showDeleteConfirm()">🗑 Konto löschen</button>
+          </div>
+          <div class="profile-del-confirm" id="pf-del-confirm">
+            <p><strong>Achtung — diese Aktion ist unwiderruflich!</strong><br/>
+            Ihr Konto, alle hochgeladenen Dokumente und sämtliche gespeicherten Daten werden dauerhaft gelöscht.</p>
+            <div class="profile-actions" style="margin-top:0">
+              <button class="profile-cancel" onclick="hideDeleteConfirm()">Abbrechen</button>
+              <button class="profile-del-final" onclick="deleteAccount()">Endgültig löschen</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="progress-wrap"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+  </header>
+
+  <main id="main">
+
+    <!-- ── AUTH ────────────────────────────────── -->
+    <div class="screen" id="sc-auth">
+      <div class="card auth-card">
+        <div class="auth-icon">🔐</div>
+        <div class="auth-title">Willkommen bei<br/><span id="auth-kanzlei-name">Ihrer Kanzlei</span></div>
+        <p class="auth-sub">Melden Sie sich an oder erstellen Sie ein Konto, um den Fragebogen zu starten und Ihren Fortschritt zu speichern.</p>
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Anmelden</button>
+          <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Registrieren</button>
+        </div>
+        <div class="auth-form-panel active" id="panel-login">
+          <div class="field-group">
+            <div class="field-label">E-Mail</div>
+            <input class="f-input" type="email" id="login-email" placeholder="ihre@email.de" autocomplete="email"/>
+          </div>
+          <div class="field-group">
+            <div class="field-label">Passwort</div>
+            <div class="pwd-wrap">
+              <input class="f-input" type="password" id="login-pwd" placeholder="Ihr Passwort" autocomplete="current-password"/>
+              <button class="pwd-toggle" type="button" onclick="togglePwd('login-pwd',this)" tabindex="-1">👁</button>
+            </div>
+          </div>
+          <div class="auth-error" id="login-error"></div>
+          <button class="btn-auth" onclick="doLogin()">Anmelden →</button>
+          <button class="forgot-link" type="button" onclick="showReset()">Passwort vergessen?</button>
+        </div>
+        <div class="auth-form-panel" id="panel-register">
+          <div class="field-group">
+            <div class="field-label">Vollständiger Name <span class="field-required">*</span></div>
+            <input class="f-input" type="text" id="reg-name" placeholder="Max Mustermann" autocomplete="name"/>
+          </div>
+          <div class="field-group">
+            <div class="field-label">E-Mail <span class="field-required">*</span></div>
+            <input class="f-input" type="email" id="reg-email" placeholder="ihre@email.de" autocomplete="email"/>
+          </div>
+          <div class="field-group">
+            <div class="field-label">Passwort <span class="field-required">*</span></div>
+            <div class="pwd-wrap">
+              <input class="f-input" type="password" id="reg-pwd" placeholder="Mindestens 8 Zeichen" autocomplete="new-password"/>
+              <button class="pwd-toggle" type="button" onclick="togglePwd('reg-pwd',this)" tabindex="-1">👁</button>
+            </div>
+            <div class="field-hint">Mindestens 8 Zeichen</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">Passwort bestätigen <span class="field-required">*</span></div>
+            <div class="pwd-wrap">
+              <input class="f-input" type="password" id="reg-pwd2" placeholder="Passwort wiederholen" autocomplete="new-password"/>
+              <button class="pwd-toggle" type="button" onclick="togglePwd('reg-pwd2',this)" tabindex="-1">👁</button>
+            </div>
+          </div>
+          <div class="auth-error" id="reg-error"></div>
+          <button class="btn-auth" onclick="doRegister()">Konto erstellen →</button>
+          <p class="auth-dsgvo">🔒 Ihre Daten werden sicher auf dem Server Ihrer Kanzlei gespeichert.</p>
+        </div>
+
+        <!-- Kanzlei-Panel -->
+        <div class="auth-form-panel" id="panel-kanzlei">
+          <div class="field-group">
+            <div class="field-label">E-Mail-Adresse</div>
+            <input class="f-input" type="email" id="kanzlei-email" placeholder="kanzlei@ihre-kanzlei.de" autocomplete="username"/>
+          </div>
+          <div class="field-group">
+            <div class="field-label">Passwort</div>
+            <div class="pwd-wrap">
+              <input class="f-input" type="password" id="kanzlei-pwd" placeholder="Kanzlei-Passwort eingeben" autocomplete="current-password"/>
+              <button class="pwd-toggle" type="button" onclick="togglePwd('kanzlei-pwd',this)" tabindex="-1">👁</button>
+            </div>
+          </div>
+          <div class="auth-error" id="kanzlei-error"></div>
+          <button class="btn-auth" onclick="doKanzleiLogin()">Kanzlei-Zugang →</button>
+          <p class="auth-dsgvo">🔒 Nur für Kanzlei-Mitarbeiter — Mandanten können sich hier nicht anmelden</p>
+        </div>
+
+        <!-- Reset-Panel -->
+        <div class="auth-form-panel" id="panel-reset">
+          <button class="reset-back" onclick="switchTab('login')">← Zurück zur Anmeldung</button>
+          <div class="reset-step active" id="reset-step1">
+            <p class="reset-code-sent">Geben Sie Ihre E-Mail-Adresse ein. Wir senden Ihnen einen 6-stelligen Code.</p>
+            <div class="field-group">
+              <div class="field-label">E-Mail</div>
+              <input class="f-input" type="email" id="reset-email" placeholder="ihre@email.de" autocomplete="email"/>
+            </div>
+            <div class="auth-error" id="reset-error1"></div>
+            <button class="btn-auth" onclick="requestReset(event)">Code senden →</button>
+          </div>
+          <div class="reset-step" id="reset-step2">
+            <p class="reset-code-sent">Code gesendet an <strong id="reset-email-display"></strong>. Bitte Postfach prüfen.</p>
+            <div class="field-group">
+              <div class="field-label">6-stelliger Code</div>
+              <input class="f-input" type="text" id="reset-code" placeholder="123456" maxlength="6" inputmode="numeric"/>
+            </div>
+            <div class="field-group">
+              <div class="field-label">Neues Passwort</div>
+              <div class="pwd-wrap">
+                <input class="f-input" type="password" id="reset-pwd" placeholder="Mindestens 8 Zeichen"/>
+                <button class="pwd-toggle" type="button" onclick="togglePwd('reset-pwd',this)" tabindex="-1">👁</button>
+              </div>
+            </div>
+            <div class="auth-error" id="reset-error2"></div>
+            <button class="btn-auth" onclick="verifyReset(event)">Passwort zurücksetzen →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── WELCOME ──────────────────────────────── -->
+    <div class="screen active" id="sc-welcome">
+      <div class="wlc-icon">👋</div>
+      <p class="wlc-sub">Dieser intelligente Fragebogen erfasst in ca. <strong>5 Minuten</strong> alle Informationen, die Ihr Steuerberater benötigt. Die Fragen passen sich automatisch Ihrer Situation an.</p>
+      <div class="wlc-features">
+        <div class="wlc-feat"><span class="fi">🧠</span><div><div class="ft">Adaptiv & intelligent</div><div class="fs">Nur relevante Fragen – keine unnötigen Felder</div></div></div>
+        <div class="wlc-feat"><span class="fi">🔒</span><div><div class="ft">Sicher & DSGVO-konform</div><div class="fs">Ihre Daten bleiben bei Ihnen</div></div></div>
+        <div class="wlc-feat"><span class="fi">📋</span><div><div class="ft">Dokumentenliste am Ende</div><div class="fs">Genau welche Unterlagen Sie mitbringen müssen</div></div></div>
+      </div>
+    </div>
+
+    <!-- ── SCREENS (dynamisch gerendert) ───────── -->
+    <div class="screen card" id="sc-q"></div>
+
+    <!-- ── SUMMARY ──────────────────────────────── -->
+    <div class="screen card" id="sc-summary">
+      <div class="sum-head">
+        <div class="sum-check" style="background:rgba(99,102,241,.1);border-color:#6366f1;font-size:1.5rem">📋</div>
+        <div class="sum-title">Bitte prüfen Sie Ihre Angaben</div>
+        <p class="sum-sub">Hier sehen Sie eine Übersicht aller Ihrer Eingaben. Scrollen Sie durch und prüfen Sie, ob alles stimmt. Klicken Sie anschließend unten auf <strong>„Abschließen &amp; Einreichen"</strong>, um den Fragebogen offiziell abzuschicken.</p>
+      </div>
+      <div id="sum-body"></div>
+      <div class="docs-section">
+        <div class="docs-banner">
+          <div class="docs-banner-top">
+            <div class="docs-title">📁 Benötigte Unterlagen</div>
+            <span class="docs-count" id="docs-count-badge"></span>
+          </div>
+          <div class="docs-banner-sub">Pflichtdokumente müssen eingereicht werden. Optionale Unterlagen helfen, alle Steuervorteile auszuschöpfen.</div>
+        </div>
+        <div class="docs-list" id="docs-list"></div>
+        <p style="font-size:.72rem;color:var(--sub);margin-top:12px;font-family:'Inter',sans-serif;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--acc);margin-right:5px;"></span>Pflichtdokument &nbsp; <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--orange);margin-right:5px;"></span>Falls vorhanden</p>
+      </div>
+      <div id="email-status"><span id="email-icon"></span><span id="email-msg"></span></div>
+      <div class="portal-cta">
+        <button class="btn-portal" id="btn-portal-submit" onclick="submitAndShowPortal()">
+          <span>📤</span> Abschließen &amp; Einreichen
+        </button>
+        <p class="portal-cta-hint" id="portal-cta-hint">Fragebogen einreichen und zum sicheren Mandantenportal weitergehen</p>
+      </div>
+      <div class="sum-actions">
+        <button class="btn-print" onclick="window.print()">🖨 Drucken / PDF</button>
+      </div>
+      <p style="text-align:center;font-size:.7rem;color:var(--sub);margin-top:20px;font-family:'Inter',sans-serif;">
+        Powered by <a href="https://hks-automation.de" target="_blank" rel="noopener" style="color:var(--acc);text-decoration:none;font-weight:500;">H&K Automation</a>
+      </p>
+    </div>
+
+    <!-- ── PORTAL: Dokumenten-Upload ─────────────── -->
+    <div class="screen card" id="sc-portal">
+      <div class="sc-head">
+        <div class="sc-tag">📤 Mandantenportal</div>
+        <div class="sc-title">Dokumente hochladen</div>
+        <p class="sc-sub">Laden Sie Ihre Unterlagen direkt hier hoch. Pflichtdokumente sind blau markiert, optionale orange.</p>
+      </div>
+      <div class="portal-prog-wrap">
+        <div class="portal-prog-bar"><div class="portal-prog-fill" id="portal-prog-fill" style="width:0%"></div></div>
+        <div class="portal-prog-text" id="portal-prog-text">0 von 0 Dokumenten hochgeladen</div>
+      </div>
+      <div class="portal-global-zone" id="portal-global-zone"
+        ondragover="pgzDragOver(event)" ondragleave="pgzDragLeave(event)" ondrop="pgzDrop(event)"
+        onclick="document.getElementById('pgz-input').click()">
+        <div class="pgz-icon">📁</div>
+        <div class="pgz-text">Alle Dokumente hier ablegen</div>
+        <div class="pgz-hint">oder klicken zum Auswählen — mehrere Dateien gleichzeitig möglich</div>
+        <input type="file" id="pgz-input" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.csv,.zip" style="display:none" onchange="pgzFileSelect(event)"/>
+      </div>
+      <div class="portal-docs-list" id="portal-docs-list"></div>
+
+      <div class="sig-error" id="sig-error" style="display:none"></div>
+
+<div class="portal-sent-banner" id="portal-sent-banner">
+        <div class="psb-title">✓ Dokumente erfolgreich eingereicht!</div>
+        <div class="psb-sub">Das H&amp;K Automation Team wird Ihre Unterlagen prüfen und sich bei Ihnen melden.</div>
+      </div>
+      <div class="portal-actions">
+        <button class="btn-p-back" onclick="portalBack()">← Zurück</button>
+        <button class="btn-p-send" id="btn-p-send" onclick="portalSend()">Absenden →</button>
+      </div>
+    </div>
+
+    <!-- ── RÜCKKEHR-PORTAL ──────────────────────── -->
+    <div class="screen card" id="sc-return">
+      <div class="sc-head">
+        <div class="sc-tag">📬 Nachreichen</div>
+        <div class="sc-title">Willkommen zurück!</div>
+        <p class="sc-sub" id="return-sub">Folgende Unterlagen fehlen noch. Laden Sie diese hoch und klicken Sie auf „Nachreichen".</p>
+      </div>
+      <div class="return-progress">
+        <div class="rp-bar"><div class="rp-fill" id="return-progress-fill" style="width:0%"></div></div>
+      </div>
+      <div id="return-doc-list" style="padding:0 20px 8px"></div>
+      <div class="portal-actions" style="padding:16px 20px 20px">
+        <button class="btn-p-send" id="btn-return-send" onclick="submitReturnDocs()">Nachreichen →</button>
+      </div>
+    </div>
+
+    <!-- ── KANZLEI DASHBOARD ────────────────── -->
+    <div class="screen card" id="sc-kanzlei">
+      <div class="sc-head">
+        <div class="sc-tag">🏢 Kanzlei-Dashboard</div>
+        <div class="sc-title">Eingereichte Fragebögen</div>
+        <p class="sc-sub">Nur Mandanten die den Fragebogen ausgefüllt, unterschrieben und abgesendet haben erscheinen hier.</p>
+      </div>
+      <nav class="km-nav">
+        <button class="km-nav-tab active" id="km-tab-mandanten" onclick="switchKanzleiTab('mandanten')">Mandanten</button>
+        <button class="km-nav-tab" id="km-tab-belege" onclick="switchKanzleiTab('belege')">Belege</button>
+      </nav>
+      <div class="km-tab-panel active" id="km-panel-mandanten">
+        <div class="km-actions-bar">
+          <div class="km-stats">
+            <div class="km-stat"><div class="km-stat-num" id="km-stat-total">–</div><div class="km-stat-lbl">Gesamt</div></div>
+            <div class="km-stat"><div class="km-stat-num" id="km-stat-complete">–</div><div class="km-stat-lbl">Vollständig</div></div>
+          </div>
+          <div class="km-bar-btns">
+            <button class="btn-km-action" onclick="loadKanzleiDashboard()">↻ Aktualisieren</button>
+            <button class="btn-km-action danger" onclick="doKanzleiLogout()">Abmelden</button>
+          </div>
+        </div>
+        <div class="km-list" id="kanzlei-mandant-list">
+          <div class="km-empty"><div class="km-empty-icon">📭</div>Wird geladen…</div>
+        </div>
+      </div>
+      <div class="km-belege-panel" id="km-panel-belege">
+        <div class="km-empty-icon">📂</div>
+        Hier erscheinen demnächst die Belege.
+      </div>
+    </div>
+
+    <!-- ── DATEV Export ──────────────────────── -->
+    <div class="screen card" id="sc-datev">
+      <div class="sc-head">
+        <div class="sc-tag">📊 DATEV-Export</div>
+        <div class="sc-title">Daten exportieren</div>
+        <p class="sc-sub">Mandantendaten im DATEV EXTF-Format – direkt importierbar in Ihre DATEV-Software. Belege werden in DATEV-kompatibler Ordnerstruktur verpackt.</p>
+      </div>
+
+      <div class="datev-preview" id="datev-preview-inner"></div>
+
+      <div class="datev-success" id="datev-success-banner">
+        <div class="datev-success-title">✓ Download gestartet</div>
+        <div class="datev-success-sub" id="datev-success-msg"></div>
+      </div>
+
+      <div class="datev-actions">
+        <button class="btn-datev btn-datev-primary" onclick="downloadDATEVStammdaten()">
+          <span class="btn-datev-icon">📋</span>
+          <div class="btn-datev-info">
+            <span class="btn-datev-label">Stammdaten herunterladen</span>
+            <span class="btn-datev-sub">DATEV EXTF CSV · Import: Stammdaten → Debitoren/Kreditoren</span>
+          </div>
+          <span class="btn-datev-arrow">↓</span>
+        </button>
+        <button class="btn-datev btn-datev-secondary" id="datev-zip-btn" onclick="downloadBelegeZip()">
+          <span class="btn-datev-icon">📁</span>
+          <div class="btn-datev-info">
+            <span class="btn-datev-label">Belege-Paket herunterladen</span>
+            <span class="btn-datev-sub">ZIP mit Dokumenten in DATEV-Ordnerstruktur</span>
+          </div>
+          <span class="btn-datev-arrow">↓</span>
+        </button>
+        <button class="btn-datev btn-datev-secondary" id="datev-komplett-btn" onclick="downloadDATEVKomplett()">
+          <span class="btn-datev-icon">💾</span>
+          <div class="btn-datev-info">
+            <span class="btn-datev-label">Vollständiges Paket</span>
+            <span class="btn-datev-sub">Stammdaten + Belege in einem ZIP · alles auf einmal</span>
+          </div>
+          <span class="btn-datev-arrow">↓</span>
+        </button>
+      </div>
+
+      <div class="portal-actions">
+        <button class="btn-p-back" onclick="datevBack()">← Zurück zur Zusammenfassung</button>
+      </div>
+    </div>
+
+  </main>
+
+  <footer id="footer" style="display:none">
+    <button class="btn-back" id="btn-back" onclick="prev()" style="display:none">← Zurück</button>
+    <button class="btn-next" id="btn-next" onclick="next()">Los geht's →</button>
+  </footer>
+</div>
+
+<!-- ── Bestätigungs-Modal ─────────────────────────────── -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-icon">📋</div>
+    <div class="confirm-title">Fragebogen einreichen?</div>
+    <div class="confirm-sub">Ihre Angaben werden jetzt an die Kanzlei übermittelt. Bitte stellen Sie sicher, dass alle Informationen korrekt sind.</div>
+    <div class="confirm-actions">
+      <button class="confirm-cancel" onclick="closeConfirm()">Zurück</button>
+      <button class="confirm-ok" onclick="confirmSubmit()">Jetzt einreichen →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SERVER_URL = location.protocol === 'file:' ? 'https://app.hks-automation.de' : '';
+
+/* ═══════════════════════════════════════════════════════════
+   CONFIG – White-Label über URL-Parameter
+   Verwendung: fragebogen.html?name=Kanzlei+XY&formspree=ABCDEF&logo=https://...&accent=%236d7aff
+═══════════════════════════════════════════════════════════ */
+(function initConfig() {
+  const p          = new URLSearchParams(window.location.search);
+  const logo       = p.get('logo')      || null;
+  const formspree  = p.get('formspree') || 'mykdqwab';
+  const accent     = p.get('accent')    || null;
+
+  // Formspree-Endpunkt setzen
+  window._FORMSPREE_URL = 'https://formspree.io/f/' + formspree;
+  window._KANZLEI_NAME  = 'H&K Automation'; // Fallback, wird vom Server überschrieben
+
+  // Kanzleiname dynamisch vom Server laden
+  fetch(SERVER_URL + '/api/info')
+    .then(r => r.ok ? r.json() : null)
+    .then(k => {
+      if (!k || !k.name) return;
+      window._KANZLEI_NAME = k.name;
+      applyKanzleiName(k.name, logo);
+    })
+    .catch(() => {});
+
+  function applyKanzleiName(name, logo) {
+    if (name === 'H&K Automation Steuerberatungsgesellschaft mbH' || name === 'H&K Automation') return;
+    const logoArea = document.getElementById('logo-area');
+    if (logo) {
+      logoArea.innerHTML = `<img src="${logo}" alt="${name}" style="height:36px;max-width:180px;object-fit:contain;vertical-align:middle;">`;
+    } else {
+      const words = name.trim().split(/\s+/);
+      const initials = words.length >= 2 ? (words[0][0] + words[words.length-1][0]).toUpperCase() : name.slice(0,2).toUpperCase();
+      const rest = words.length >= 2 ? words.slice(1).join(' ') : '';
+      logoArea.innerHTML = `<div class="logo-c">${initials}</div><span class="logo-t">${rest.toLowerCase() || name.toLowerCase()}</span>`;
+    }
+    const authEl = document.getElementById('auth-kanzlei-name');
+    if (authEl) authEl.textContent = name;
+  }
+
+  // Akzentfarbe
+  if(accent) {
+    document.documentElement.style.setProperty('--acc',   accent);
+    document.documentElement.style.setProperty('--acc-d', accent);
+  }
+
+
+  // Auto-Resize für iframe-Embed via postMessage (debounced, nur bei echter Änderung)
+  if(window.self !== window.top) {
+    let lastH = 0, rafId = null;
+    const notify = () => {
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        const h = document.documentElement.scrollHeight;
+        if(Math.abs(h - lastH) < 2) return;
+        lastH = h;
+        window.parent.postMessage({ type:'hk-resize', height: h }, '*');
+      });
+    };
+    new ResizeObserver(notify).observe(document.documentElement);
+    notify();
+  }
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   DATA – alle Fragen & Sektionen
+═══════════════════════════════════════════════════════════ */
+const SECTIONS = [
+  /* 0: Mandantentyp */
+  {
+    id:'typ', icon:'🧑‍💼', tag:'Schritt 1',
+    title:'Wer sind Sie?',
+    sub:'Die Fragen passen sich automatisch Ihrer Situation an.',
+    fields:[
+      { id:'mandant_typ', type:'cards', label:'Was beschreibt Sie am besten?', required:true,
+        options:[
+          { value:'privatperson', emoji:'👤', label:'Privatperson', desc:'Arbeitnehmer, Beamter, Rentner, Student' },
+          { value:'freiberufler', emoji:'💼', label:'Selbstständig / Freiberufler', desc:'Einzelunternehmer, Freiberufler (Arzt, Anwalt, IT, etc.)' },
+          { value:'unternehmen',  emoji:'🏢', label:'Unternehmen', desc:'GmbH, UG, GbR, OHG, KG, e.K. …' },
+        ]
+      }
+    ]
+  },
+
+  /* 1: Persönliche Daten – Privatperson / Freiberufler */
+  {
+    id:'personal', icon:'📋', tag:'Persönliche Daten',
+    title:'Ihre Kontaktdaten',
+    sub:'Für die korrekte Anlage Ihrer Mandantenakte.',
+    condition: a => ['privatperson','freiberufler'].includes(a.mandant_typ),
+    fields:[
+      { id:'vorname',   type:'text',  label:'Vorname',   placeholder:'Max',          required:true  },
+      { id:'nachname',  type:'text',  label:'Nachname',  placeholder:'Mustermann',   required:true, row:'name' },
+      { id:'geburtsdatum', type:'datum', label:'Geburtsdatum', required:true },
+      { id:'geburtsort', type:'text', label:'Geburtsort', placeholder:'München', required:true },
+      { id:'staatsangehoerigkeit', type:'text', label:'Staatsangehörigkeit', placeholder:'Deutsch', required:true, hint:'Bei doppelter Staatsangehörigkeit beide angeben (z.B. Deutsch / Amerikanisch)' },
+      { id:'email',     type:'email', label:'E-Mail-Adresse', placeholder:'max@beispiel.de', required:true },
+      { id:'telefon',   type:'tel',   label:'Telefon',   placeholder:'+49 170 1234567', required:false },
+      { id:'strasse',   type:'text',  label:'Straße & Hausnummer', placeholder:'Musterstraße 1', required:true },
+      { id:'plz',       type:'text',  label:'PLZ',       placeholder:'80331',        required:true, row:'addr' },
+      { id:'ort',       type:'text',  label:'Ort',       placeholder:'München',      required:true, row:'addr' },
+      { id:'steuer_id', type:'text',  label:'Steuer-Identifikationsnummer', placeholder:'12 345 678 901', required:true, hint:'11-stellige Nummer – auf Ihrem letzten Steuerbescheid oder unter www.bzst.de abrufbar' },
+      { id:'steuernummer', type:'text', label:'Steuernummer (falls bekannt)', placeholder:'123/456/78901', required:false, hint:'Vom zuständigen Finanzamt – falls bereits vorhanden' },
+      { id:'iban', type:'text', label:'IBAN (für Steuererstattungen)', placeholder:'DE89 3704 0044 0532 0130 00', required:true, hint:'Damit das Finanzamt eventuelle Erstattungen direkt auf Ihr Konto überweist' },
+    ]
+  },
+
+  /* 2: Unternehmensdaten */
+  {
+    id:'firma', icon:'🏢', tag:'Unternehmensdaten',
+    title:'Ihr Unternehmen',
+    sub:'Angaben zu Ihrer Gesellschaft.',
+    condition: a => a.mandant_typ === 'unternehmen',
+    fields:[
+      { id:'firma_name',     type:'text',   label:'Firmenname',  placeholder:'Mustermann GmbH',  required:true },
+      { id:'rechtsform',     type:'select', label:'Rechtsform',  required:true,
+        options:['GmbH','UG (haftungsbeschränkt)','GmbH & Co. KG','AG','GbR','OHG','KG','PartG','PartG mbB','Einzelunternehmen (e.K.)','Sonstige']
+      },
+      { id:'hr_nummer',      type:'text',   label:'Handelsregisternummer', placeholder:'HRB 123456', required:false },
+      { id:'gruendungsjahr', type:'text',   label:'Gründungsjahr', placeholder:'2020', required:true },
+      { id:'branche',        type:'text',   label:'Branche / Tätigkeitsbereich', placeholder:'z.B. IT-Dienstleistungen', required:true },
+      { id:'kontakt_name',   type:'text',   label:'Name Ansprechpartner', placeholder:'Max Mustermann', required:true },
+      { id:'email',          type:'email',  label:'E-Mail', placeholder:'info@firma.de', required:true },
+      { id:'telefon',        type:'tel',    label:'Telefon', placeholder:'+49 89 123456', required:false },
+      { id:'strasse',        type:'text',   label:'Geschäftsadresse (Straße & Nr.)', placeholder:'Musterstraße 1', required:true },
+      { id:'plz',            type:'text',   label:'PLZ',    placeholder:'80331',          required:true, row:'addr' },
+      { id:'ort',            type:'text',   label:'Ort',    placeholder:'München',        required:true, row:'addr' },
+      { id:'steuer_id',      type:'text',   label:'Steuernummer', placeholder:'123/456/78901', required:false },
+      { id:'ust_id',         type:'text',   label:'USt-IdNr. (falls vorhanden)', placeholder:'DE123456789', required:false },
+      { id:'iban',           type:'text',   label:'IBAN Geschäftskonto (für Steuererstattungen)', placeholder:'DE89 3704 0044 0532 0130 00', required:false },
+      { id:'finanzamt',      type:'text',   label:'Zuständiges Finanzamt', placeholder:'z.B. Finanzamt München', required:false },
+      { id:'abw_wirtschaftsjahr', type:'yn', label:'Weicht Ihr Wirtschaftsjahr vom Kalenderjahr ab?', required:false,
+        hint:'Standard: 1. Januar – 31. Dezember'
+      },
+      { id:'wirtschaftsjahr_zeitraum', type:'text', label:'Ihr Wirtschaftsjahr', placeholder:'z.B. 01. April – 31. März', required:false,
+        condition: a => a.abw_wirtschaftsjahr === 'ja'
+      },
+    ]
+  },
+
+  /* 3: Familiensituation */
+  {
+    id:'familie', icon:'👨‍👩‍👧', tag:'Familiensituation',
+    title:'Familie & Lebensumstand',
+    sub:'Relevant für Splitting, Kinderfreibeträge und Absetzbarkeit.',
+    condition: a => a.mandant_typ === 'privatperson',
+    fields:[
+      { id:'familienstand', type:'cards', label:'Familienstand', required:true,
+        options:[
+          { value:'ledig',         emoji:'🙋', label:'Ledig' },
+          { value:'verheiratet',   emoji:'💍', label:'Verheiratet / eingetr. Lebenspartnerschaft' },
+          { value:'getrennt',      emoji:'📝', label:'Getrennt lebend' },
+          { value:'geschieden',    emoji:'📄', label:'Geschieden' },
+          { value:'verwitwet',     emoji:'🕊️',  label:'Verwitwet' },
+        ]
+      },
+      { id:'steuerklasse', type:'select', label:'Ihre Steuerklasse', required:false,
+        condition: a => ['ledig','getrennt','geschieden','verwitwet'].includes(a.familienstand) || !a.familienstand,
+        options:['Steuerklasse I','Steuerklasse II (Alleinerziehend)','Steuerklasse III','Steuerklasse IV','Steuerklasse V','Steuerklasse VI','Weiß ich nicht']
+      },
+      { id:'steuerklasse_gem', type:'select', label:'Steuerklassen-Kombination', required:false,
+        condition: a => a.familienstand === 'verheiratet',
+        options:['III / V','IV / IV','IV / IV mit Faktor','Weiß ich nicht']
+      },
+      { id:'veranlagung', type:'cards', label:'Wie möchten Sie veranlagt werden?', required:true,
+        condition: a => a.familienstand === 'verheiratet',
+        hint:'Zusammenveranlagung nutzt das Ehegattensplitting und ist meist günstiger – Einzelveranlagung kann bei sehr unterschiedlichen Einkommen sinnvoll sein.',
+        options:[
+          { value:'zusammen', emoji:'👫', label:'Zusammenveranlagung', desc:'Ehegattensplitting – in den meisten Fällen steuerlich günstiger' },
+          { value:'einzeln',  emoji:'👤', label:'Einzelveranlagung',   desc:'Getrennte Steuererklärung – sinnvoll bei sehr unterschiedlichen Einkommen' },
+          { value:'weiss_nicht', emoji:'❓', label:'Weiß ich nicht', desc:'Die Kanzlei berät Sie dazu' },
+        ]
+      },
+      { id:'partner_berufstaetig', type:'yn', label:'Ist Ihr Partner / Ihre Partnerin berufstätig?', required:false,
+        condition: a => a.familienstand === 'verheiratet' && ['zusammen','weiss_nicht'].includes(a.veranlagung),
+        hint:'Relevant für die Lohnsteuerbescheinigung des Partners / der Partnerin'
+      },
+      { id:'kinder', type:'yn', label:'Haben Sie Kinder?', required:true },
+      { id:'kinder_anzahl', type:'select', label:'Wie viele Kinder?', required:true,
+        condition: a => a.kinder === 'ja',
+        options:['1','2','3','4','5','6','7','8','9','10','11','12']
+      },
+      { id:'kind1_geburt',  type:'monat-jahr', label:'Geburtsdatum Kind 1',  required:true,  condition: a => a.kinder === 'ja' && ['1','2','3','4','5','6','7','8','9','10','11','12'].includes(a.kinder_anzahl) },
+      { id:'kind2_geburt',  type:'monat-jahr', label:'Geburtsdatum Kind 2',  required:true,  condition: a => a.kinder === 'ja' && ['2','3','4','5','6','7','8','9','10','11','12'].includes(a.kinder_anzahl) },
+      { id:'kind3_geburt',  type:'monat-jahr', label:'Geburtsdatum Kind 3',  required:true,  condition: a => a.kinder === 'ja' && ['3','4','5','6','7','8','9','10','11','12'].includes(a.kinder_anzahl) },
+      { id:'kind4_geburt',  type:'monat-jahr', label:'Geburtsdatum Kind 4',  required:true,  condition: a => a.kinder === 'ja' && ['4','5','6','7','8','9','10','11','12'].includes(a.kinder_anzahl) },
+      { id:'kind5_geburt',  type:'monat-jahr', label:'Geburtsdatum Kind 5',  required:true,  condition: a => a.kinder === 'ja' && ['5','6','7','8','9','10','11','12'].includes(a.kinder_anzahl) },
+      { id:'kind6_geburt',  type:'monat-jahr', label:'Geburtsdatum Kind 6',  required:true,  condition: a => a.kinder === 'ja' && ['6','7','8','9','10','11','12'].includes(a.kinder_anzahl) },
+      { id:'kind7_geburt',  type:'monat-jahr', label:'Geburtsdatum Kind 7',  required:true,  condition: a => a.kinder === 'ja' && ['7','8','9','10','11','12'].includes(a.kinder_anzahl) },
+      { id:'kind8_geburt',  type:'monat-jahr', label:'Geburtsdatum Kind 8',  required:true,  condition: a => a.kinder === 'ja' && ['8','9','10','11','12'].includes(a.kinder_anzahl) },
+      { id:'kind9_geburt',  type:'monat-jahr', label:'Geburtsdatum Kind 9',  required:true,  condition: a => a.kinder === 'ja' && ['9','10','11','12'].includes(a.kinder_anzahl) },
+      { id:'kind10_geburt', type:'monat-jahr', label:'Geburtsdatum Kind 10', required:true,  condition: a => a.kinder === 'ja' && ['10','11','12'].includes(a.kinder_anzahl) },
+      { id:'kind11_geburt', type:'monat-jahr', label:'Geburtsdatum Kind 11', required:true,  condition: a => a.kinder === 'ja' && ['11','12'].includes(a.kinder_anzahl) },
+      { id:'kind12_geburt', type:'monat-jahr', label:'Geburtsdatum Kind 12', required:true,  condition: a => a.kinder === 'ja' && ['12'].includes(a.kinder_anzahl) },
+
+      { id:'kinder_ausbildung', type:'yn', label:'Befinden sich (einige) Kinder noch in Schule, Studium oder Ausbildung?', required:false,
+        condition: a => a.kinder === 'ja',
+        hint:'Relevant für Ausbildungsfreibetrag und Schulbescheinigung – gilt auch wenn nur ein Kind betroffen ist'
+      },
+      { id:'kirchensteuer', type:'yn', label:'Sind Sie kirchensteuerpflichtig?', required:false,
+        hint:'Mitglied einer steuererhebenden Religionsgemeinschaft (kath., evang., jüd. etc.) – steht auch auf Ihrer Lohnsteuerbescheinigung'
+      },
+      { id:'behinderung', type:'yn', label:'Liegt eine anerkannte Behinderung vor (GdB ≥ 25)?', required:false,
+        hint:'Berechtigter erhält Behinderten-Pauschbetrag bis zu 7.400 € – steuerlich sehr relevant'
+      },
+      { id:'behinderung_gdb', type:'select', label:'Grad der Behinderung (GdB)', required:false,
+        condition: a => a.behinderung === 'ja',
+        options:['GdB 25–45','GdB 50','GdB 55–65','GdB 70','GdB 75–85','GdB 90','GdB 95','GdB 100 (Schwerbehinderung)']
+      },
+      { id:'pflegeperson', type:'yn', label:'Pflegen Sie eine hilflose Person (z.B. Angehörigen) unentgeltlich?', required:false,
+        hint:'Pflege-Pauschbetrag: bis zu 1.800 € / Jahr absetzbar – auch ohne Belege'
+      },
+    ]
+  },
+
+  /* 4: Berufliche Situation Privatperson */
+  {
+    id:'beruf', icon:'💼', tag:'Beruf & Einkommen',
+    title:'Ihre berufliche Situation',
+    sub:'Für die korrekte Erfassung Ihrer Einkunftsarten.',
+    condition: a => a.mandant_typ === 'privatperson',
+    fields:[
+      { id:'beschaeftigung', type:'cards', label:'Welche Beschäftigung trifft zu?', required:true,
+        options:[
+          { value:'angestellt',     emoji:'🏭', label:'Angestellt',          desc:'Arbeitnehmer in Voll- oder Teilzeit' },
+          { value:'beamter',        emoji:'🏛️',  label:'Beamter / Soldat',    desc:'Inkl. Pensionäre' },
+          { value:'rentner',        emoji:'👴', label:'Rentner / Pensionär', desc:'Gesetzliche oder private Rente' },
+          { value:'arbeitssuchend', emoji:'📋', label:'Arbeitssuchend',      desc:'ALG I oder II, Bürgergeld' },
+          { value:'sonstiges',      emoji:'🔄', label:'Sonstiges',           desc:'z.B. Elternzeit, Haushaltsführung' },
+        ]
+      },
+      { id:'krankenversicherung', type:'cards', label:'Welche Krankenversicherung haben Sie?', required:false,
+        options:[
+          { value:'gkv', emoji:'🏥', label:'Gesetzlich (GKV)', desc:'z.B. AOK, TK, Barmer, DAK' },
+          { value:'pkv', emoji:'💳', label:'Privat (PKV)',      desc:'Private Krankenversicherung' },
+        ]
+      },
+      { id:'pkv_beitrag', type:'select', label:'Monatlicher PKV-Beitrag (Arbeitnehmeranteil, ca.)', required:false,
+        condition: a => a.krankenversicherung === 'pkv',
+        hint:'PKV-Beiträge sind als Sonderausgaben absetzbar – kann mehrere tausend Euro Ersparnis bedeuten',
+        options:['unter 200 €','200–400 €','400–600 €','600–800 €','über 800 €']
+      },
+      { id:'mehrere_ag', type:'yn', label:'Hatten Sie im letzten Jahr mehrere Arbeitgeber gleichzeitig?', required:false,
+        condition: a => a.beschaeftigung === 'angestellt'
+      },
+      { id:'minijob', type:'yn', label:'Haben Sie zusätzlich einen Minijob oder 520-€-Job?', required:false,
+        condition: a => a.beschaeftigung === 'angestellt'
+      },
+      { id:'kurzarbeit', type:'yn', label:'Haben Sie Kurzarbeitergeld bezogen?', required:false,
+        condition: a => a.beschaeftigung === 'angestellt'
+      },
+      { id:'homeoffice', type:'yn', label:'Haben Sie im letzten Jahr im Homeoffice gearbeitet?', required:false,
+        condition: a => ['angestellt','beamter'].includes(a.beschaeftigung),
+        hint:'Homeoffice-Pauschale: 6 € pro Tag, bis zu 1.260 € / Jahr absetzbar'
+      },
+      { id:'homeoffice_tage', type:'select', label:'Wie viele Tage ca. im Homeoffice?', required:false,
+        condition: a => a.homeoffice === 'ja',
+        options:['1–20 Tage','21–50 Tage','51–100 Tage','101–150 Tage','151–200 Tage','über 200 Tage']
+      },
+      { id:'pendler_km', type:'select', label:'Entfernung Wohnung – Arbeitsstätte (einfache Strecke)', required:false,
+        condition: a => ['angestellt','beamter'].includes(a.beschaeftigung),
+        hint:'Pendlerpauschale: 0,30 € je km (ab km 21: 0,38 €) – gilt für jeden Arbeitstag',
+        options:['unter 10 km','10–20 km','21–30 km','31–50 km','51–75 km','über 75 km','Weiß ich nicht']
+      },
+      { id:'firmenwagen', type:'yn', label:'Nutzen Sie einen Firmenwagen (auch privat)?', required:false,
+        condition: a => ['angestellt','beamter'].includes(a.beschaeftigung)
+      },
+      { id:'firmenwagen_methode', type:'cards', label:'Wie wird der Firmenwagen versteuert?', required:false,
+        condition: a => a.firmenwagen === 'ja',
+        options:[
+          { value:'ein_prozent', emoji:'📊', label:'1%-Regel',     desc:'Pauschale monatliche Versteuerung' },
+          { value:'fahrtenbuch', emoji:'📒', label:'Fahrtenbuch',   desc:'Nachweis der tatsächlichen Nutzung' },
+          { value:'weiss_nicht', emoji:'❓', label:'Weiß ich nicht' },
+        ]
+      },
+      { id:'rente_betrag', type:'select', label:'Ungefähre monatliche Rente (brutto)', required:false,
+        condition: a => a.beschaeftigung === 'rentner',
+        options:['unter 500 €','500–1.000 €','1.000–1.500 €','1.500–2.000 €','über 2.000 €']
+      },
+    ]
+  },
+
+  /* 5: Selbstständigkeit */
+  {
+    id:'selbst', icon:'🧾', tag:'Selbstständigkeit',
+    title:'Ihre selbstständige Tätigkeit',
+    sub:'Details zu Ihrer freiberuflichen oder gewerblichen Arbeit.',
+    condition: a => a.mandant_typ === 'freiberufler',
+    fields:[
+      { id:'selbst_seit', type:'monat-jahr', label:'Seit wann sind Sie selbstständig?', required:true },
+      { id:'taetigkeit', type:'text', label:'Welche Tätigkeit üben Sie aus?', placeholder:'z.B. IT-Beratung, Architektur, Grafik-Design', required:true },
+      { id:'selbst_umsatz', type:'select', label:'Jahresumsatz (letzte 12 Monate, ca.)', required:true,
+        options:['unter 10.000 €','10.000–22.000 €','22.000–50.000 €','50.000–100.000 €','100.000–200.000 €','200.000–600.000 €','über 600.000 €']
+      },
+      { id:'gewinnermittlung', type:'cards', label:'Wie ermitteln Sie Ihren Gewinn?', required:false,
+        condition: a => a.selbst_umsatz === 'über 600.000 €',
+        options:[
+          { value:'euer',       emoji:'📋', label:'EÜR',     desc:'Einnahmen-Überschuss-Rechnung' },
+          { value:'bilanz',     emoji:'📊', label:'Bilanz',  desc:'Doppelte Buchführung' },
+          { value:'weiss_nicht',emoji:'❓', label:'Weiß ich nicht' },
+        ]
+      },
+      { id:'ust_pflichtig', type:'yn', label:'Sind Sie umsatzsteuerpflichtig?', required:true,
+        hint:'Kleinunternehmer (§ 19 UStG) sind i.d.R. nicht USt-pflichtig unter 22.000 € Umsatz'
+      },
+      { id:'ust_rhythmus', type:'cards', label:'In welchem Rhythmus melden Sie die Umsatzsteuer?', required:false,
+        condition: a => a.ust_pflichtig === 'ja',
+        options:[
+          { value:'monatlich',    emoji:'📅', label:'Monatlich' },
+          { value:'quartalsweise',emoji:'🗓️',  label:'Quartalsweise' },
+          { value:'weiss_nicht',  emoji:'❓', label:'Weiß ich nicht' },
+        ]
+      },
+      { id:'buchhaltung_art', type:'cards', label:'Wie führen Sie Ihre Buchhaltung?', required:true,
+        options:[
+          { value:'selbst',   emoji:'📊', label:'Selbst (Excel, DATEV etc.)' },
+          { value:'software', emoji:'💻', label:'Buchhaltungssoftware',  desc:'z.B. lexoffice, sevDesk' },
+          { value:'extern',   emoji:'🤝', label:'Externe Buchhaltung' },
+          { value:'keine',    emoji:'🗂️',  label:'Noch keine Buchhaltung' },
+        ]
+      },
+      { id:'datev_nr', type:'text', label:'DATEV-Mandantennummer (falls bekannt)', placeholder:'z.B. 12345', required:false,
+        condition: a => a.buchhaltung_art !== 'keine'
+      },
+      { id:'betriebsausgaben', type:'checkbox', label:'Welche Betriebsausgaben haben Sie? (Mehrfachauswahl)', required:false,
+        options:[
+          { value:'bueро',        emoji:'🖥️',  label:'Büro / Homeoffice' },
+          { value:'fahrzeug',     emoji:'🚗', label:'Fahrzeug / Reisekosten' },
+          { value:'personal',     emoji:'👥', label:'Personal / Subunternehmer' },
+          { value:'werbung',      emoji:'📣', label:'Marketing / Werbung' },
+          { value:'software',     emoji:'💻', label:'Software / Lizenzen' },
+          { value:'fortbildung',  emoji:'📚', label:'Fortbildung / Fachliteratur' },
+          { value:'versicherung', emoji:'🛡️',  label:'Betriebliche Versicherungen' },
+        ]
+      },
+      { id:'firmenwagen_selbst', type:'yn', label:'Nutzen Sie ein Fahrzeug betrieblich?', required:false },
+      { id:'firmenwagen_selbst_methode', type:'cards', label:'Wie wird das Fahrzeug steuerlich behandelt?', required:false,
+        condition: a => a.firmenwagen_selbst === 'ja',
+        options:[
+          { value:'ein_prozent', emoji:'📊', label:'1%-Regel',         desc:'Pauschale monatliche Versteuerung' },
+          { value:'fahrtenbuch', emoji:'📒', label:'Fahrtenbuch',       desc:'Nachweis der tatsächlichen Nutzung' },
+          { value:'noch_nicht',  emoji:'❓', label:'Noch nicht geklärt' },
+        ]
+      },
+      { id:'iab_selbst', type:'yn', label:'Planen Sie in den nächsten 3 Jahren größere Investitionen (> 10.000 €)?', required:false,
+        hint:'Investitionsabzugsbetrag (IAB): bis zu 50 % der geplanten Investition jetzt schon steuermindernd absetzbar'
+      },
+      { id:'kirchensteuer', type:'yn', label:'Sind Sie kirchensteuerpflichtig?', required:false,
+        hint:'Mitglied einer steuererhebenden Religionsgemeinschaft (kath., evang., jüd. etc.) – wird auch auf die Einkommensteuer erhoben'
+      },
+    ]
+  },
+
+  /* 6: Unternehmensdetails */
+  {
+    id:'unternehmens_details', icon:'📊', tag:'Unternehmensdetails',
+    title:'Finanzen & Buchhaltung',
+    sub:'Damit wir Ihre laufende Betreuung optimal planen können.',
+    condition: a => a.mandant_typ === 'unternehmen',
+    fields:[
+      { id:'jahresumsatz', type:'select', label:'Jahresumsatz (letztes Geschäftsjahr, ca.)', required:true,
+        options:['unter 100.000 €','100.000–600.000 €','600.000–1 Mio. €','1–5 Mio. €','über 5 Mio. €']
+      },
+      { id:'gewinnermittlung_u', type:'cards', label:'Wie wird der Gewinn ermittelt?', required:false,
+        condition: a => !['GmbH','UG (haftungsbeschränkt)','GmbH & Co. KG','AG'].includes(a.rechtsform) && (['GbR','OHG','KG','PartG','PartG mbB','Einzelunternehmen (e.K.)','Sonstige'].includes(a.rechtsform) || ['600.000–1 Mio. €','1–5 Mio. €','über 5 Mio. €'].includes(a.jahresumsatz)),
+        options:[
+          { value:'euer',        emoji:'📋', label:'EÜR',    desc:'Einnahmen-Überschuss-Rechnung' },
+          { value:'bilanz',      emoji:'📊', label:'Bilanz',  desc:'Doppelte Buchführung' },
+          { value:'weiss_nicht', emoji:'❓', label:'Weiß ich nicht' },
+        ]
+      },
+      { id:'mitarbeiter', type:'select', label:'Anzahl Mitarbeiter (inkl. Geschäftsführer)', required:true,
+        options:['Nur Geschäftsführer','2–5','6–10','11–25','26–50','über 50']
+      },
+      { id:'buchhaltung_intern', type:'cards', label:'Wie läuft Ihre Buchhaltung aktuell?', required:true,
+        options:[
+          { value:'intern',    emoji:'🏠', label:'Intern',    desc:'Buchhaltung wird im Unternehmen erledigt' },
+          { value:'extern',    emoji:'🤝', label:'Extern',    desc:'Steuerberater oder Buchhalter übernimmt' },
+          { value:'gar_nicht', emoji:'📭', label:'Noch nicht', desc:'Neugründung / kein System vorhanden' },
+        ]
+      },
+      { id:'lohnbuchhaltung', type:'yn', label:'Benötigen Sie Lohnbuchhaltung?', required:true },
+      { id:'ust_voranmeldung', type:'yn', label:'Sollen wir Ihre USt-Voranmeldungen übernehmen?', required:true },
+      { id:'ust_rhythmus_u', type:'cards', label:'In welchem Rhythmus melden Sie die Umsatzsteuer?', required:false,
+        condition: a => a.ust_voranmeldung === 'ja',
+        options:[
+          { value:'monatlich',     emoji:'📅', label:'Monatlich' },
+          { value:'quartalsweise', emoji:'🗓️',  label:'Quartalsweise' },
+          { value:'weiss_nicht',   emoji:'❓', label:'Weiß ich nicht' },
+        ]
+      },
+      { id:'datev_nr', type:'text', label:'DATEV-Mandantennummer (falls vorhanden)', placeholder:'z.B. 12345', required:false,
+        condition: a => a.buchhaltung_intern !== 'gar_nicht'
+      },
+      { id:'letzte_bilanz', type:'select', label:'Letzter Jahresabschluss / Bilanz liegt vor für', required:false,
+        options:['2025','2024','2023','2022','2021 oder älter','Noch kein Jahresabschluss erstellt']
+      },
+      { id:'gesellschafter_anzahl', type:'select', label:'Anzahl Gesellschafter', required:false,
+        options:['1','2','3','4','5','6','7','8','9','10 oder mehr'],
+        condition: a => a.rechtsform && a.rechtsform !== 'Einzelunternehmen (e.K.)'
+      },
+      { id:'gf_gehalt', type:'yn', label:'Beziehen Sie als Gesellschafter-GF ein Gehalt aus der Gesellschaft?', required:false,
+        condition: a => ['GmbH','UG (haftungsbeschränkt)','GmbH & Co. KG','AG'].includes(a.rechtsform)
+      },
+      { id:'iab', type:'yn', label:'Planen Sie größere Investitionen in den nächsten 3 Jahren?', required:false,
+        hint:'Investitionsabzugsbetrag (IAB): bis zu 50 % der geplanten Investition jetzt schon steuermindernd absetzbar'
+      },
+      { id:'firmenwagen_unternehmen', type:'yn', label:'Werden Fahrzeuge betrieblich genutzt?', required:false },
+      { id:'firmenwagen_u_methode', type:'cards', label:'Versteuerungsmethode Firmenfahrzeuge', required:false,
+        condition: a => a.firmenwagen_unternehmen === 'ja',
+        options:[
+          { value:'ein_prozent', emoji:'📊', label:'1%-Regel',         desc:'Pauschale monatliche Versteuerung' },
+          { value:'fahrtenbuch', emoji:'📒', label:'Fahrtenbuch',       desc:'Nachweis der tatsächlichen Nutzung' },
+          { value:'noch_nicht',  emoji:'❓', label:'Noch nicht geklärt' },
+        ]
+      },
+    ]
+  },
+
+  /* 7: Weitere Einkünfte */
+  {
+    id:'weitere_einkuenfte', icon:'💰', tag:'Weitere Einkünfte',
+    title:'Weitere Einkunftsquellen',
+    sub:'Bitte alles ankreuzen, was auf Sie zutrifft.',
+    fields:[
+      { id:'hat_weitere_anstellung', type:'yn', label:'Haben Sie (weitere) Anstellungsverhältnisse?', required:false,
+        condition: a => ['privatperson','freiberufler'].includes(a.mandant_typ)
+      },
+      { id:'weitere_anstellung_details', type:'repeater', label:'Kurze Beschreibung je Anstellungsverhältnis', required:false,
+        placeholder:'z.B. Teilzeit bei Müller GmbH, ca. 15.000 €/Jahr',
+        condition: a => ['privatperson','freiberufler'].includes(a.mandant_typ) && a.hat_weitere_anstellung === 'ja'
+      },
+      { id:'hat_weitere_selbst', type:'yn', label:'Haben Sie (weitere) selbstständige Tätigkeiten?', required:false,
+        condition: a => ['privatperson','freiberufler'].includes(a.mandant_typ)
+      },
+      { id:'weitere_selbst_details', type:'repeater', label:'Kurze Beschreibung je Tätigkeit', required:false,
+        placeholder:'z.B. IT-Freelancer, ca. 20.000 €/Jahr',
+        condition: a => ['privatperson','freiberufler'].includes(a.mandant_typ) && a.hat_weitere_selbst === 'ja'
+      },
+      { id:'einkuenfte_weitere', type:'checkbox', label:'Welche weiteren Einkünfte haben Sie? (Mehrfachauswahl)', required:false,
+        options:[
+          { value:'vermietung',    emoji:'🏠', label:'Vermietung & Verpachtung' },
+          { value:'kapital',       emoji:'📈', label:'Kapitalerträge (Zinsen, Dividenden, ETF/Aktien)' },
+          { value:'beteiligung',   emoji:'🏢', label:'Beteiligungen an anderen Unternehmen' },
+          { value:'rente_priv',    emoji:'🏦', label:'Private Rente / Lebensversicherung',   condition: a => a.mandant_typ !== 'unternehmen' },
+          { value:'rente_gesetz',  emoji:'🏛️',  label:'Gesetzliche Rente / Versorgungswerk', condition: a => a.mandant_typ !== 'unternehmen' },
+          { value:'ausland',       emoji:'🌍', label:'Auslandseinkünfte' },
+          { value:'krypto',        emoji:'₿',  label:'Kryptowährungen (Kauf/Verkauf/Mining)' },
+          { value:'immo_verkauf',  emoji:'🏡', label:'Immobilienverkauf im letzten Jahr' },
+          { value:'erbschaft',     emoji:'📜', label:'Erbschaft oder Schenkung erhalten',    condition: a => a.mandant_typ !== 'unternehmen' },
+          { value:'unterhalt',     emoji:'👨‍👧', label:'Unterhalt gezahlt oder erhalten',     condition: a => a.mandant_typ !== 'unternehmen' },
+          { value:'keine',         emoji:'➖', label:'Keine weiteren Einkünfte' },
+        ]
+      },
+      { id:'vermietung_objekte', type:'select', label:'Wie viele Objekte vermieten Sie?', required:false,
+        condition: a => (a.einkuenfte_weitere || []).includes('vermietung'),
+        options:['1 Objekt','2 Objekte','3 Objekte','4 oder mehr']
+      },
+    ]
+  },
+
+  /* 8: Werbungskosten & Sonderausgaben */
+  {
+    id:'werbungskosten', icon:'🧾', tag:'Werbungskosten & Aufwendungen',
+    title:'Absetzbare Kosten',
+    sub:'Je vollständiger, desto mehr Steuern sparen Sie.',
+    condition: a => ['privatperson','freiberufler'].includes(a.mandant_typ),
+    fields:[
+      { id:'wk_posten', type:'checkbox', label:'Welche Ausgaben hatten Sie? (Mehrfachauswahl)', required:false,
+        options:[
+          { value:'fortbildung',   emoji:'📚', label:'Fortbildung / Weiterbildung / Fachliteratur' },
+          { value:'arbeitsmittel', emoji:'🖥️',  label:'Arbeitsmittel (PC, Schreibtisch, Headset etc.)' },
+          { value:'berufskleidung',emoji:'👔', label:'Berufskleidung (typisch, z.B. Uniform, Schutzkleidung)' },
+          { value:'bewerbungen',   emoji:'📄', label:'Bewerbungskosten' },
+          { value:'doppelfuehrung',emoji:'🏨', label:'Doppelte Haushaltsführung / Umzug' },
+          { value:'spenden',       emoji:'❤️',  label:'Spenden (steuerbegünstigt)' },
+          { value:'handwerker',    emoji:'🔨', label:'Handwerkerleistungen im Haushalt' },
+          { value:'haushaltsnahe', emoji:'🧹', label:'Haushaltsnahe Dienstleistungen (Putzhilfe etc.)' },
+          { value:'krankenversicherung', emoji:'🏥', label:'Krankenversicherungsbeiträge (PKV oder GKV)' },
+          { value:'riester',        emoji:'🏦', label:'Riester / Rürup / bAV Beiträge' },
+          { value:'gewerkschaft',   emoji:'🤝', label:'Gewerkschaftsbeiträge / Berufsverbände' },
+          { value:'krankheit',      emoji:'💊', label:'Außergewöhnliche Belastungen (Krankheitskosten etc.)' },
+        ]
+      },
+      { id:'kinderbetreuung', type:'yn', label:'Haben Sie im letzten Jahr Kosten für Kinderbetreuung gehabt?', required:false,
+        condition: a => a.kinder === 'ja',
+        hint:'Kita, Tagesmutter, Hort: 2/3 der Kosten absetzbar, bis zu 4.000 € pro Kind unter 14 Jahren'
+      },
+    ]
+  },
+
+  /* 9: Vorherige Steuersituation */
+  {
+    id:'vorjahr', icon:'📅', tag:'Steuersituation',
+    title:'Bisherige Steuererklärungen',
+    sub:'Wichtig für die Übernahme Ihrer Steuerdaten.',
+    fields:[
+      { id:'letzte_erklaerung', type:'select', label:'Letzte Steuererklärung eingereicht für', required:true,
+        options:['2025','2024','2023','2022','2021 oder früher','Noch keine Steuererklärung abgegeben']
+      },
+      { id:'wer_hat_gemacht', type:'cards', label:'Wer hat die letzte Steuererklärung erstellt?', required:true,
+        options:[
+          { value:'selbst',    emoji:'✍️',  label:'Selbst / Intern',  desc:'ELSTER, Drittanbieter oder im eigenen Haus' },
+          { value:'steuerber', emoji:'👨‍💼', label:'Steuerberater',    desc:'Anderer als H&K' },
+          { value:'lohnstv',   emoji:'🤝', label:'Lohnsteuerhilfeverein', condition: a => a.mandant_typ === 'privatperson' },
+          { value:'keine',     emoji:'➖', label:'Noch nie gemacht' },
+        ]
+      },
+      { id:'steuerberatungskosten', type:'yn', label:'Hatten Sie im letzten Jahr Kosten für Steuerberatung oder den Lohnsteuerhilfeverein?', required:false,
+        condition: a => ['steuerber','lohnstv'].includes(a.wer_hat_gemacht),
+        hint: a => a.mandant_typ === 'unternehmen'
+          ? 'Diese Kosten sind als Betriebsausgaben absetzbar'
+          : 'Diese Kosten sind als Sonderausgaben absetzbar'
+      },
+      { id:'erklaerungen_vollstaendig', type:'yn', label:'Sind alle Steuererklärungen der letzten Jahre vollständig eingereicht?', required:false,
+        condition: a => a.mandant_typ === 'unternehmen' && a.wer_hat_gemacht !== 'keine',
+        hint:'Körperschaftsteuer-, Gewerbesteuer- und USt-Jahreserklärung – fehlende Erklärungen können zu Verspätungszuschlägen führen'
+      },
+      { id:'offene_bescheide', type:'yn', label:'Haben Sie offene Steuerbescheide, gegen die Sie Einspruch einlegen wollten?', required:false,
+        condition: a => a.wer_hat_gemacht !== 'keine'
+      },
+      { id:'steuerrueckstand', type:'yn', label:'Haben Sie Steuerrückstände oder laufende Zahlungsvereinbarungen mit dem Finanzamt?', required:false },
+      { id:'betriebspruefung', type:'yn', label:'Läuft oder droht eine Betriebsprüfung?', required:false,
+        condition: a => ['freiberufler','unternehmen'].includes(a.mandant_typ) && a.wer_hat_gemacht !== 'keine'
+      },
+      { id:'verlustvortraege', type:'yn', label:'Haben Sie steuerliche Verlustvorträge aus Vorjahren?', required:false,
+        condition: a => a.wer_hat_gemacht !== 'keine',
+        hint:'Verlustvorträge können mit künftigen Gewinnen verrechnet werden und senken die Steuerlast erheblich'
+      },
+      { id:'verlustvortraege_art', type:'checkbox', label:'Art der Verlustvorträge (Mehrfachauswahl)', required:false,
+        condition: a => a.verlustvortraege === 'ja',
+        options:[
+          { value:'einkommen',  emoji:'💼', label:'Einkünfte aus Gewerbebetrieb / Selbstständigkeit' },
+          { value:'kapital',    emoji:'📈', label:'Kapitalverluste (Aktien, ETF, Krypto)' },
+          { value:'vermietung', emoji:'🏠', label:'Verluste aus Vermietung & Verpachtung' },
+          { value:'sonstige',   emoji:'📋', label:'Sonstige Verluste' },
+        ]
+      },
+    ]
+  },
+
+  /* 10: Sonstiges & Anmerkungen */
+  {
+    id:'sonstiges', icon:'💬', tag:'Abschluss',
+    title:'Noch etwas?',
+    sub:'Raum für alles, was Sie uns sonst mitteilen möchten.',
+    fields:[
+      { id:'kontakt_wunsch', type:'cards', label:'Wie sollen wir Sie bevorzugt kontaktieren?', required:false,
+        options:[
+          { value:'telefon',  label:'Telefon' },
+          { value:'email',    label:'E-Mail' },
+          { value:'whatsapp', label:'WhatsApp' },
+          { value:'egal',     label:'Keine Präferenz' },
+        ]
+      },
+      { id:'kontakt_telefon', type:'tel', label:'Unter welcher Nummer erreichen wir Sie?', placeholder:'+49 170 1234567', required:false,
+        condition: a => ['telefon','whatsapp'].includes(a.kontakt_wunsch)
+      },
+      { id:'kontakt_email', type:'email', label:'An welche E-Mail-Adresse sollen wir uns wenden?', placeholder:'max@beispiel.de', required:false,
+        condition: a => a.kontakt_wunsch === 'email'
+      },
+      { id:'anmerkungen', type:'textarea', label:'Anmerkungen & besondere Situation', placeholder:'Teilen Sie uns alles mit, was für Ihre steuerliche Beratung wichtig sein könnte...', required:false },
+    ]
+  },
+];
+
+/* ═══════════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════════ */
+let answers  = {};
+let step     = 0; // 0=welcome, 1..n=sections, n+1=summary
+
+function visibleSections() {
+  return SECTIONS.filter(s => !s.condition || s.condition(answers));
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RENDER
+═══════════════════════════════════════════════════════════ */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if(el) { el.classList.add('active'); }
+  document.getElementById('app').style.visibility = 'visible';
+}
+
+function updateHeader() {
+  // User-Badge
+  const sess=getSession?.();
+  const badge=document.getElementById('user-badge');
+  if(badge) {
+    if(sess){
+      badge.style.display='flex';
+      document.getElementById('user-badge-name').textContent=sess.name;
+      const av=document.getElementById('user-avatar');
+      if(av) av.textContent=(sess.name||'?').trim().charAt(0).toUpperCase();
+    } else { badge.style.display='none'; }
+  }
+
+  const vs   = visibleSections();
+  const total = vs.length + 2; // welcome + sections + summary
+  const pct  = Math.round((step / (total - 1)) * 100);
+  document.getElementById('progress').style.width = pct + '%';
+
+  if(step === 0) {
+    document.getElementById('step-info').textContent = '';
+  } else if(step > vs.length) {
+    document.getElementById('step-info').textContent = 'Zusammenfassung';
+  } else {
+    document.getElementById('step-info').textContent = `Schritt ${step} von ${vs.length}`;
+  }
+
+  document.getElementById('btn-back').style.display = step > 0 ? 'block' : 'none';
+  document.getElementById('btn-next').textContent =
+    step === 0            ? 'Los geht\'s →' :
+    step > vs.length      ? '' :
+    step === vs.length    ? 'Abschließen ✓' : 'Weiter →';
+
+  if(step > vs.length) {
+    document.getElementById('btn-next').style.display = 'none';
+  } else {
+    document.getElementById('btn-next').style.display = 'block';
+  }
+}
+
+function renderSection(sec) {
+  const el = document.getElementById('sc-q');
+  el.innerHTML = `
+    <div class="sc-head">
+      <div class="sc-tag">${sec.icon} ${sec.tag}</div>
+      <div class="sc-title">${sec.title}</div>
+      <p class="sc-sub">${sec.sub}</p>
+    </div>
+    <div class="fields" id="fields-inner">${renderFields(sec.fields)}</div>
+  `;
+  attachListeners(sec.fields);
+  restoreValues(sec.fields);
+  updateConditionalFields(sec.fields);
+}
+
+function renderFields(fields) {
+  return fields.map(f => renderField(f)).join('');
+}
+
+function renderField(f) {
+  const wrap = `<div class="field-group" id="fg-${f.id}" data-cond="${f.condition ? 'yes' : ''}">`;
+  const labelHtml = `<div class="field-label">${f.label}${f.required ? ' <span class="field-required">*</span>' : ''}</div>`;
+  const hintText  = typeof f.hint === 'function' ? f.hint(answers) : f.hint;
+  const hintHtml  = hintText ? `<div class="field-hint">ℹ️ ${hintText}</div>` : '';
+  const errHtml   = `<div class="field-error" id="err-${f.id}">Dieses Feld ist erforderlich.</div>`;
+
+  let input = '';
+
+  if(f.type === 'cards') {
+    const gridClass = f.options.length <= 3 ? 'grid-'+f.options.length : '';
+    input = `<div class="card-options ${gridClass}" id="co-${f.id}">` +
+      f.options.map(o => {
+        const hidden = o.condition && !o.condition(answers) ? ' style="display:none"' : '';
+        return `
+        <div class="opt-card${f.options.length >= 3 ? ' grid-style' : ''}" data-field="${f.id}" data-val="${o.value}"${hidden}>
+          <div class="opt-emoji">${o.emoji||''}</div>
+          <div><div class="opt-label">${o.label}</div>${o.desc ? `<div class="opt-desc">${o.desc}</div>` : ''}</div>
+          <div class="opt-radio"></div>
+        </div>`;
+      }).join('') + `</div>`;
+  }
+  else if(f.type === 'yn') {
+    input = `<div class="yn-wrap" id="yn-${f.id}">
+      <div class="yn-btn yes" data-field="${f.id}" data-val="ja">✓ &nbsp;Ja</div>
+      <div class="yn-btn no"  data-field="${f.id}" data-val="nein">✗ &nbsp;Nein</div>
+    </div>`;
+  }
+  else if(f.type === 'select') {
+    input = `<select class="f-select" id="fi-${f.id}" data-field="${f.id}">
+      <option value="">– Bitte wählen –</option>
+      ${(f.options||[]).map(o => `<option value="${o}">${o}</option>`).join('')}
+    </select>`;
+  }
+  else if(f.type === 'checkbox') {
+    input = `<div class="check-options" id="chk-${f.id}">` +
+      (f.options||[]).filter(o => !o.condition || o.condition(answers)).map(o => `
+        <div class="check-item" data-field="${f.id}" data-val="${o.value}">
+          <div class="check-box"><span class="tick">✓</span></div>
+          <span class="check-emoji">${o.emoji||''}</span>
+          <span class="check-label">${o.label}</span>
+        </div>`).join('') + `</div>`;
+  }
+  else if(f.type === 'textarea') {
+    input = `<textarea class="f-input" id="fi-${f.id}" data-field="${f.id}" placeholder="${f.placeholder||''}" rows="3"></textarea>`;
+  }
+  else if(f.type === 'monat-jahr') {
+    const baseStyle = 'padding:12px 14px;border-radius:12px;border:1px solid rgba(166,171,189,.3);background:var(--sl);color:var(--text);font-size:.9rem;font-family:inherit;outline:none;box-shadow:-3px -3px 8px var(--sl),3px 3px 8px var(--sd2);';
+    input = `<div style="display:flex;align-items:center;gap:8px">
+      <input type="text" id="fi-${f.id}-m" inputmode="numeric" maxlength="2" placeholder="MM"   style="${baseStyle}width:64px;text-align:center" data-mj="${f.id}" data-part="m"/>
+      <span style="font-size:1.2rem;font-weight:600;color:var(--sub)">/</span>
+      <input type="text" id="fi-${f.id}-y" inputmode="numeric" maxlength="4" placeholder="JJJJ" style="${baseStyle}width:90px;text-align:center" data-mj="${f.id}" data-part="y"/>
+    </div>`;
+  }
+  else if(f.type === 'datum') {
+    const baseStyle = 'padding:12px 14px;border-radius:12px;border:1px solid rgba(166,171,189,.3);background:var(--sl);color:var(--text);font-size:.9rem;font-family:inherit;outline:none;box-shadow:-3px -3px 8px var(--sl),3px 3px 8px var(--sd2);';
+    const sep = `<span style="font-size:1.2rem;font-weight:600;color:var(--sub)">/</span>`;
+    input = `<div style="display:flex;align-items:center;gap:8px">
+      <input type="text" id="fi-${f.id}-d" inputmode="numeric" maxlength="2" placeholder="TT"   style="${baseStyle}width:64px;text-align:center" data-datum="${f.id}" data-part="d"/>
+      ${sep}
+      <input type="text" id="fi-${f.id}-mo" inputmode="numeric" maxlength="2" placeholder="MM"  style="${baseStyle}width:64px;text-align:center" data-datum="${f.id}" data-part="mo"/>
+      ${sep}
+      <input type="text" id="fi-${f.id}-y" inputmode="numeric" maxlength="4" placeholder="JJJJ" style="${baseStyle}width:90px;text-align:center" data-datum="${f.id}" data-part="y"/>
+    </div>`;
+  }
+  else if(f.type === 'repeater') {
+    const ph = (f.placeholder||'').replace(/'/g,"\\'");
+    input = `<div class="repeater-wrap" id="rep-${f.id}">
+      <div class="rep-items" id="rep-items-${f.id}"></div>
+      <button type="button" class="btn-rep-add" onclick="repAdd('${f.id}','${ph}')">+ Eintrag hinzufügen</button>
+    </div>`;
+  }
+  else {
+    input = `<input class="f-input" type="${f.type}" id="fi-${f.id}" data-field="${f.id}" placeholder="${f.placeholder||''}"/>`;
+  }
+
+  return `${wrap}${labelHtml}${hintHtml}${input}${errHtml}</div>`;
+}
+
+function attachListeners(fields) {
+  // card-select
+  document.querySelectorAll('.opt-card').forEach(el => {
+    el.addEventListener('click', () => {
+      const field = el.dataset.field;
+      const val   = el.dataset.val;
+      document.querySelectorAll(`.opt-card[data-field="${field}"]`).forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      answers[field] = val;
+      clearError(field);
+      updateConditionalFields(fields);
+    });
+  });
+
+  // yes-no
+  document.querySelectorAll('.yn-btn').forEach(el => {
+    el.addEventListener('click', () => {
+      const field = el.dataset.field;
+      const val   = el.dataset.val;
+      document.querySelectorAll(`.yn-btn[data-field="${field}"]`).forEach(b => b.classList.remove('selected'));
+      el.classList.add('selected');
+      answers[field] = val;
+      clearError(field);
+      updateConditionalFields(fields);
+    });
+  });
+
+  // checkbox-group
+  document.querySelectorAll('.check-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const field = el.dataset.field;
+      const val   = el.dataset.val;
+      if(!answers[field]) answers[field] = [];
+      const idx = answers[field].indexOf(val);
+      if(idx === -1) { answers[field].push(val); el.classList.add('selected'); }
+      else           { answers[field].splice(idx,1); el.classList.remove('selected'); }
+    });
+  });
+
+  // datum Felder (TT / MM / JJJJ)
+  document.querySelectorAll('[data-datum]').forEach(el => {
+    const fid = el.dataset.datum;
+    const part = el.dataset.part;
+    const getVal = p => document.getElementById('fi-' + fid + '-' + p)?.value || '';
+    const save = () => {
+      const d = getVal('d'), mo = getVal('mo'), y = getVal('y');
+      answers[fid] = (d && mo && y) ? d.padStart(2,'0') + '/' + mo.padStart(2,'0') + '/' + y : '';
+      clearError(fid);
+    };
+    el.addEventListener('input', () => {
+      el.value = el.value.replace(/\D/g, '');
+      if (part === 'd'  && el.value.length === 2) document.getElementById('fi-' + fid + '-mo').focus();
+      if (part === 'mo' && el.value.length === 2) document.getElementById('fi-' + fid + '-y').focus();
+      save();
+    });
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && el.value === '') {
+        if (part === 'mo') document.getElementById('fi-' + fid + '-d').focus();
+        if (part === 'y')  document.getElementById('fi-' + fid + '-mo').focus();
+      }
+    });
+  });
+
+  // monat-jahr Felder (MM / JJJJ)
+  document.querySelectorAll('[data-mj]').forEach(el => {
+    const fid = el.dataset.mj;
+    const part = el.dataset.part;
+    el.addEventListener('input', () => {
+      el.value = el.value.replace(/\D/g, '');
+      if (part === 'm' && el.value.length === 2) {
+        document.getElementById('fi-' + fid + '-y').focus();
+      }
+      const m = (document.getElementById('fi-' + fid + '-m')?.value || '').padStart(2,'0');
+      const y = document.getElementById('fi-' + fid + '-y')?.value || '';
+      answers[fid] = (m && y) ? m + '/' + y : '';
+      clearError(fid);
+    });
+    el.addEventListener('keydown', e => {
+      if (part === 'y' && e.key === 'Backspace' && el.value === '') {
+        document.getElementById('fi-' + fid + '-m').focus();
+      }
+    });
+  });
+
+  // text / email / tel / number / date / textarea / select
+  document.querySelectorAll('.f-input, .f-select').forEach(el => {
+    el.addEventListener('input', () => {
+      answers[el.dataset.field] = el.value;
+      clearError(el.dataset.field);
+      updateConditionalFields(fields);
+    });
+  });
+
+  // Format-Validierung on blur (IBAN, E-Mail, Telefon, PLZ, Steuer-ID)
+  document.querySelectorAll('.f-input').forEach(el => {
+    el.addEventListener('blur', () => {
+      const fieldId = el.dataset.field;
+      let val = el.value.trim();
+      if (!val) return;
+      // IBAN: Leerzeichen normalisieren
+      if (fieldId === 'iban') {
+        const clean = val.replace(/\s/g, '').toUpperCase();
+        el.value = clean.replace(/(.{4})(?=.)/g, '$1 ');
+        answers[fieldId] = el.value;
+        val = clean;
+      }
+      const rule = FORMAT_VALIDATORS[fieldId];
+      if (!rule) return;
+      const fg = document.getElementById('fg-' + fieldId);
+      const errEl = document.getElementById('err-' + fieldId);
+      if (!rule.test(val)) {
+        if (fg) { fg.classList.add('has-error', 'has-fmt-error'); }
+        if (errEl) errEl.textContent = rule.msg;
+      } else {
+        if (fg) fg.classList.remove('has-fmt-error');
+      }
+    });
+  });
+}
+
+function restoreValues(fields) {
+  fields.forEach(f => {
+    const val = answers[f.id];
+    if(!val) return;
+    if(f.type === 'cards') {
+      document.querySelectorAll(`.opt-card[data-field="${f.id}"][data-val="${val}"]`).forEach(el => el.classList.add('selected'));
+    } else if(f.type === 'yn') {
+      document.querySelectorAll(`.yn-btn[data-field="${f.id}"][data-val="${val}"]`).forEach(el => el.classList.add('selected'));
+    } else if(f.type === 'checkbox') {
+      (val||[]).forEach(v => {
+        document.querySelectorAll(`.check-item[data-field="${f.id}"][data-val="${v}"]`).forEach(el => el.classList.add('selected'));
+      });
+    } else if(f.type === 'datum') {
+      if(val && val.includes('/')) {
+        const parts = val.split('/');
+        const dEl  = document.getElementById('fi-'+f.id+'-d');
+        const mEl  = document.getElementById('fi-'+f.id+'-mo');
+        const yEl  = document.getElementById('fi-'+f.id+'-y');
+        if(dEl) dEl.value  = parts[0] || '';
+        if(mEl) mEl.value  = parts[1] || '';
+        if(yEl) yEl.value  = parts[2] || '';
+      }
+    } else if(f.type === 'monat-jahr') {
+      if(val && val.includes('/')) {
+        const [m, y] = val.split('/');
+        const mEl = document.getElementById('fi-'+f.id+'-m');
+        const yEl = document.getElementById('fi-'+f.id+'-y');
+        if(mEl) mEl.value = m;
+        if(yEl) yEl.value = y;
+      }
+    } else if(f.type === 'repeater') {
+      if(Array.isArray(val) && val.length > 0) {
+        val.forEach(v => {
+          repAdd(f.id, f.placeholder || '');
+          const items = document.querySelectorAll(`#rep-items-${f.id} .rep-input`);
+          if(items.length > 0) items[items.length - 1].value = v;
+        });
+      }
+    } else {
+      const el = document.getElementById('fi-'+f.id);
+      if(el) el.value = val;
+    }
+  });
+}
+
+function updateConditionalFields(fields) {
+  fields.forEach(f => {
+    if(!f.condition) return;
+    const show = f.condition(answers);
+    const fg = document.getElementById('fg-'+f.id);
+    if(fg) fg.style.display = show ? '' : 'none';
+  });
+}
+
+function repAdd(id, placeholder) {
+  const container = document.getElementById('rep-items-' + id);
+  const div = document.createElement('div');
+  div.className = 'rep-item';
+  div.innerHTML = `<input type="text" class="f-input rep-input" placeholder="${placeholder}" data-rep="${id}" oninput="repUpdate('${id}')"/>
+    <button type="button" class="btn-rep-remove" onclick="repRemove(this,'${id}')">×</button>`;
+  container.appendChild(div);
+  div.querySelector('input').focus();
+}
+function repRemove(btn, id) {
+  btn.closest('.rep-item').remove();
+  repUpdate(id);
+}
+function repUpdate(id) {
+  const inputs = document.querySelectorAll(`[data-rep="${id}"]`);
+  answers[id] = Array.from(inputs).map(i => i.value.trim()).filter(v => v);
+}
+
+function clearError(fieldId) {
+  const fg = document.getElementById('fg-'+fieldId);
+  if(fg) fg.classList.remove('has-error');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   VALIDATION
+═══════════════════════════════════════════════════════════ */
+function validateCurrent() {
+  const vs  = visibleSections();
+  const sec = vs[step - 1];
+  if(!sec) return true;
+  let ok = true;
+  sec.fields.forEach(f => {
+    if(!f.required) return;
+    if(f.condition && !f.condition(answers)) return;
+    const val = answers[f.id];
+    const empty = !val || (Array.isArray(val) && val.length === 0) || val === '';
+    if(empty) {
+      const fg = document.getElementById('fg-'+f.id);
+      if(fg) fg.classList.add('has-error');
+      ok = false;
+    }
+  });
+  // Format-Validierung
+  sec.fields.forEach(f => {
+    if(f.condition && !f.condition(answers)) return;
+    const val = answers[f.id]; if(!val||val==='') return;
+    const rule = FORMAT_VALIDATORS[f.id]; if(!rule||rule.test(val)) return;
+    const fg=document.getElementById('fg-'+f.id), errEl=document.getElementById('err-'+f.id);
+    if(fg){fg.classList.add('has-error','has-fmt-error');} if(errEl) errEl.textContent=rule.msg; ok=false;
+  });
+  if(!ok) {
+    const firstErr = document.querySelector('.has-error');
+    if(firstErr) firstErr.scrollIntoView({ behavior:'smooth', block:'center' });
+  }
+  return ok;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════════════════ */
+function scrollToTop() {
+  if(window.self !== window.top) {
+    // Im iframe: Parent bitten, ans Fragebogen-Top zu scrollen
+    window.parent.postMessage({ type:'hk-scroll-top' }, '*');
+  } else {
+    window.scrollTo({ top:0, behavior:'smooth' });
+  }
+}
+
+function next() {
+  if(!validateCurrent()) return;
+  const vs = visibleSections();
+  if(step === vs.length) {
+    // Letzter Schritt → direkt zur Zusammenfassung, Modal erst beim Einreichen
+    step++;
+    renderSummary();
+    showScreen('sc-summary');
+    updateHeader();
+    scrollToTop();
+    return;
+  }
+  step++;
+  renderSection(vs[step-1]);
+  showScreen('sc-q');
+  updateHeader();
+  scrollToTop();
+}
+
+function closeConfirm() {
+  document.getElementById('confirm-overlay').classList.remove('active');
+}
+
+function confirmSubmit() {
+  closeConfirm();
+  doSubmitAndShowPortal();
+  scrollToTop();
+}
+
+function prev() {
+  if(step <= 0) return;
+  step--;
+  if(step === 0) {
+    showScreen('sc-welcome');
+  } else {
+    const vs = visibleSections();
+    renderSection(vs[step-1]);
+    showScreen('sc-q');
+  }
+  updateHeader();
+  scrollToTop();
+}
+
+function restart() {
+  answers = {};
+  step    = 0;
+  showScreen('sc-welcome');
+  updateHeader();
+  scrollToTop();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SUMMARY
+═══════════════════════════════════════════════════════════ */
+const LABELS = {
+  mandant_typ: 'Mandantentyp',
+  vorname:'Vorname', nachname:'Nachname', geburtsdatum:'Geburtsdatum',
+  geburtsort:'Geburtsort', staatsangehoerigkeit:'Staatsangehörigkeit',
+  email:'E-Mail', telefon:'Telefon', strasse:'Straße', plz:'PLZ', ort:'Ort',
+  steuer_id:'Steuer-ID', steuernummer:'Steuernummer', ust_id:'USt-IdNr.',
+  firma_name:'Firmenname', rechtsform:'Rechtsform', hr_nummer:'HR-Nummer',
+  gruendungsjahr:'Gründungsjahr', branche:'Branche', kontakt_name:'Ansprechpartner',
+  finanzamt:'Finanzamt', abw_wirtschaftsjahr:'Abweichendes Wirtschaftsjahr', wirtschaftsjahr_zeitraum:'Wirtschaftsjahr',
+  familienstand:'Familienstand', steuerklasse:'Steuerklasse',
+  steuerklasse_gem:'SK-Kombination', veranlagung:'Veranlagung',
+  kinder:'Kinder', kinder_anzahl:'Anzahl Kinder',
+  kind1_geburt:'Geburtsdatum Kind 1',   kind2_geburt:'Geburtsdatum Kind 2',
+  kind3_geburt:'Geburtsdatum Kind 3',   kind4_geburt:'Geburtsdatum Kind 4',
+  kind5_geburt:'Geburtsdatum Kind 5',   kind6_geburt:'Geburtsdatum Kind 6',
+  kind7_geburt:'Geburtsdatum Kind 7',   kind8_geburt:'Geburtsdatum Kind 8',
+  kind9_geburt:'Geburtsdatum Kind 9',   kind10_geburt:'Geburtsdatum Kind 10',
+  kind11_geburt:'Geburtsdatum Kind 11', kind12_geburt:'Geburtsdatum Kind 12',
+  kinder_ausbildung:'In Schule/Studium',
+  beschaeftigung:'Beschäftigung', mehrere_ag:'Mehrere Arbeitgeber',
+  homeoffice:'Homeoffice', homeoffice_tage:'Homeoffice-Tage', pendler_km:'Pendler-km',
+  minijob:'Minijob', kurzarbeit:'Kurzarbeitergeld', rente_betrag:'Rente (monatl.)',
+  selbst_seit:'Selbstständig seit',
+  hat_weitere_anstellung:'Weitere Anstellung', weitere_anstellung_details:'Anstellungen',
+  hat_weitere_selbst:'Weitere Selbstständigkeit', weitere_selbst_details:'Selbstständige Tätigkeiten', taetigkeit:'Tätigkeit', selbst_umsatz:'Umsatz', ust_pflichtig:'USt-pflichtig',
+  gewinnermittlung:'Gewinnermittlung', ust_rhythmus:'USt-Rhythmus',
+  buchhaltung_art:'Buchhaltung', betriebsausgaben:'Betriebsausgaben',
+  jahresumsatz:'Jahresumsatz', mitarbeiter:'Mitarbeiter',
+  buchhaltung_intern:'Buchhaltung', lohnbuchhaltung:'Lohnbuchhaltung',
+  ust_voranmeldung:'USt-Voranmeldung', datev_nr:'DATEV-Nr.',
+  letzte_bilanz:'Letzter Abschluss',
+  einkuenfte_weitere:'Weitere Einkünfte', vermietung_objekte:'Vermietobjekte',
+  wk_posten:'Werbungskosten / Aufwendungen',
+  letzte_erklaerung:'Letzte Steuererklärung', wer_hat_gemacht:'Erstellt durch',
+  offene_bescheide:'Offene Bescheide', steuerrueckstand:'Steuerrückstände',
+  betriebspruefung:'Betriebsprüfung',
+  iban:'IBAN (Privat)', iban_firma:'IBAN (Unternehmen)',
+  kirchensteuer:'Kirchensteuerpflicht', behinderung:'Behinderung vorhanden',
+  behinderung_gdb:'Grad der Behinderung (GdB)', pflegeperson:'Pflegeperson',
+  krankenversicherung:'Krankenversicherung', pkv_beitrag:'PKV-Beitrag (monatl.)',
+  firmenwagen:'Firmenwagen (angestellt)', firmenwagen_methode:'Firmenw.-Versteuerung',
+  firmenwagen_selbst:'Fahrzeug betrieblich', firmenwagen_selbst_methode:'Fahrzeug-Versteuerung',
+  iab_selbst:'Investitionsplanung (IAB)',
+  gesellschafter_anzahl:'Anzahl Gesellschafter', gf_gehalt:'GF-Gehalt aus Gesellschaft',
+  iab:'Investitionsplanung (IAB)', firmenwagen_unternehmen:'Firmenfahrzeuge',
+  firmenwagen_u_methode:'Firmenfahrzeug-Versteuerung',
+  verlustvortraege:'Verlustvorträge', verlustvortraege_art:'Art der Verlustvorträge',
+  leistungen_gewuenscht:'Gewünschte Leistungen',
+  kontakt_wunsch:'Kontaktmethode', anmerkungen:'Anmerkungen',
+};
+
+const OPT_LABELS = {
+  privatperson:'Privatperson', freiberufler:'Selbstständig/Freiberufler', unternehmen:'Unternehmen',
+  ledig:'Ledig', verheiratet:'Verheiratet', getrennt:'Getrennt lebend', geschieden:'Geschieden', verwitwet:'Verwitwet',
+  angestellt:'Angestellt', beamter:'Beamter/Soldat', rentner:'Rentner/Pensionär', arbeitssuchend:'Arbeitssuchend', sonstiges:'Sonstiges',
+  selbst:'Selbst (Excel, DATEV)', software:'Buchhaltungssoftware', extern:'Externe Buchhaltung', keine:'Noch keine',
+  intern:'Intern', steuerber:'Bisheriger Steuerberater', gar_nicht:'Noch nicht',
+  lohnstv:'Lohnsteuerhilfeverein', keine:'Noch nie gemacht',
+};
+
+function labelVal(key, val) {
+  if(Array.isArray(val)) return val.map(v => OPT_LABELS[v] || v).join(', ');
+  return OPT_LABELS[val] || val;
+}
+
+function renderSummary() {
+  const vs = visibleSections();
+  let html = '';
+  vs.forEach(sec => {
+    const items = sec.fields
+      .filter(f => answers[f.id] !== undefined && answers[f.id] !== '' && !(Array.isArray(answers[f.id]) && answers[f.id].length === 0))
+      .filter(f => !f.condition || f.condition(answers));
+    if(!items.length) return;
+    html += `<div class="sum-section">
+      <div class="sum-sec-title">${sec.icon} ${sec.title}</div>
+      <div class="sum-items">
+        ${items.map(f => `<div class="sum-item"><span class="si-label">${LABELS[f.id]||f.id}</span><span class="si-val">${labelVal(f.id, answers[f.id])}</span></div>`).join('')}
+      </div>
+    </div>`;
+  });
+  document.getElementById('sum-body').innerHTML = html;
+
+  // Documents
+  const docs = buildDocList();
+  const mustCount = docs.filter(d => d.must).length;
+  const badge = document.getElementById('docs-count-badge');
+  if(badge) badge.textContent = `${mustCount} Pflicht · ${docs.length - mustCount} Optional`;
+  document.getElementById('docs-list').innerHTML = docs.map(d =>
+    `<div class="doc-item"><div class="doc-dot ${d.must?'must':'nice'}"></div>${d.name}</div>`
+  ).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DOCUMENT CHECKLIST
+═══════════════════════════════════════════════════════════ */
+function buildDocList() {
+  const a = answers;
+  const docs = [];
+  const add  = (name, must=true) => docs.push({ name, must });
+
+  // Vollmacht immer als erstes Pflichtdokument (Unterschrift direkt im Portal)
+  docs.push({ name: 'Steuerberatervollmacht', must: true, sign: true });
+
+  // Persönliche Dokumente (nur Privatperson / Freiberufler)
+  if(a.mandant_typ !== 'unternehmen') {
+    add('Personalausweis oder Reisepass (Kopie Vorder- & Rückseite)');
+    add('Aktuelle Meldebescheinigung');
+    if(!a.steuer_id) add('Steuer-Identifikationsnummer (11-stellig, auf alten Bescheiden oder über bzst.de)');
+    if(!a.steuernummer) add('Steuernummer des Finanzamts (falls vorhanden)', false);
+  }
+
+  // Unternehmen
+  if(a.mandant_typ === 'unternehmen') {
+    const rf = a.rechtsform || '';
+    const istPartnerschaft = ['PartG','PartG mbB'].includes(rf);
+    const istGbR = rf === 'GbR';
+    const istEinzel = rf === 'Einzelunternehmen (e.K.)';
+
+    const istKapitalges = ['GmbH','UG (haftungsbeschränkt)','AG'].includes(rf);
+    const istGmbHCoKG   = rf === 'GmbH & Co. KG';
+
+    if(istPartnerschaft) {
+      add('Partnerschaftsregisterauszug (aktuell)');
+      add('Partnerschaftsvertrag');
+    } else if(istGbR) {
+      add('Gesellschaftsvertrag der GbR (falls schriftlich vorhanden)', false);
+      add('Gewerbeanmeldung');
+    } else if(istEinzel) {
+      add('Aktueller Handelsregisterauszug');
+      add('Gewerbeanmeldung');
+    } else {
+      add('Aktueller Handelsregisterauszug');
+      add('Gesellschaftsvertrag / Satzung');
+      if(istKapitalges || istGmbHCoKG) {
+        add('Gesellschafterliste (aktuell, aus Handelsregister)');
+        add('Gewerbeanmeldung', false);
+      } else {
+        add('Gewerbeanmeldung');
+      }
+    }
+
+    if(a.letzte_bilanz && a.letzte_bilanz !== 'Noch kein Jahresabschluss erstellt') add('Jahresabschlüsse der letzten 2–3 Jahre');
+    const hochUmsatz = ['600.000–1 Mio. €','1–5 Mio. €','über 5 Mio. €'].includes(a.jahresumsatz);
+    if(a.gewinnermittlung_u === 'euer' && !hochUmsatz) {
+      add('Aktuelle Einnahmen-Überschuss-Rechnung (EÜR, laufendes Jahr)');
+    } else {
+      add('Aktuelle BWA (letzte 3 Monate)');
+    }
+    add('Kontoauszüge aller Geschäftskonten (letztes Jahr)');
+    if(a.ust_voranmeldung === 'ja') add('USt-Voranmeldungen des letzten Jahres');
+    if(a.lohnbuchhaltung === 'ja') add('Aktuelle Lohnlisten / Arbeitsverträge');
+  }
+
+  // Privatperson – angestellt
+  if(a.beschaeftigung === 'angestellt') {
+    add('Lohnsteuerbescheinigung(en) aller Arbeitgeber');
+    if(a.mehrere_ag === 'ja') add('Lohnsteuerbescheinigung weiterer Arbeitgeber');
+    if(a.kurzarbeit === 'ja') add('Bescheinigung über Kurzarbeitergeld');
+  }
+
+  // Rentner
+  if(a.beschaeftigung === 'rentner') {
+    add('Rentenbescheid / jüngste Rentenanpassungsmitteilung');
+    add('Jahresbescheinigung der Rentenversicherung');
+  }
+
+  // Beamter
+  if(a.beschaeftigung === 'beamter') add('Bezügemitteilung / Jahresabrechnung');
+
+  // Arbeitssuchend
+  if(a.beschaeftigung === 'arbeitssuchend') add('Jahresbescheinigung der Bundesagentur für Arbeit / Jobcenter (nur bei ALG I erforderlich)');
+
+  // Sonstiges (Elternzeit etc.)
+  if(a.beschaeftigung === 'sonstiges') add('Bescheid über Lohnersatzleistungen (Elterngeld, Mutterschaftsgeld, Krankengeld) – falls vorhanden', false);
+
+  // Freiberufler / Selbstständig
+  if(a.mandant_typ === 'freiberufler') {
+    if(a.gewinnermittlung === 'bilanz') {
+      add('Jahresabschluss / Bilanz der letzten 2 Jahre');
+    } else {
+      add('Einnahmen-Überschuss-Rechnung (EÜR) oder BWA');
+    }
+    add('Belege über Betriebsausgaben (Rechnungen, Quittungen)');
+    if(a.ust_pflichtig === 'ja') add('USt-Voranmeldungen des letzten Jahres');
+  }
+
+  // Familie
+  if(a.familienstand === 'verheiratet') {
+    add('Steuer-ID des Ehepartners / eingetr. Lebenspartners');
+    add('Heiratsurkunde', false);
+    if(a.partner_berufstaetig === 'ja' && ['zusammen','weiss_nicht'].includes(a.veranlagung))
+      add('Lohnsteuerbescheinigung Ehepartner / eingetr. Lebenspartner', false);
+  }
+  if(a.kinder === 'ja') {
+    add('Geburtsurkunden der Kinder');
+    if(a.kinder_ausbildung === 'ja') add('Schulbescheinigung / Immatrikulationsbescheinigung');
+  }
+
+  // Weitere Einkünfte
+  const we = a.einkuenfte_weitere || [];
+  if(we.includes('vermietung')) {
+    add('Mietverträge aller vermieteten Objekte');
+    add('Nachweise Mieteinnahmen (Kontoauszüge)');
+    add('Belege für Werbungskosten: Reparaturen, Zinsen, Hausgeld, Abschreibungen');
+    add('Zinsbescheinigung(en) der finanzierenden Bank(en)');
+  }
+  if(we.includes('kapital')) {
+    add('Jahressteuerbescheinigung(en) aller Banken / Depots');
+    add('Jahresabrechnung / Depotauszüge zum 31.12.');
+  }
+  if(we.includes('rente_priv'))   add('Jahresbescheinigung der privaten Rentenversicherung / Lebensversicherung');
+  if(we.includes('rente_gesetz')) add('Rentenbescheid / Rentenanpassungsmitteilung (gesetzliche Rente / Versorgungswerk)');
+  if(we.includes('beteiligung'))  add('Gewinnfeststellungsbescheid / Jahresbescheinigung der Beteiligung');
+  if(we.includes('ausland')) {
+    add('Ausländische Einkommensnachweise / Gehaltszettel');
+    add('Ansässigkeitsbescheinigung (falls im Ausland gemeldet)', false);
+  }
+  if(we.includes('krypto')) {
+    add('Vollständige Transaktionshistorie aller Krypto-Börsen und Wallets');
+    add('Auswertung aus Portfolio-Tracking-Tool (z.B. CoinTracking)', false);
+  }
+  if(we.includes('immo_verkauf')) {
+    add('Kaufvertrag der verkauften Immobilie');
+    add('Ursprünglicher Kaufvertrag (Anschaffungsnachweis)');
+    add('Notarrechnung, Maklercourtage, Renovierungskosten');
+  }
+  if(we.includes('erbschaft')) {
+    add('Erbschein / Schenkungsvertrag / Steuerbescheid Erbschaftsteuer', false);
+  }
+  if(we.includes('unterhalt')) {
+    add('Nachweise über gezahlten / erhaltenen Unterhalt');
+    add('Ggf. Unterhaltsvereinbarung / Gerichtsbeschluss');
+  }
+
+  // Weitere Anstellungen
+  if(a.hat_weitere_anstellung === 'ja') add('Lohnsteuerbescheinigung(en) aller weiteren Arbeitgeber');
+
+  // Nebentätigkeit (selbstständig)
+  if(a.hat_weitere_selbst === 'ja') add('Einnahmen-Überschuss-Rechnung (EÜR) der Nebentätigkeit');
+
+  // Werbungskosten
+  const wk = a.wk_posten || [];
+  if(wk.includes('fortbildung'))    add('Rechnungen / Quittungen Fortbildungen, Fachliteratur, Fachzeitschriften');
+  if(wk.includes('arbeitsmittel'))  add('Rechnungen Arbeitsmittel (PC, Schreibtisch, etc. > 952 € netto = Abschreibung)');
+  if(wk.includes('doppelfuehrung')) add('Mietvertrag Zweitwohnung, Fahrtkosten-Nachweise, Heimfahrten-Belege');
+  if(wk.includes('spenden'))        add('Spendenquittungen (gemeinnützige Organisationen)');
+  if(wk.includes('handwerker'))     add('Rechnungen Handwerkerleistungen (Lohnanteil separat ausgewiesen)');
+  if(wk.includes('haushaltsnahe'))  add('Rechnungen haushaltsnahe Dienstleistungen (Putzhilfe, Gärtner etc.)');
+  if(wk.includes('krankenversicherung')) add('Jahresbescheinigung Krankenversicherung (PKV-Beitrag oder GKV-Bescheinigung)');
+  if(wk.includes('riester'))        add('Jahresbescheinigung Riester / Rürup / bAV-Vertrag');
+  if(wk.includes('krankheit'))      add('Ärztliche Rechnungen, Rezepte, Zuzahlungsbelege (außergewöhnliche Belastungen)');
+  if(a.kinderbetreuung === 'ja')    add('Rechnungen / Bescheinigungen Kinderbetreuung (Kita, Tagesmutter, Hort)');
+
+  // Bisherige Steuersituation
+  if(a.wer_hat_gemacht === 'steuerber') add('Letzte Steuererklärung und zugehöriger Steuerbescheid', false);
+  if(a.offene_bescheide === 'ja') add('Offene Steuerbescheide (mit Einspruchsfrist)');
+  if(a.steuerrueckstand === 'ja') add('Nachweis laufende Ratenzahlung / Stundungsvereinbarung', false);
+
+  // Krankenversicherung
+  if(a.krankenversicherung === 'pkv') add('Jahresbescheinigung PKV über geleistete Beiträge');
+  if(a.mandant_typ === 'freiberufler' && a.krankenversicherung === 'gkv') add('Jahresbescheinigung der Krankenkasse (GKV-Beiträge als Sonderausgaben)');
+
+  // Firmenwagen – Fahrtenbuch
+  if(a.firmenwagen_methode === 'fahrtenbuch') add('Fahrtenbuch (lückenloses Fahrtbuch, Angestellt)');
+  if(a.firmenwagen_selbst_methode === 'fahrtenbuch') add('Fahrtenbuch (betriebliches Fahrzeug, Selbstständig)');
+  if(a.firmenwagen_u_methode === 'fahrtenbuch') add('Fahrtenbücher aller Firmenfahrzeuge');
+
+  // Kirchensteuer
+  if(a.kirchensteuer === 'ja') add('Kirchensteuerbescheid (falls separate Veranlagung)', false);
+
+  // Behinderung
+  if(a.behinderung === 'ja') add('Schwerbehindertenausweis (Kopie Vorder- & Rückseite)');
+
+  // Pflegeperson
+  if(a.pflegeperson === 'ja') add('Pflegebescheinigung / Pflegegrad-Bescheid der gepflegten Person');
+
+  // IAB
+  if(a.iab_selbst === 'ja' || a.iab === 'ja') add('Investitionsplanung / Angebote für geplante Anschaffungen', false);
+
+  // Verlustvorträge
+  if(a.verlustvortraege === 'ja') add('Verlustfeststellungsbescheide der Vorjahre');
+
+  // GF-Gehalt
+  if(a.gf_gehalt === 'ja') {
+    add('Anstellungsvertrag als Geschäftsführer');
+    add('Lohnsteuerbescheinigung GF-Gehalt');
+  }
+
+  return docs;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FORMSPREE – Daten senden an info@hks-automation.de
+═══════════════════════════════════════════════════════════ */
+const FORMSPREE_URL = window._FORMSPREE_URL || 'https://formspree.io/f/mykdqwab';
+
+async function sendEmail() {
+  const statusEl = document.getElementById('email-status');
+  const iconEl   = document.getElementById('email-icon');
+  const msgEl    = document.getElementById('email-msg');
+
+  // Lade-Status anzeigen
+  statusEl.className = 'sending';
+  iconEl.innerHTML   = '<span class="spin">⟳</span>';
+  msgEl.textContent  = 'Daten werden gesendet…';
+
+  // Name ermitteln
+  const name = answers.vorname && answers.nachname
+    ? `${answers.vorname} ${answers.nachname}`
+    : (answers.firma_name || 'Unbekannt');
+
+  // Alle Antworten als lesbaren Text formatieren
+  const vs = visibleSections();
+  let alleAntworten = '';
+  vs.forEach(sec => {
+    const items = sec.fields.filter(f => {
+      const val = answers[f.id];
+      return val !== undefined && val !== ''
+        && !(Array.isArray(val) && val.length === 0)
+        && (!f.condition || f.condition(answers));
+    });
+    if (!items.length) return;
+    alleAntworten += `\n──── ${sec.title} ────\n`;
+    items.forEach(f => {
+      alleAntworten += `${LABELS[f.id] || f.id}: ${labelVal(f.id, answers[f.id])}\n`;
+    });
+  });
+
+  // Dokumentenliste
+  const docs = buildDocList();
+  const docsText = docs
+    .map(d => `${d.must ? '● (Pflicht)' : '○ (empfohlen)'} ${d.name}`)
+    .join('\n');
+
+  const datum = new Date().toLocaleString('de-DE', {
+    day:'2-digit', month:'2-digit', year:'numeric',
+    hour:'2-digit', minute:'2-digit'
+  });
+
+  try {
+    const res = await fetch(FORMSPREE_URL, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        _subject:       `Neuer Mandant: ${name} (${labelVal('mandant_typ', answers.mandant_typ) || '–'})`,
+        Datum:          datum,
+        Name:           name,
+        Typ:            labelVal('mandant_typ', answers.mandant_typ) || '–',
+        'E-Mail':       answers.email   || 'Nicht angegeben',
+        Telefon:        answers.telefon || 'Nicht angegeben',
+        Antworten:      alleAntworten,
+        Dokumente:      docsText,
+      })
+    });
+
+    if (res.ok) {
+      statusEl.className = 'success';
+      iconEl.textContent = '✓';
+      msgEl.textContent  = `Ihre Angaben wurden erfolgreich übermittelt! (${datum})`;
+    } else {
+      throw new Error(`Status ${res.status}`);
+    }
+
+  } catch (err) {
+    console.error('Formspree Fehler:', err);
+    statusEl.className = 'error';
+    iconEl.textContent = '✗';
+    msgEl.textContent  = 'Senden fehlgeschlagen – bitte per PDF senden oder erneut versuchen.';
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   AUTH
+═══════════════════════════════════════════════════════════ */
+const LS_USERS = 'hk_users';
+const SS_USER  = 'hk_session';
+
+async function hashPwd(p) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(p));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function getUsers() { try { return JSON.parse(localStorage.getItem(LS_USERS)||'{}'); } catch { return {}; } }
+function saveUsers(u) { localStorage.setItem(LS_USERS, JSON.stringify(u)); }
+function getSession() { try { return JSON.parse(sessionStorage.getItem(SS_USER)||'null'); } catch { return null; } }
+function setSession(u) { sessionStorage.setItem(SS_USER, JSON.stringify(u)); }
+
+
+/* ── Kanzlei Session ─────────────────────────────── */
+const SS_KANZLEI = 'hk_kanzlei_session';
+function getKanzleiSession() { try { return JSON.parse(sessionStorage.getItem(SS_KANZLEI)||'null'); } catch { return null; } }
+function setKanzleiSession(s) { sessionStorage.setItem(SS_KANZLEI, JSON.stringify(s)); }
+function getKanzleiToken()    { return getKanzleiSession()?.token || null; }
+function isKanzlei()          { return !!getKanzleiToken(); }
+
+function switchTab(tab) {
+  ['login','register','kanzlei'].forEach(t => {
+    document.getElementById('tab-'+t)?.classList.toggle('active', t===tab);
+    document.getElementById('panel-'+t)?.classList.toggle('active', t===tab);
+  });
+  document.getElementById('panel-reset').classList.remove('active');
+  ['login-error','reg-error','kanzlei-error'].forEach(id => document.getElementById(id)?.classList.remove('visible'));
+}
+function showReset() {
+  ['panel-login','panel-register'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  ['tab-login','tab-register'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  document.getElementById('panel-reset').classList.add('active');
+  document.getElementById('reset-step1').classList.add('active');
+  document.getElementById('reset-step2').classList.remove('active');
+  document.getElementById('reset-error1').classList.remove('visible');
+}
+async function requestReset(e) {
+  const btn = e.currentTarget;
+  const email = document.getElementById('reset-email').value.trim().toLowerCase();
+  const errEl = document.getElementById('reset-error1');
+  errEl.classList.remove('visible');
+  if(!email) { errEl.textContent='Bitte E-Mail eingeben.'; errEl.classList.add('visible'); return; }
+  btn.disabled=true; btn.textContent='⟳ Wird gesendet…';
+  try {
+    const r = await fetch(SERVER_URL+'/api/auth/reset-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+    const d = await r.json();
+    if(!r.ok) throw new Error(d.error||'Fehler');
+    document.getElementById('reset-email-display').textContent=email;
+    document.getElementById('reset-step1').classList.remove('active');
+    document.getElementById('reset-step2').classList.add('active');
+  } catch(err) { errEl.textContent=err.message; errEl.classList.add('visible');
+  } finally { btn.disabled=false; btn.textContent='Code senden →'; }
+}
+async function verifyReset(e) {
+  const btn = e.currentTarget;
+  const email = document.getElementById('reset-email').value.trim().toLowerCase();
+  const code  = document.getElementById('reset-code').value.trim();
+  const pwd   = document.getElementById('reset-pwd').value;
+  const errEl = document.getElementById('reset-error2');
+  errEl.classList.remove('visible');
+  if(code.length!==6) { errEl.textContent='Bitte 6-stelligen Code eingeben.'; errEl.classList.add('visible'); return; }
+  if(pwd.length<8)    { errEl.textContent='Passwort min. 8 Zeichen.'; errEl.classList.add('visible'); return; }
+  btn.disabled=true; btn.textContent='⟳ Wird geprüft…';
+  try {
+    const newHash = await hashPwd(pwd);
+    const r = await fetch(SERVER_URL+'/api/auth/reset-verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,code,password_sha256:newHash})});
+    const d = await r.json();
+    if(!r.ok) throw new Error(d.error||'Ungültiger Code');
+    alert('Passwort erfolgreich zurückgesetzt! Sie können sich jetzt anmelden.');
+    switchTab('login');
+    document.getElementById('login-email').value=email;
+  } catch(err) { errEl.textContent=err.message; errEl.classList.add('visible');
+  } finally { btn.disabled=false; btn.textContent='Passwort zurücksetzen →'; }
+}
+function togglePwd(id, btn) {
+  const el = document.getElementById(id);
+  el.type = el.type==='password' ? 'text' : 'password';
+  btn.textContent = el.type==='password' ? '👁' : '🙈';
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const pwd   = document.getElementById('login-pwd').value;
+  const errEl = document.getElementById('login-error');
+  const btn   = document.querySelector('#panel-login .btn-auth');
+  errEl.classList.remove('visible');
+  if(!email||!pwd) { errEl.textContent='Bitte E-Mail und Passwort eingeben.'; errEl.classList.add('visible'); return; }
+  btn.disabled = true; btn.textContent = '⟳ Wird angemeldet…';
+  try {
+    const hash = await hashPwd(pwd);
+    const r = await fetch(SERVER_URL + '/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password_sha256: hash })
+    });
+    const d = await r.json();
+    if (!r.ok) { errEl.textContent = d.error || 'Anmeldung fehlgeschlagen.'; errEl.classList.add('visible'); return; }
+    setSession({ email, name: d.name, hash });
+    onLoginSuccess();
+  } catch(e) {
+    errEl.textContent = 'Server nicht erreichbar (' + e.message + '). Bitte versuchen Sie es erneut.';
+    errEl.classList.add('visible');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Anmelden →';
+  }
+}
+async function doRegister() {
+  const name  = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim().toLowerCase();
+  const pwd   = document.getElementById('reg-pwd').value;
+  const pwd2  = document.getElementById('reg-pwd2').value;
+  const errEl = document.getElementById('reg-error');
+  const btn   = document.querySelector('#panel-register .btn-auth');
+  errEl.classList.remove('visible');
+  if(!name||!email||!pwd||!pwd2) { errEl.textContent='Bitte alle Felder ausfüllen.'; errEl.classList.add('visible'); return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errEl.textContent='Ungültige E-Mail.'; errEl.classList.add('visible'); return; }
+  if(pwd.length<8) { errEl.textContent='Passwort min. 8 Zeichen.'; errEl.classList.add('visible'); return; }
+  if(pwd!==pwd2) { errEl.textContent='Passwörter stimmen nicht überein.'; errEl.classList.add('visible'); return; }
+  btn.disabled = true; btn.textContent = '⟳ Konto wird erstellt…';
+  try {
+    const hash = await hashPwd(pwd);
+    const r = await fetch(SERVER_URL + '/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, name, password_sha256: hash })
+    });
+    const d = await r.json();
+    if (!r.ok) { errEl.textContent = d.error || 'Registrierung fehlgeschlagen.'; errEl.classList.add('visible'); return; }
+    setSession({ email, name, hash });
+    onLoginSuccess();
+  } catch(e) {
+    errEl.textContent = 'Fehler: ' + e.message + '. Bitte versuchen Sie es erneut.';
+    errEl.classList.add('visible');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Konto erstellen →';
+  }
+}
+// ─── User Dropdown ───────────────────────────────────────────────────────────
+function toggleUserDropdown(e) {
+  e.stopPropagation();
+  document.getElementById('user-dropdown').classList.toggle('open');
+}
+document.addEventListener('click', () => {
+  const dd = document.getElementById('user-dropdown');
+  if(dd) dd.classList.remove('open');
+});
+
+// ─── Profile Modal ────────────────────────────────────────────────────────────
+function openProfileModal() {
+  document.getElementById('user-dropdown').classList.remove('open');
+  const sess = getSession();
+  document.getElementById('pf-name').value  = sess?.name  || '';
+  document.getElementById('pf-email').value = sess?.email || '';
+  document.getElementById('pf-pw').value    = '';
+  document.getElementById('pf-pw-wrap').style.display = 'none';
+  document.getElementById('pf-msg').textContent = '';
+  document.getElementById('pf-pwd-section').style.display = 'none';
+  document.getElementById('pf-cur-pw').value = '';
+  document.getElementById('pf-new-pw').value = '';
+  document.getElementById('pf-new-pw2').value = '';
+  document.getElementById('pf-pwd-msg').textContent = '';
+  hideDeleteConfirm();
+  document.getElementById('profile-overlay').classList.add('open');
+}
+function togglePwdChange() {
+  const s = document.getElementById('pf-pwd-section');
+  s.style.display = s.style.display === 'none' ? '' : 'none';
+}
+async function savePwdChange() {
+  const sess = getSession();
+  const curPw  = document.getElementById('pf-cur-pw').value;
+  const newPw  = document.getElementById('pf-new-pw').value;
+  const newPw2 = document.getElementById('pf-new-pw2').value;
+  const msg = document.getElementById('pf-pwd-msg');
+  if(!curPw || !newPw || !newPw2) { msg.style.color='#ef4444'; msg.textContent='Alle Felder ausfüllen.'; return; }
+  if(newPw.length < 8) { msg.style.color='#ef4444'; msg.textContent='Mindestens 8 Zeichen.'; return; }
+  if(newPw !== newPw2) { msg.style.color='#ef4444'; msg.textContent='Passwörter stimmen nicht überein.'; return; }
+  msg.style.color='var(--sub)'; msg.textContent='Wird gespeichert…';
+  try {
+    const lr = await fetch(SERVER_URL + '/api/auth/login', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email: sess.email, password_sha256: sess.hash })
+    });
+    if(!lr.ok) { msg.style.color='#ef4444'; msg.textContent='Authentifizierung fehlgeschlagen.'; return; }
+    const { token } = await lr.json();
+    const r = await fetch(SERVER_URL + '/api/auth/change-password', {
+      method:'PUT', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body: JSON.stringify({ current_password_sha256: await hashPwd(curPw), new_password_sha256: await hashPwd(newPw) })
+    });
+    const data = await r.json();
+    if(!r.ok) { msg.style.color='#ef4444'; msg.textContent=data.error||'Fehler.'; return; }
+    // Session-Hash aktualisieren
+    setSession({ ...sess, hash: await hashPwd(newPw) });
+    msg.style.color='#16a34a'; msg.textContent='Passwort geändert ✓';
+    document.getElementById('pf-cur-pw').value='';
+    document.getElementById('pf-new-pw').value='';
+    document.getElementById('pf-new-pw2').value='';
+  } catch(e) { msg.style.color='#ef4444'; msg.textContent='Serverfehler.'; }
+}
+function showDeleteConfirm() {
+  document.getElementById('pf-del-normal').style.display = 'none';
+  document.getElementById('pf-del-confirm').style.display = 'block';
+}
+function hideDeleteConfirm() {
+  document.getElementById('pf-del-normal').style.display = 'block';
+  document.getElementById('pf-del-confirm').style.display = 'none';
+}
+async function deleteAccount() {
+  const sess = getSession();
+  if(!sess) return;
+  try {
+    const lr = await fetch(SERVER_URL + '/api/auth/login', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email: sess.email, password_sha256: sess.hash })
+    });
+    if(!lr.ok) { alert('Authentifizierung fehlgeschlagen. Bitte neu anmelden.'); return; }
+    const { token } = await lr.json();
+    const r = await fetch(SERVER_URL + '/api/auth/account', {
+      method:'DELETE', headers:{'Authorization':'Bearer '+token}
+    });
+    if(!r.ok) { alert('Fehler beim Löschen. Bitte erneut versuchen.'); return; }
+    // Abmelden und Seite zurücksetzen
+    sessionStorage.removeItem(SS_USER);
+    answers = {}; step = 0;
+    closeProfileModal();
+    updateHeader();
+    showScreen('sc-auth');
+    document.getElementById('footer').style.display = 'none';
+  } catch(e) { alert('Serverfehler. Bitte erneut versuchen.'); }
+}
+function closeProfileModal() {
+  document.getElementById('profile-overlay').classList.remove('open');
+}
+function closeProfileOnBg(e) {
+  if(e.target === document.getElementById('profile-overlay')) closeProfileModal();
+}
+function onProfileEmailChange() {
+  const sess = getSession();
+  const changed = document.getElementById('pf-email').value.trim() !== (sess?.email || '');
+  document.getElementById('pf-pw-wrap').style.display = changed ? '' : 'none';
+}
+async function saveProfile() {
+  const sess = getSession();
+  const newName  = document.getElementById('pf-name').value.trim();
+  const newEmail = document.getElementById('pf-email').value.trim();
+  const pw       = document.getElementById('pf-pw').value;
+  const msg      = document.getElementById('pf-msg');
+  const emailChanged = newEmail !== (sess?.email || '');
+  if(!newName) { msg.style.color='#ef4444'; msg.textContent='Name darf nicht leer sein.'; return; }
+  if(emailChanged && !pw) { msg.style.color='#ef4444'; msg.textContent='Bitte aktuelles Passwort eingeben.'; return; }
+  msg.style.color='var(--sub)'; msg.textContent='Wird gespeichert…';
+  try {
+    const body = { name: newName, new_email: newEmail };
+    if(emailChanged) body.current_password_sha256 = await hashPwd(pw);
+    // Token via Login holen (wird nicht in Session persistiert)
+    const lr = await fetch(SERVER_URL + '/api/auth/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: sess.email, password_sha256: sess.hash })
+    });
+    if(!lr.ok) { msg.style.color='#ef4444'; msg.textContent='Authentifizierung fehlgeschlagen.'; return; }
+    const { token } = await lr.json();
+    const r = await fetch(SERVER_URL + '/api/auth/update-profile', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify(body)
+    });
+    const data = await r.json();
+    if(!r.ok) { msg.style.color='#ef4444'; msg.textContent=data.error||'Fehler beim Speichern.'; return; }
+    // Session aktualisieren
+    const updated = { ...sess, name: newName, email: newEmail };
+    setSession(updated);
+    updateHeader();
+    msg.style.color='#16a34a'; msg.textContent='Gespeichert ✓';
+    setTimeout(closeProfileModal, 900);
+  } catch(e) { msg.style.color='#ef4444'; msg.textContent='Serverfehler.'; }
+}
+
+function doLogout() {
+  sessionStorage.removeItem(SS_USER); answers={}; step=0;
+  updateHeader(); showScreen('sc-auth');
+  document.getElementById('footer').style.display='none';
+}
+async function onLoginSuccess() {
+  updateHeader();
+  document.getElementById('footer').style.display='';
+
+  // Server prüfen: bereits eingereicht?
+  const sess = getSession();
+  if (sess && sess.hash) {
+    try {
+      const lr = await fetch(SERVER_URL + '/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: sess.email, password_sha256: sess.hash })
+      });
+      if (!lr.ok) {
+        // Konto existiert nicht mehr (z.B. vom Steuerberater gelöscht)
+        sessionStorage.removeItem(SS_USER);
+        answers = {}; step = 0;
+        updateHeader();
+        document.getElementById('footer').style.display = 'none';
+        showScreen('sc-auth');
+        return;
+      }
+      const { token } = await lr.json();
+      const dr = await fetch(SERVER_URL + '/api/docs', { headers: { 'Authorization': 'Bearer ' + token } });
+      if (dr.ok) {
+        const { documents } = await dr.json();
+        if (documents && documents.length > 0) {
+          showReturnPortal(token, documents);
+          return;
+        }
+      }
+    } catch(e) {}
+  }
+
+  // Noch nicht eingereicht → normaler Flow
+  const vs = visibleSections();
+  if(step===0) showScreen('sc-welcome');
+  else if(step>vs.length) { renderSummary(); showScreen('sc-summary'); }
+  else { renderSection(vs[step-1]); showScreen('sc-q'); }
+}
+function checkSession() {
+  if(getKanzleiToken()) { showKanzleiDashboard(); return; }
+  const s = getSession();
+  if(s) onLoginSuccess();
+  else { showScreen('sc-auth'); document.getElementById('footer').style.display='none'; }
+}
+
+/* ── Rückkehr-Portal ─────────────────────────────────────── */
+let _returnToken = null;
+let _returnServerDocs = [];
+let _returnFiles = {};
+
+function showReturnPortal(token, docs) {
+  _returnToken = token;
+  _returnServerDocs = docs;
+  _returnFiles = {};
+  _renderReturnDocs();
+  showScreen('sc-return');
+  document.getElementById('footer').style.display = 'none';
+  // banner entfernt
+  const btn = document.getElementById('btn-return-send');
+  btn.disabled = false; btn.textContent = 'Nachreichen →'; btn.style.background = '';
+}
+
+function _renderReturnDocs() {
+  const pending  = _returnServerDocs.filter(d => !d.filename);
+  const uploaded = _returnServerDocs.filter(d =>  d.filename);
+  const total = _returnServerDocs.length;
+  const done  = uploaded.length;
+
+  // Fortschrittsbalken
+  const pct = total > 0 ? Math.round(done / total * 100) : 0;
+  document.getElementById('return-progress-fill').style.width = pct + '%';
+  document.getElementById('return-sub').textContent = pending.length === 0
+    ? '✓ Alle Unterlagen wurden eingereicht. Vielen Dank!'
+    : `Noch ${pending.length} Dokument${pending.length>1?'e':''} ausstehend — laden Sie diese hoch.`;
+  if (pending.length === 0) document.getElementById('btn-return-send').style.display = 'none';
+  else document.getElementById('btn-return-send').style.display = '';
+
+  let html = '';
+  // Vollmacht: nur oben zeigen wenn noch nicht unterschrieben
+  const vollmachtDoc = _returnServerDocs.find(d => d.doc_key === 'vollmacht');
+  if (vollmachtDoc && !vollmachtDoc.filename) {
+    html += `<div class="return-doc-row" id="rdr-${vollmachtDoc.id}" style="flex-direction:column;align-items:stretch">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="rdr-name" style="flex:1">${_escHtml(vollmachtDoc.doc_name)}<span class="rdr-badge">Pflicht</span></div>
+      </div>
+      <div class="rdr-sig-wrap">
+        <canvas id="rdr-canvas-${vollmachtDoc.id}" class="rdr-canvas" height="80"></canvas>
+        <div class="rdr-sig-hint">Hier unterschreiben (Finger oder Maus)</div>
+        <div class="rdr-sig-actions">
+          <button class="rdr-sig-clear" onclick="rdrSigClear(${vollmachtDoc.id})">Löschen</button>
+          <button class="rdr-sig-btn" onclick="rdrSigConfirm(${vollmachtDoc.id})">✓ Unterschrift bestätigen</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  pending.forEach(doc => {
+    if (doc.doc_key === 'vollmacht') {
+      // bereits oben gerendert
+    } else {
+      const files = _returnFiles[doc.id] || [];
+      const hasFile = files.length > 0;
+      html += `<div class="return-doc-row" id="rdr-${doc.id}">
+        <div style="flex:1;min-width:0">
+          <div class="rdr-name">${_escHtml(doc.doc_name)}${doc.is_required ? '<span class="rdr-badge">Pflicht</span>' : ''}</div>
+          ${hasFile ? `<div class="rdr-files">${files.map(f=>_escHtml(f.name)).join(', ')}</div>` : ''}
+        </div>
+        <label style="cursor:pointer;flex-shrink:0">
+          <input type="file" style="display:none" accept="image/*,application/pdf" multiple onchange="handleReturnFile(event,${doc.id})">
+          <span class="btn-rdr-upload${hasFile?' has-file':''}">${hasFile ? '✓ '+files.length+(files.length===1?' Datei':' Dateien') : '+ Hochladen'}</span>
+        </label>
+      </div>`;
+    }
+  });
+  uploaded.forEach(doc => {
+    const isVollmacht = doc.doc_key === 'vollmacht';
+    const resetLabel = isVollmacht ? '↺ Erneut unterschreiben' : '↺ Ersetzen';
+    const resetFn = isVollmacht ? `rdrSigRedo(${doc.id})` : `rdrDocReset(${doc.id})`;
+    html += `<div class="return-doc-row rdr-done" id="rdr-${doc.id}" style="flex-direction:column;align-items:stretch;gap:8px">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div class="rdr-name">✓ ${_escHtml(doc.doc_name)}${doc.is_required ? '<span class="rdr-badge">Pflicht</span>' : ''}</div>
+        <span style="color:var(--green);font-size:.75rem;font-weight:600">Eingereicht</span>
+      </div>
+      <button class="rdr-sig-clear" style="align-self:flex-start" onclick="${resetFn}">${resetLabel}</button>
+    </div>`;
+  });
+  document.getElementById('return-doc-list').innerHTML = html;
+  // Sig-Canvases initialisieren
+  requestAnimationFrame(() => {
+    pending.filter(d => d.doc_key === 'vollmacht').forEach(doc => _initRdrSig(doc.id));
+  });
+}
+
+const _rdrSigDrawing = {};
+const _rdrSigHasDrawn = {};
+
+function _initRdrSig(docId) {
+  const canvas = document.getElementById('rdr-canvas-' + docId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth || 300;
+  ctx.strokeStyle = '#1a1a2e'; ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+  const pos = (e) => {
+    const r = canvas.getBoundingClientRect();
+    const t = e.touches ? e.touches[0] : e;
+    return { x: (t.clientX - r.left) * (canvas.width / r.width), y: (t.clientY - r.top) * (canvas.height / r.height) };
+  };
+  const start = (e) => { e.preventDefault(); _rdrSigDrawing[docId] = true; const p = pos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); };
+  const draw  = (e) => { e.preventDefault(); if (!_rdrSigDrawing[docId]) return; const p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); _rdrSigHasDrawn[docId] = true; };
+  const end   = () => { _rdrSigDrawing[docId] = false; };
+
+  canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', draw); canvas.addEventListener('mouseup', end);
+  canvas.addEventListener('touchstart', start, {passive:false}); canvas.addEventListener('touchmove', draw, {passive:false}); canvas.addEventListener('touchend', end);
+}
+
+function rdrSigClear(docId) {
+  const canvas = document.getElementById('rdr-canvas-' + docId);
+  if (!canvas) return;
+  canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+  _rdrSigHasDrawn[docId] = false;
+}
+
+async function rdrSigRedo(docId) {
+  // Altes Dokument auf Server zurücksetzen
+  try {
+    await fetch(SERVER_URL + '/api/docs/' + docId + '/reset', {
+      method: 'POST', headers: { 'Authorization': 'Bearer ' + _returnToken }
+    });
+  } catch(e) {}
+  // Lokal als pending markieren und Canvas zeigen
+  const doc = _returnServerDocs.find(d => d.id === docId);
+  if (doc) { doc.filename = null; doc.status = 'pending'; }
+  _rdrSigHasDrawn[docId] = false;
+  _renderReturnDocs();
+}
+
+async function rdrDocReset(docId) {
+  try {
+    await fetch(SERVER_URL + '/api/docs/' + docId + '/reset', {
+      method: 'POST', headers: { 'Authorization': 'Bearer ' + _returnToken }
+    });
+  } catch(e) {}
+  const doc = _returnServerDocs.find(d => d.id === docId);
+  if (doc) { doc.filename = null; doc.status = 'pending'; }
+  _renderReturnDocs();
+}
+
+async function rdrSigConfirm(docId) {
+  if (!_rdrSigHasDrawn[docId]) { alert('Bitte erst unterschreiben.'); return; }
+  const canvas = document.getElementById('rdr-canvas-' + docId);
+  const btn = canvas?.closest('.return-doc-row')?.querySelector('.rdr-sig-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '⟳ Wird gespeichert…'; }
+  canvas.toBlob(async (blob) => {
+    try {
+      const fd = new FormData();
+      fd.append('file', blob, 'vollmacht_unterschrift.png');
+      const r = await fetch(SERVER_URL + '/api/docs/' + docId + '/upload', {
+        method: 'POST', headers: { 'Authorization': 'Bearer ' + _returnToken }, body: fd
+      });
+      if (!r.ok) throw new Error('Upload fehlgeschlagen');
+      const dr = await fetch(SERVER_URL + '/api/docs', { headers: { 'Authorization': 'Bearer ' + _returnToken } });
+      if (dr.ok) { const { documents } = await dr.json(); _returnServerDocs = documents; }
+      _renderReturnDocs();
+    } catch(e) {
+      alert('Fehler beim Speichern der Unterschrift. Bitte erneut versuchen.');
+      if (btn) { btn.disabled = false; btn.textContent = '✓ Unterschrift bestätigen'; }
+    }
+  }, 'image/png');
+}
+
+function handleReturnFile(event, docId) {
+  _returnFiles[docId] = Array.from(event.target.files);
+  _renderReturnDocs();
+}
+
+async function submitReturnDocs() {
+  const hasAny = Object.values(_returnFiles).some(f => f.length > 0);
+  if (!hasAny) { alert('Bitte wählen Sie mindestens eine Datei aus.'); return; }
+  const btn = document.getElementById('btn-return-send');
+  btn.disabled = true; btn.textContent = '⟳ Wird hochgeladen…';
+  try {
+    for (const [docId, files] of Object.entries(_returnFiles)) {
+      if (!files.length) continue;
+      const fd = new FormData();
+      files.forEach(f => fd.append('file', f));
+      await fetch(SERVER_URL + '/api/docs/' + docId + '/upload', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + _returnToken },
+        body: fd
+      });
+    }
+    // Docs neu laden
+    const dr = await fetch(SERVER_URL + '/api/docs', { headers: { 'Authorization': 'Bearer ' + _returnToken } });
+    if (dr.ok) { const { documents } = await dr.json(); _returnServerDocs = documents; }
+    _returnFiles = {};
+    _renderReturnDocs();
+    btn.textContent = '✓ Eingereicht!'; btn.style.background = 'var(--green)';
+    scrollToTop();
+  } catch(e) {
+    alert('Fehler: ' + e.message);
+    btn.disabled = false; btn.textContent = 'Nachreichen →';
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FORMAT-VALIDATOREN
+═══════════════════════════════════════════════════════════ */
+const FORMAT_VALIDATORS = {
+  email:    { test: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()), msg:'Keine gültige E-Mail (z.B. max@beispiel.de)' },
+  telefon:  { test: v => /^[\+\d][\d\s\(\)\-\/]{5,}$/.test(v.trim()),  msg:'Keine gültige Telefonnummer' },
+  iban:     { test: v => /^[A-Z]{2}\d{2}[A-Z0-9]{11,}$/.test(v.replace(/\s/g,'').toUpperCase()), msg:'Keine gültige IBAN (z.B. DE89 3704 0044 0532 0130 00)' },
+  plz:      { test: v => /^\d{5}$/.test(v.trim()), msg:'PLZ muss genau 5 Ziffern haben' },
+  steuer_id:{ test: v => /^[1-9]\d{10}$/.test(v.replace(/[\s\/\-]/g,'')), msg:'Steuer-ID: 11 Ziffern, erste nicht 0' },
+};
+
+/* ═══════════════════════════════════════════════════════════
+   KI-DOKUMENTENPRÜFUNG
+═══════════════════════════════════════════════════════════ */
+const AI_CHECK_URL = 'https://h-and-k-automation.vercel.app/api/ai-check';
+const _aiState = {};
+const _aiTimer = {};
+
+function _getExpectedName() {
+  if(answers.vorname&&answers.nachname) return `${answers.vorname} ${answers.nachname}`;
+  if(answers.kontakt_name) return answers.kontakt_name;
+  if(answers.firma_name)   return answers.firma_name;
+  return null;
+}
+function _renderAiBadge(docIdx) {
+  const st = _aiState[docIdx];
+  if(!st||st.status==='idle') return '';
+  if(st.status==='checking') return `<div class="ai-badge checking"><span class="ai-sp">⟳</span> KI prüft…</div>`;
+  if(st.status==='ok')       return `<div class="ai-badge ok">✓ ${_escHtml(st.msg)}</div>`;
+  if(st.status==='warn')     return `<div class="ai-badge warn">⚠ ${_escHtml(st.msg)}</div>`;
+  return '';
+}
+async function _fileToB64(file) {
+  return new Promise((res,rej) => {
+    const r = new FileReader();
+    r.onload = () => { const d=r.result,c=d.indexOf(','); res({b64:d.slice(c+1),mediaType:d.slice(5,d.indexOf(';'))}); };
+    r.onerror = rej; r.readAsDataURL(file);
+  });
+}
+async function _aiCheckDoc(docIdx) {
+  const doc   = _pDocs[docIdx];
+  const files = (_pFiles[docIdx]||[]).filter(f=>{
+    const e=f.name.split('.').pop().toLowerCase();
+    return ['jpg','jpeg','png','gif','webp','pdf'].includes(e) && f.size<6000000;
+  });
+  if(!files.length || !doc) return;
+  _aiState[docIdx] = {status:'checking', msg:''};
+  _renderPortalDocs();
+  try {
+    const content = [];
+    for(const file of files.slice(0,3)) {
+      const {b64,mediaType} = await _fileToB64(file);
+      if(mediaType==='application/pdf') content.push({type:'document',source:{type:'base64',media_type:mediaType,data:b64}});
+      else content.push({type:'image',source:{type:'base64',media_type:mediaType,data:b64}});
+    }
+    const expectedDoc = doc.name;
+    const personName  = _getExpectedName();
+    const nameHint    = personName ? ` Der Name der Person lautet "${personName}".` : '';
+    const prompt = `Du bist ein Dokumentenprüfer für eine Steuerberatungskanzlei.
+Erwartetes Dokument: "${expectedDoc}"${nameHint}
+Aufgabe: Prüfe ob das hochgeladene Dokument tatsächlich dem erwarteten Dokumenttyp entspricht.${personName?'\nPrüfe außerdem ob der Name auf dem Dokument mit dem erwarteten Namen übereinstimmt.':''}
+Antworte NUR mit JSON (kein weiterer Text): {"ok":true,"issue":"Kurze Bestätigung auf Deutsch"} oder {"ok":false,"issue":"Kurze Fehlerbeschreibung auf Deutsch was falsch ist"}`;
+    content.push({type:'text', text:prompt});
+    let raw = '{}';
+    if(window._ANTHROPIC_KEY) {
+      const r = await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-api-key':window._ANTHROPIC_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:150,messages:[{role:'user',content}]})
+      });
+      raw=(await r.json()).content?.[0]?.text||'{}';
+    } else {
+      const fd=new FormData();
+      fd.append('expectedDoc', expectedDoc);
+      if(personName) fd.append('expectedName', personName);
+      files.slice(0,3).forEach((f,i)=>fd.append(`file${i}`,f));
+      raw=JSON.stringify(await(await fetch(AI_CHECK_URL,{method:'POST',body:fd})).json());
+    }
+    const parsed=JSON.parse(raw.replace(/```(?:json)?\n?|\n?```/g,'').trim().match(/\{[\s\S]*\}/)?.[0]||'{}');
+    _aiState[docIdx]=parsed.ok
+      ? {status:'ok',   msg: parsed.issue||'Dokument korrekt ✓'}
+      : {status:'warn', msg: parsed.issue||'Falsches Dokument – bitte prüfen'};
+  } catch(e) { console.warn('KI-Check:',e); delete _aiState[docIdx]; }
+  _renderPortalDocs();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   VOLLMACHTEN
+═══════════════════════════════════════════════════════════ */
+function buildVollmachten() {
+  const a=answers, vl=[];
+  vl.push({emoji:'📋',name:'Steuerberatervollmacht',desc:'Allgemeine Bevollmächtigung gegenüber dem Finanzamt für alle Steuerarten'});
+  vl.push({emoji:'💻',name:'ELSTER-Datenabruf-Vollmacht',desc:'Elektronischer Abruf steuerrelevanter Daten (Lohnbescheinigungen, Rentendaten etc.)'});
+  const needsUst=a.mandant_typ==='unternehmen'||(a.mandant_typ==='freiberufler'&&a.ust_pflichtig==='ja')||(a.leistungen_gewuenscht||[]).includes('ust_voa');
+  if(needsUst) vl.push({emoji:'🧾',name:'Umsatzsteuer-Vollmacht',desc:'Bevollmächtigung für USt-Voranmeldungen und die USt-Jahreserklärung'});
+  const needsLohn=(a.mandant_typ==='unternehmen'&&a.lohnbuchhaltung==='ja')||(a.leistungen_gewuenscht||[]).includes('lohnbuch');
+  if(needsLohn) {
+    vl.push({emoji:'💶',name:'Lohnsteuer-Vollmacht',desc:'Bevollmächtigung für Lohnsteueranmeldungen und Lohnbuchhaltung'});
+    vl.push({emoji:'🏥',name:'Sozialversicherungs-Vollmacht',desc:'Kommunikation mit Krankenkassen und Rentenversicherungsträger'});
+  }
+  return vl;
+}
+function _renderVollmachten(signed) {
+  const list=document.getElementById('sig-vl-list'); if(!list) return;
+  list.innerHTML=buildVollmachten().map(v=>`
+    <div class="sig-vl-item">
+      <span class="sig-vl-icon">${v.emoji}</span>
+      <div class="sig-vl-info"><div class="sig-vl-name">${v.name}</div><div class="sig-vl-desc">${v.desc}</div></div>
+      <span class="sig-vl-status ${signed?'signed':''}">${signed?'✓ bereit':'— ausstehend'}</span>
+    </div>`).join('');
+}
+
+/* ── Unterschriften-Pad ─────────────────────────── */
+let _sigDrawing=false, _sigHasDrawn=false, _sigHasData=false;
+function _initSigPad() {
+  const canvas=document.getElementById('sig-canvas'); if(!canvas) return;
+  canvas.width=canvas.parentElement.clientWidth||560; canvas.height=140;
+  const ctx=canvas.getContext('2d');
+  ctx.strokeStyle='#111111'; ctx.lineWidth=2.5; ctx.lineCap='round'; ctx.lineJoin='round';
+  function getPos(e) { const r=canvas.getBoundingClientRect(),sx=canvas.width/r.width,sy=canvas.height/r.height,s=e.touches?e.touches[0]:e; return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy}; }
+  function onStart(e) { e.preventDefault(); _sigDrawing=true; const p=getPos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); }
+  function onMove(e) {
+    if(!_sigDrawing) return; e.preventDefault();
+    const p=getPos(e); ctx.lineTo(p.x,p.y); ctx.stroke();
+    if(!_sigHasDrawn) { _sigHasDrawn=true; document.getElementById('sig-clear-btn')?.classList.add('visible'); document.getElementById('sig-confirm-btn')?.classList.add('visible'); }
+  }
+  function onEnd() { _sigDrawing=false; }
+  canvas.addEventListener('mousedown',onStart,{passive:false}); canvas.addEventListener('mousemove',onMove,{passive:false});
+  canvas.addEventListener('mouseup',onEnd); canvas.addEventListener('mouseleave',onEnd);
+  canvas.addEventListener('touchstart',onStart,{passive:false}); canvas.addEventListener('touchmove',onMove,{passive:false}); canvas.addEventListener('touchend',onEnd);
+}
+function sigConfirm() {
+  if(!_sigHasDrawn) return; _sigHasData=true;
+  const btn=document.getElementById('sig-confirm-btn');
+  if(btn){btn.textContent='✓ Vollmachten bestätigt';btn.classList.add('confirmed');}
+  document.getElementById('sig-error')?.classList.remove('visible');
+  _renderVollmachten(true);
+}
+function sigClear() {
+  const c=document.getElementById('sig-canvas'); if(!c) return;
+  c.getContext('2d').clearRect(0,0,c.width,c.height);
+  _sigHasDrawn=false; _sigHasData=false;
+  document.getElementById('sig-clear-btn')?.classList.remove('visible');
+  const cb=document.getElementById('sig-confirm-btn');
+  if(cb){cb.classList.remove('visible','confirmed');cb.textContent='✓ Unterschrift bestätigen';}
+  _renderVollmachten(false);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PORTAL
+═══════════════════════════════════════════════════════════ */
+const _pFiles={};
+let   _pDocs=[];
+
+function showPortal() {
+  _pDocs=buildDocList(); _sigHasDrawn=false; _sigHasData=false;
+  _renderPortalDocs(); _updatePortalProgress(); _renderVollmachten(false);
+  document.getElementById('sig-clear-btn')?.classList.remove('visible');
+  document.getElementById('sig-error')?.classList.remove('visible');
+  const cb=document.getElementById('sig-confirm-btn');
+  if(cb){cb.classList.remove('visible','confirmed');cb.textContent='✓ Unterschrift bestätigen';}
+  showScreen('sc-portal');
+  document.getElementById('footer').style.display='none';
+  scrollToTop();
+  requestAnimationFrame(()=>_initSigPad());
+}
+function portalBack() {
+  showScreen('sc-summary'); document.getElementById('footer').style.display=''; updateHeader(); scrollToTop();
+}
+function _renderPortalDocs() {
+  const container=document.getElementById('portal-docs-list');
+  if(!container||!_pDocs.length) return;
+  container.innerHTML=_pDocs.map((doc,i)=>{
+    const files=_pFiles[i]||[], uploaded=files.length>0;
+    const indClass=uploaded?'done':(doc.must?'must':'nice');
+    const badgeCls=uploaded?'s-done':(doc.must?'s-must':'s-nice');
+    const badgeTxt=uploaded?`✓ ${files.length} Datei${files.length>1?'en':''}`:(doc.must?'Pflicht':'Optional');
+    const fileRows=files.map((f,fi)=>`
+      <div class="pdc-file">
+        <span>${_pFileIcon(f.name)}</span>
+        <span class="pdc-fname">${_escHtml(f.name)}</span>
+        <span class="pdc-fsize">${_fmtBytes(f.size)}</span>
+        <button class="pdc-fdel" onclick="portalRemoveFile(${i},${fi})" title="Entfernen">✕</button>
+      </div>`).join('');
+    return `
+      <div class="pdc" id="pdc-${i}">
+        <div class="pdc-top">
+          <div class="pdc-indicator ${indClass}"></div>
+          <div class="pdc-name">${_escHtml(doc.name)}</div>
+          <span class="pdc-badge ${badgeCls}">${badgeTxt}</span>
+        </div>
+        <div class="pdc-body">
+          <div class="pdc-zone" id="pdz-${i}" ondragover="pdcDragOver(event,${i})" ondragleave="pdcDragLeave(event,${i})" ondrop="pdcDrop(event,${i})" onclick="document.getElementById('pdi-${i}').click()">
+            ${uploaded?'＋ Weitere Datei hinzufügen':'📎 Datei hier ablegen oder klicken zum Auswählen'}
+          </div>
+          <input type="file" id="pdi-${i}" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.csv,.zip" style="display:none" onchange="pdcFileSelect(event,${i})"/>
+          ${fileRows?`<div class="pdc-files">${fileRows}</div>`:''}
+          ${_renderAiBadge(i)}
+        </div>
+      </div>`;
+  }).join('');
+}
+function _updatePortalProgress() {
+  const total=_pDocs.length, doneCount=_pDocs.filter((_,i)=>(_pFiles[i]||[]).length>0).length;
+  const mustTotal=_pDocs.filter(d=>d.must).length, mustDone=_pDocs.filter((d,i)=>d.must&&(_pFiles[i]||[]).length>0).length;
+  const pct=total>0?Math.round((doneCount/total)*100):0;
+  const fillEl=document.getElementById('portal-prog-fill'), textEl=document.getElementById('portal-prog-text');
+  if(fillEl) fillEl.style.width=pct+'%';
+  if(textEl) textEl.textContent=`${doneCount} von ${total} Dokumenten hochgeladen  ·  ${mustDone}/${mustTotal} Pflichtdokumente`;
+  const btn=document.getElementById('btn-p-send');
+  if(btn&&btn.textContent!=='✓ Eingereicht!') btn.disabled=false;
+}
+function _portalAddFiles(docIdx, files) {
+  if(!_pFiles[docIdx]) _pFiles[docIdx]=[];
+  Array.from(files).forEach(f=>_pFiles[docIdx].push(f));
+  _renderPortalDocs(); _updatePortalProgress();
+  if(_pFiles[docIdx].length>0 && window._ANTHROPIC_KEY) {
+    clearTimeout(_aiTimer[docIdx]);
+    _aiTimer[docIdx]=setTimeout(()=>_aiCheckDoc(docIdx),600);
+  }
+}
+function portalRemoveFile(docIdx,fileIdx) {
+  if(_pFiles[docIdx]) { _pFiles[docIdx].splice(fileIdx,1); _renderPortalDocs(); _updatePortalProgress(); }
+}
+function pdcDragOver(e,i) { e.preventDefault(); document.getElementById('pdz-'+i)?.classList.add('drag-over'); }
+function pdcDragLeave(e,i) { document.getElementById('pdz-'+i)?.classList.remove('drag-over'); }
+function pdcDrop(e,i) { e.preventDefault(); document.getElementById('pdz-'+i)?.classList.remove('drag-over'); _portalAddFiles(i,e.dataTransfer.files); }
+function pdcFileSelect(e,i) { _portalAddFiles(i,e.target.files); e.target.value=''; }
+function pgzDragOver(e) { e.preventDefault(); document.getElementById('portal-global-zone')?.classList.add('drag-over'); }
+function pgzDragLeave(e) { document.getElementById('portal-global-zone')?.classList.remove('drag-over'); }
+function pgzDrop(e) { e.preventDefault(); document.getElementById('portal-global-zone')?.classList.remove('drag-over'); _smartAssign(Array.from(e.dataTransfer.files)); }
+function pgzFileSelect(e) { _smartAssign(Array.from(e.target.files)); e.target.value=''; }
+function _smartAssign(files) {
+  files.forEach(file=>{
+    const n=file.name.toLowerCase().replace(/[_\-\.]/g,' ');
+    let bestIdx=-1,bestScore=0;
+    _pDocs.forEach((doc,i)=>{ const s=doc.name.toLowerCase().split(/\s+/).filter(w=>w.length>3&&n.includes(w)).length; if(s>bestScore){bestScore=s;bestIdx=i;} });
+    if(bestIdx===-1||bestScore===0) bestIdx=_pDocs.findIndex((d,i)=>d.must&&(!_pFiles[i]||!_pFiles[i].length));
+    if(bestIdx===-1) bestIdx=_pDocs.findIndex((_,i)=>!_pFiles[i]||!_pFiles[i].length);
+    if(bestIdx===-1) bestIdx=0;
+    _portalAddFiles(bestIdx,[file]);
+  });
+}
+
+function submitAndShowPortal() {
+  document.getElementById('confirm-overlay').classList.add('active');
+}
+async function doSubmitAndShowPortal() {
+  const btn = document.getElementById('btn-portal-submit');
+  if (!btn || btn.disabled) return;
+  btn.disabled = true;
+  btn.innerHTML = '<span>⟳</span> Wird eingereicht…';
+
+  try {
+    const sess = getSession();
+    if (!sess) throw new Error('Sitzung abgelaufen – bitte neu anmelden.');
+    if (!sess.hash) throw new Error('Sitzung abgelaufen – bitte abmelden und neu anmelden.');
+
+    // Doc-Liste (Vollmacht bekommt festen Key)
+    const allDocs = buildDocList();
+    let _di = 0;
+    const docList = allDocs.map(d => d.sign
+      ? { key: 'vollmacht', name: d.name, must: true }
+      : { key: 'doc' + (_di++), name: d.name, must: !!d.must }
+    );
+
+    // Fragebogen an Server senden
+    const submitRes = await fetch(SERVER_URL + '/api/auth/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: sess.email, name: sess.name, password_sha256: sess.hash, answers, docList })
+    });
+    if (!submitRes.ok) { const e = await submitRes.json(); throw new Error(e.error || 'Serverfehler'); }
+    const { token } = await submitRes.json();
+
+    // Bestätigungsmail (asynchron, blockiert nicht)
+    fetch(SERVER_URL + '/api/notify/submission', {
+      method: 'POST', headers: { 'Authorization': 'Bearer ' + token }
+    }).catch(() => {});
+
+    // Dokument-Liste laden und Portal zeigen
+    const docsRes = await fetch(SERVER_URL + '/api/docs', { headers: { 'Authorization': 'Bearer ' + token } });
+    if (!docsRes.ok) throw new Error('Dokument-Liste konnte nicht geladen werden.');
+    const { documents: serverDocs } = await docsRes.json();
+    showReturnPortal(token, serverDocs);
+
+  } catch (err) {
+    console.error('submitAndShowPortal:', err);
+    btn.disabled = false;
+    btn.innerHTML = '<span>📤</span> Abschließen &amp; Einreichen';
+    alert('Fehler beim Einreichen:\n' + err.message);
+  }
+}
+function _escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function _fmtBytes(b) { if(b<1024) return b+' B'; if(b<1048576) return (b/1024).toFixed(1)+' KB'; return (b/1048576).toFixed(1)+' MB'; }
+function _pFileIcon(n) { const e=(n.split('.').pop()||'').toLowerCase(); if(e==='pdf') return '📄'; if(['jpg','jpeg','png','gif'].includes(e)) return '🖼️'; if(['doc','docx'].includes(e)) return '📝'; if(['xls','xlsx','csv'].includes(e)) return '📊'; return '📎'; }
+
+/* ═══════════════════════════════════════════════════════════
+   DATEV EXPORT
+═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════
+   KANZLEI LOGIN & DASHBOARD
+═══════════════════════════════════════════════════════════ */
+async function doKanzleiLogin() {
+  const email = (document.getElementById('kanzlei-email')?.value || '').trim();
+  const pwd   = document.getElementById('kanzlei-pwd').value;
+  const errEl = document.getElementById('kanzlei-error');
+  errEl.classList.remove('visible');
+  if(!pwd) { errEl.textContent='Bitte Passwort eingeben.'; errEl.classList.add('visible'); return; }
+  const btn = document.querySelector('#panel-kanzlei .btn-auth');
+  btn.disabled = true; btn.textContent = '⟳ Wird geprüft…';
+  try {
+    const enc = new TextEncoder().encode(pwd);
+    const hashBuf = await crypto.subtle.digest('SHA-256', enc);
+    const password_sha256 = Array.from(new Uint8Array(hashBuf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    const body = email ? { email, password_sha256 } : { password: pwd };
+    const r = await fetch(SERVER_URL + '/api/kanzlei/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const d = await r.json();
+    if(!r.ok) throw new Error(d.error || 'Falsches Passwort');
+    setKanzleiSession({ token: d.token, kanzleiId: d.kanzleiId });
+    showKanzleiDashboard();
+  } catch(err) {
+    errEl.textContent = err.message.includes('fetch') ? 'Server nicht erreichbar – bitte node server.js starten.' : err.message;
+    errEl.classList.add('visible');
+  } finally { btn.disabled = false; btn.textContent = 'Kanzlei-Zugang →'; }
+}
+
+function doKanzleiLogout() {
+  sessionStorage.removeItem(SS_KANZLEI);
+  showScreen('sc-auth');
+  switchTab('login');
+  document.getElementById('footer').style.display = 'none';
+}
+
+function switchKanzleiTab(tab) {
+  document.querySelectorAll('.km-nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('km-tab-' + tab).classList.add('active');
+  document.getElementById('km-panel-mandanten').classList.toggle('active', tab === 'mandanten');
+  document.getElementById('km-panel-belege').classList.toggle('active', tab === 'belege');
+}
+
+function showKanzleiDashboard() {
+  showScreen('sc-kanzlei');
+  document.getElementById('footer').style.display = 'none';
+  document.getElementById('user-badge').style.display = 'none';
+  document.getElementById('step-info').textContent = '';
+  document.getElementById('progress').style.width = '0%';
+  loadKanzleiDashboard();
+}
+
+async function loadKanzleiDashboard() {
+  const listEl = document.getElementById('kanzlei-mandant-list');
+  listEl.innerHTML = '<div class="km-empty"><div class="km-empty-icon">⟳</div>Wird geladen…</div>';
+  try {
+    const r = await fetch(SERVER_URL + '/api/kanzlei/mandants', {
+      headers: { 'Authorization': 'Bearer ' + getKanzleiToken() }
+    });
+    if(r.status === 401 || r.status === 403) { doKanzleiLogout(); return; }
+    if(!r.ok) throw new Error('Serverfehler');
+    const mandants = await r.json();
+
+    // Stats
+    const complete = mandants.filter(m => m.totalDocs > 0 && m.uploadedDocs >= m.totalDocs).length;
+    document.getElementById('km-stat-total').textContent    = mandants.length;
+    document.getElementById('km-stat-complete').textContent = complete;
+
+    if(!mandants.length) {
+      listEl.innerHTML = '<div class="km-empty"><div class="km-empty-icon">📭</div>Noch keine eingereichten Fragebögen.<br>Sobald ein Mandant Fragebogen + Dokumente absendet, erscheint er hier.</div>';
+      return;
+    }
+
+    listEl.innerHTML = mandants.map(m => {
+      const date     = new Date(m.submittedAt).toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric' });
+      const uploaded = m.uploadedDocs || 0;
+      const total    = m.totalDocs    || 0;
+      const pct      = total > 0 ? Math.round((uploaded / total) * 100) : 0;
+      const badgeCls = pct === 100 ? 's-done' : pct > 0 ? 's-wip' : 's-todo';
+      const badgeTxt = pct === 100 ? '✓ Vollständig' : total > 0 ? `${uploaded}/${total} Dokumente` : 'Ausstehend';
+      const initials = m.name.trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+      return `
+        <div class="km-row">
+          <div class="km-avatar">${initials}</div>
+          <div class="km-info">
+            <div class="km-name">${_escHtml(m.name)}</div>
+            <div class="km-meta">${_escHtml(m.email)} · Eingereicht ${date}</div>
+          </div>
+          <div class="km-badge-wrap"><span class="s-badge ${badgeCls}">${badgeTxt}</span></div>
+          <button class="btn-km-datev" onclick="kanzleiDATEVExport(${m.userId}, this)">📊 DATEV</button>
+        </div>`;
+    }).join('');
+  } catch(err) {
+    listEl.innerHTML = `<div class="km-empty" style="color:var(--red)">Fehler: ${err.message}<br><small>Ist der Server gestartet?</small></div>`;
+  }
+}
+
+async function kanzleiDATEVExport(userId, btn) {
+  const orig = btn.textContent;
+  btn.disabled = true; btn.textContent = '⟳';
+  try {
+    const r = await fetch(SERVER_URL + '/api/kanzlei/mandant/' + userId, {
+      headers: { 'Authorization': 'Bearer ' + getKanzleiToken() }
+    });
+    if(!r.ok) throw new Error('Mandant konnte nicht geladen werden');
+    const { user, submission } = await r.json();
+    if(!submission?.answers) throw new Error('Keine Fragebogendaten vorhanden');
+
+    const mandantAnswers = JSON.parse(submission.answers);
+    const csv  = _buildDATEVCSVString(mandantAnswers);
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    const date = new Date().toISOString().slice(0,10).replace(/-/g,'');
+    link.href = url;
+    link.download = `DATEV_${user.name.replace(/\s+/g,'_')}_${date}_Stammdaten.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+
+    btn.textContent = '✓ Geladen'; btn.classList.add('done');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('done'); btn.disabled = false; }, 3000);
+  } catch(err) {
+    alert('Fehler: ' + err.message);
+    btn.textContent = orig; btn.disabled = false;
+  }
+}
+
+function showDATEVExport() {
+  _renderDATEVPreview();
+  document.getElementById('datev-success-banner').classList.remove('visible');
+  showScreen('sc-datev');
+  document.getElementById('footer').style.display = 'none';
+  scrollToTop();
+}
+
+function datevBack() {
+  showScreen('sc-summary');
+  document.getElementById('footer').style.display = '';
+  updateHeader();
+  scrollToTop();
+}
+
+function _renderDATEVPreview() {
+  const a = answers;
+  const isUnternehmen = a.mandant_typ === 'unternehmen';
+  const rows = [];
+
+  if (isUnternehmen) {
+    if (a.firma_name)   rows.push(['Firmenname', a.firma_name]);
+    if (a.rechtsform)   rows.push(['Rechtsform', a.rechtsform]);
+    if (a.kontakt_name) rows.push(['Ansprechpartner', a.kontakt_name]);
+    if (a.branche)      rows.push(['Unternehmensgegenstand', a.branche]);
+  } else {
+    const name = [a.vorname, a.nachname].filter(Boolean).join(' ');
+    if (name)            rows.push(['Name', name]);
+    if (a.geburtsdatum)  rows.push(['Geburtsdatum', a.geburtsdatum.split('-').reverse().join('.')]);
+  }
+  if (a.strasse)       rows.push(['Straße', a.strasse]);
+  if (a.plz || a.ort)  rows.push(['PLZ / Ort', [a.plz, a.ort].filter(Boolean).join(' ')]);
+  if (a.email)         rows.push(['E-Mail', a.email]);
+  if (a.telefon)       rows.push(['Telefon', a.telefon]);
+  if (a.steuer_id)     rows.push(['Steuer-IdNr. (11-stellig)', a.steuer_id]);
+  if (a.steuernummer)  rows.push(['Steuernummer (Finanzamt)', a.steuernummer]);
+  if (a.ust_id)        rows.push(['USt-IdNr.', a.ust_id]);
+  if (a.iban)          rows.push(['IBAN', a.iban]);
+  if (a.datev_nr)      rows.push(['DATEV-Mandantennr.', a.datev_nr]);
+
+  const tableRows = rows.map(([k, v]) =>
+    `<tr><td>${k}</td><td>${_escHtml(v)}</td></tr>`
+  ).join('');
+
+  const fileCount = Object.values(_pFiles).reduce((n, arr) => n + (arr||[]).length, 0);
+  const fileHint  = fileCount > 0
+    ? `<div style="margin-top:14px;font-size:.78rem;font-family:'Inter',sans-serif;color:var(--sub);">📎 ${fileCount} Datei${fileCount>1?'en':''} im Belege-Paket enthalten</div>`
+    : `<div style="margin-top:14px;font-size:.78rem;font-family:'Inter',sans-serif;color:var(--orange);">ℹ️ Noch keine Belege hochgeladen – erst Portal aufrufen und Dokumente hinzufügen</div>`;
+
+  document.getElementById('datev-preview-inner').innerHTML = `
+    <div class="sum-sec-title" style="margin-bottom:10px;">📋 Felder im DATEV-Export</div>
+    <table class="datev-field-table">${tableRows || '<tr><td colspan="2" style="color:var(--sub)">Keine Daten erfasst</td></tr>'}</table>
+    ${fileHint}
+  `;
+}
+
+function _buildDATEVCSVString(customAnswers) {
+  const a = customAnswers || answers;
+  const now = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  const ts  = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}000`;
+
+  const isUnternehmen = a.mandant_typ === 'unternehmen';
+  const adressattyp   = isUnternehmen ? 2 : 1;
+  const gebdat        = a.geburtsdatum ? a.geburtsdatum.split('-').reverse().join('.') : '';
+  const esc = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+
+  // DATEV EXTF Header (Debitoren/Kreditoren, Format-Version 5)
+  const header = `"EXTF";700;21;"Debitoren/Kreditoren";5;${ts};0;"";"H&K Automation";"HK";;;${ts.slice(0,8)};;4;;;;;;;"EUR";;;`;
+
+  // Spaltennamen
+  const colHeaders = [
+    'Konto',
+    'Name (Adressattyp Unternehmen)',
+    'Unternehmensgegenstand',
+    'Adressattyp',
+    'Adresse: Straße',
+    'Adresse: Postleitzahl',
+    'Adresse: Ort',
+    'Adresse: Land',
+    'Telefon',
+    'E-Mail',
+    'IBAN-Nr. 1',
+    'Name (Adressattyp natürliche Person)',
+    'Vorname (Adressattyp natürliche Person)',
+    'Geburtsdatum',
+    'Steuernummer',
+    'EU-Umsatzsteuernummer',
+    'Identifikationsnummer',
+  ].join(';');
+
+  // Datenzeile
+  const dataRow = [
+    a.datev_nr || '',
+    isUnternehmen ? (a.firma_name    || '') : '',
+    a.branche || '',
+    adressattyp,
+    a.strasse  || '',
+    a.plz      || '',
+    a.ort      || '',
+    'DE',
+    a.telefon  || '',
+    a.email    || '',
+    (a.iban    || '').replace(/\s/g, ''),
+    !isUnternehmen ? (a.nachname || '') : '',
+    !isUnternehmen ? (a.vorname  || '') : '',
+    gebdat,
+    a.steuernummer || '',
+    a.ust_id       || '',
+    a.steuer_id    || '',
+  ].map(esc).join(';');
+
+  return `${header}\r\n${colHeaders}\r\n${dataRow}\r\n`;
+}
+
+function _datevBasename(customAnswers) {
+  const a = customAnswers || answers;
+  const raw = a.firma_name || (a.nachname && a.vorname ? `${a.nachname}_${a.vorname}` : 'Mandant');
+  const clean = raw.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_äöüÄÖÜß\-]/g, '').slice(0, 40);
+  const date  = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  return `DATEV_${clean}_${date}`;
+}
+
+function _showDATEVSuccess(msg) {
+  const el = document.getElementById('datev-success-banner');
+  document.getElementById('datev-success-msg').textContent = msg;
+  el.classList.add('visible');
+  setTimeout(() => el.classList.remove('visible'), 6000);
+}
+
+function downloadDATEVStammdaten() {
+  const csv  = _buildDATEVCSVString();
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url; link.download = _datevBasename() + '_Stammdaten.csv'; link.click();
+  URL.revokeObjectURL(url);
+  _showDATEVSuccess(_datevBasename() + '_Stammdaten.csv wurde heruntergeladen.');
+}
+
+async function _buildZip(includeStammdaten) {
+  if (typeof JSZip === 'undefined') {
+    alert('ZIP-Bibliothek nicht geladen – bitte Internetverbindung prüfen und Seite neu laden.'); return null;
+  }
+  const zip  = new JSZip();
+  const root = zip.folder(_datevBasename());
+
+  if (includeStammdaten) {
+    root.file('DATEV_Stammdaten.csv', '\uFEFF' + _buildDATEVCSVString());
+  }
+
+  const belegeFolder = root.folder('Belege');
+  if (_pDocs && _pDocs.length) {
+    _pDocs.forEach((doc, i) => {
+      const files = _pFiles[i] || [];
+      if (!files.length) return;
+      const label = String(i + 1).padStart(2, '0') + '_' +
+        doc.name.replace(/[^a-zA-Z0-9äöüÄÖÜß\s]/g, '').trim().replace(/\s+/g, '_').slice(0, 40);
+      const sub = belegeFolder.folder(label);
+      files.forEach(f => sub.file(f.name, f));
+    });
+  }
+
+  const a    = answers;
+  const name = a.firma_name || [a.vorname, a.nachname].filter(Boolean).join(' ') || 'Mandant';
+  const lines = [
+    'DATEV-Export – H&K Automation',
+    '================================',
+    `Mandant:  ${name}`,
+    `Erstellt: ${new Date().toLocaleString('de-DE')}`,
+    '',
+    'Inhalt:',
+    includeStammdaten ? '• DATEV_Stammdaten.csv – Import: DATEV Arbeitsplatz → Stammdaten → Debitoren/Kreditoren → Import → EXTF-Datei wählen' : '',
+    '• Belege/ – Dokumente geordnet nach DATEV-Belegkategorien',
+    '',
+    'Erstellt mit H&K Automation (hks-automation.de)',
+  ].filter(l => l !== null).join('\r\n');
+  root.file('README.txt', lines);
+
+  return zip;
+}
+
+async function downloadBelegeZip() {
+  const btn = document.getElementById('datev-zip-btn');
+  const lbl = btn.querySelector('.btn-datev-label');
+  const orig = lbl.textContent;
+  btn.disabled = true; lbl.textContent = '⟳ ZIP wird erstellt…';
+  try {
+    const zip  = await _buildZip(false); if (!zip) return;
+    const blob = await zip.generateAsync({ type:'blob', compression:'DEFLATE', compressionOptions:{level:6} });
+    const url  = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url; link.download = _datevBasename() + '_Belege.zip'; link.click();
+    URL.revokeObjectURL(url);
+    _showDATEVSuccess(_datevBasename() + '_Belege.zip wurde heruntergeladen.');
+  } catch(e) { console.error(e); alert('Fehler: ' + e.message); }
+  finally    { btn.disabled = false; lbl.textContent = orig; }
+}
+
+async function downloadDATEVKomplett() {
+  const btns = document.querySelectorAll('.btn-datev');
+  btns.forEach(b => b.disabled = true);
+  document.getElementById('datev-komplett-btn').querySelector('.btn-datev-label').textContent = '⟳ Paket wird erstellt…';
+  try {
+    const zip  = await _buildZip(true); if (!zip) return;
+    const blob = await zip.generateAsync({ type:'blob', compression:'DEFLATE', compressionOptions:{level:6} });
+    const url  = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url; link.download = _datevBasename() + '_Komplett.zip'; link.click();
+    URL.revokeObjectURL(url);
+    _showDATEVSuccess(_datevBasename() + '_Komplett.zip wurde heruntergeladen.');
+  } catch(e) { console.error(e); alert('Fehler: ' + e.message); }
+  finally    { btns.forEach(b => b.disabled = false); document.getElementById('datev-komplett-btn').querySelector('.btn-datev-label').textContent = 'Vollständiges Paket'; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════════ */
+// API-Key für KI-Check nur via URL-Parameter ?aikey=... (nie hardcoden)
+(function(){ const k=new URLSearchParams(location.search).get('aikey'); if(k&&!k.startsWith('HIER')) window._ANTHROPIC_KEY=k; })();
+
+checkSession();
+document.addEventListener('keydown', e=>{
+  if(e.key!=='Enter') return;
+  const a=document.getElementById('sc-auth');
+  if(!a||!a.classList.contains('active')) return;
+  if(document.getElementById('panel-login').classList.contains('active')) doLogin();
+  else doRegister();
+});
+</script>
+</body>
+</html>

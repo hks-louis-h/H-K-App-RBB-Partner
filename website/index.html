@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>H&K Automation — KI-Kanzleisoftware für Steuerberater</title>
+  <meta name="description" content="Die Kanzleisoftware mit integriertem KI-Steuerberater, automatisiertem Mandantenmanagement und intelligentem Dashboard. Exklusiv für Steuerkanzleien.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:    #ecedf1;
+      --acc:   #6d7aff;
+      --acc2:  #5563e8;
+      --text:  #1a1b2e;
+      --text2: #4a4b6a;
+      --text3: #8889aa;
+      --sl:    #ffffff;
+      --sd:    rgba(166,171,189,.55);
+      --sd2:   rgba(166,171,189,.32);
+      --neu-out: -5px -5px 12px #fff, 5px 5px 12px rgba(166,171,189,.55);
+      --neu-in:  inset 3px 3px 7px rgba(166,171,189,.4), inset -3px -3px 7px #fff;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); font-family: 'Inter', sans-serif; color: var(--text); overflow-x: hidden; }
+
+    /* ── UTILS ── */
+    .neu  { box-shadow: var(--neu-out); }
+    .acc  { color: var(--acc); }
+    .fade-up { opacity: 0; transform: translateY(28px); transition: opacity .65s ease, transform .65s ease; }
+    .fade-up.visible { opacity: 1; transform: none; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 6%; height: 68px;
+      background: rgba(236,237,241,.85);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(166,171,189,.18);
+    }
+    .nav-logo { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 1.1rem; letter-spacing: -.02em; }
+    .nav-logo span { color: var(--acc); }
+    .nav-links { display: flex; gap: 36px; }
+    .nav-links a { font-size: .88rem; font-weight: 500; color: var(--text2); text-decoration: none; transition: color .2s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      background: var(--acc); color: #fff; border: none;
+      padding: 10px 22px; border-radius: 50px; font-size: .85rem;
+      font-weight: 600; cursor: pointer; transition: transform .15s, box-shadow .15s;
+      font-family: 'Inter', sans-serif;
+      box-shadow: 0 4px 16px rgba(109,122,255,.35);
+    }
+    .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(109,122,255,.45); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh; display: flex; align-items: center;
+      padding: 100px 6% 60px;
+      gap: 60px;
+    }
+    .hero-left { flex: 1; max-width: 520px; }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(109,122,255,.1); color: var(--acc);
+      padding: 6px 16px; border-radius: 50px;
+      font-size: .75rem; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; margin-bottom: 28px;
+    }
+    .hero-tag::before { content:''; width:7px; height:7px; border-radius:50%; background:var(--acc); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+    .hero h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(2.2rem, 4vw, 3.2rem);
+      font-weight: 800; line-height: 1.12;
+      letter-spacing: -.03em; margin-bottom: 22px;
+    }
+    .hero h1 em { font-style: normal; color: var(--acc); }
+    .hero-sub {
+      font-size: 1.05rem; line-height: 1.7; color: var(--text2);
+      margin-bottom: 40px; max-width: 440px;
+    }
+    .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 52px; }
+    .btn-primary {
+      background: var(--acc); color: #fff; border: none;
+      padding: 14px 30px; border-radius: 50px; font-size: .9rem;
+      font-weight: 700; cursor: pointer; transition: all .2s;
+      box-shadow: 0 6px 20px rgba(109,122,255,.4);
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(109,122,255,.5); }
+    .btn-secondary {
+      background: transparent; color: var(--text2);
+      border: 1.5px solid rgba(109,122,255,.3);
+      padding: 14px 28px; border-radius: 50px; font-size: .9rem;
+      font-weight: 600; cursor: pointer; transition: all .2s;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-secondary:hover { border-color: var(--acc); color: var(--acc); }
+    .hero-trust { display: flex; align-items: center; gap: 20px; }
+    .trust-avatars { display: flex; }
+    .trust-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--acc); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .72rem; font-weight: 700;
+      border: 2.5px solid var(--bg);
+      margin-left: -10px;
+      box-shadow: var(--neu-out);
+    }
+    .trust-avatar:first-child { margin-left: 0; }
+    .trust-avatar:nth-child(2) { background: #5563e8; }
+    .trust-avatar:nth-child(3) { background: #7c8bff; }
+    .trust-avatar:nth-child(4) { background: #4a52c8; }
+    .trust-text { font-size: .82rem; color: var(--text2); line-height: 1.4; }
+    .trust-text strong { color: var(--text); }
+
+    /* ── APP MOCKUP ── */
+    .hero-right { flex: 1.1; display: flex; justify-content: center; align-items: center; position: relative; }
+    .mockup-glow {
+      position: absolute; width: 500px; height: 400px;
+      background: radial-gradient(ellipse at center, rgba(109,122,255,.2) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .browser-wrap {
+      width: 100%; max-width: 620px;
+      border-radius: 16px;
+      box-shadow: -12px -12px 30px #fff, 12px 12px 30px rgba(166,171,189,.6), 0 30px 60px rgba(109,122,255,.12);
+      overflow: hidden;
+      position: relative; z-index: 1;
+    }
+    .browser-bar {
+      background: #e0e2e8; padding: 10px 16px;
+      display: flex; align-items: center; gap: 12px;
+      border-bottom: 1px solid rgba(166,171,189,.3);
+    }
+    .browser-dots { display: flex; gap: 6px; }
+    .browser-dot { width: 11px; height: 11px; border-radius: 50%; }
+    .browser-dot:nth-child(1) { background: #ff6059; }
+    .browser-dot:nth-child(2) { background: #ffbd2e; }
+    .browser-dot:nth-child(3) { background: #28ca41; }
+    .browser-url {
+      flex: 1; background: var(--bg); border-radius: 6px;
+      padding: 5px 12px; font-size: .72rem; color: var(--text3);
+      font-family: 'Inter', sans-serif;
+    }
+    .app-shell { display: flex; height: 420px; background: var(--bg); overflow: hidden; }
+
+    /* Mini Sidebar */
+    .mini-sidebar {
+      width: 140px; flex-shrink: 0;
+      background: var(--bg);
+      border-right: 1px solid rgba(166,171,189,.2);
+      display: flex; flex-direction: column;
+      padding: 12px 8px;
+      gap: 2px;
+    }
+    .mini-logo { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: .72rem; padding: 4px 8px 12px; color: var(--text); }
+    .mini-logo span { color: var(--acc); }
+    .mini-section-lbl { font-size: .55rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .1em; padding: 8px 8px 4px; }
+    .mini-item {
+      display: flex; align-items: center; gap: 7px;
+      padding: 7px 8px; border-radius: 8px;
+      font-size: .7rem; font-weight: 500; color: var(--text2);
+      cursor: pointer; transition: all .2s;
+    }
+    .mini-item svg { flex-shrink: 0; opacity: .7; }
+    .mini-item.active {
+      background: var(--bg);
+      box-shadow: -3px -3px 7px #fff, 3px 3px 7px rgba(166,171,189,.5);
+      color: var(--acc); font-weight: 700;
+    }
+    .mini-item.active svg { opacity: 1; }
+    .mini-item.active::before {
+      content: ''; position: absolute; left: 8px; top: 22%; bottom: 22%;
+      width: 2.5px; background: var(--acc); border-radius: 2px;
+    }
+    .mini-item { position: relative; }
+    .mini-badge {
+      margin-left: auto; background: var(--acc); color: #fff;
+      font-size: .55rem; font-weight: 700;
+      padding: 1px 5px; border-radius: 10px;
+    }
+
+    /* Mini Content Area */
+    .mini-content { flex: 1; overflow: hidden; position: relative; }
+    .mini-screen {
+      position: absolute; inset: 0;
+      opacity: 0; transform: translateX(16px);
+      transition: opacity .5s ease, transform .5s ease;
+      padding: 16px;
+      overflow: hidden;
+    }
+    .mini-screen.active { opacity: 1; transform: none; }
+
+    /* Screen 1: Dashboard */
+    .dash-stats { display: flex; gap: 10px; margin-bottom: 14px; }
+    .dash-stat {
+      flex: 1; padding: 12px 10px; border-radius: 12px;
+      box-shadow: var(--neu-out); text-align: center;
+    }
+    .dash-stat-num { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--acc); }
+    .dash-stat-lbl { font-size: .6rem; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
+    .dash-section-title { font-size: .68rem; font-weight: 700; color: var(--text2); margin-bottom: 8px; }
+    .dash-items { display: flex; flex-direction: column; gap: 6px; }
+    .dash-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 10px; border-radius: 10px;
+      box-shadow: var(--neu-out); font-size: .68rem;
+    }
+    .dash-avatar {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: var(--acc); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .6rem; font-weight: 700; flex-shrink: 0;
+    }
+    .dash-name { font-weight: 600; color: var(--text); font-size: .68rem; }
+    .dash-sub  { font-size: .6rem; color: var(--text3); }
+    .dash-date { margin-left: auto; font-size: .6rem; color: var(--text3); }
+
+    /* Screen 2: KanzleiGPT */
+    .gpt-header {
+      display: flex; align-items: center; gap: 8px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(166,171,189,.15);
+      margin-bottom: 12px;
+    }
+    .gpt-icon {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: rgba(109,122,255,.12);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: var(--neu-out);
+    }
+    .gpt-title { font-family: 'Poppins', sans-serif; font-size: .78rem; font-weight: 700; }
+    .gpt-sub   { font-size: .6rem; color: var(--text3); }
+    .gpt-msgs  { display: flex; flex-direction: column; gap: 8px; }
+    .gpt-bubble {
+      max-width: 85%; padding: 8px 12px; border-radius: 14px;
+      font-size: .68rem; line-height: 1.55;
+    }
+    .gpt-bubble.user {
+      align-self: flex-end;
+      background: var(--acc); color: #fff;
+      border-radius: 14px 14px 3px 14px;
+    }
+    .gpt-bubble.ai {
+      align-self: flex-start;
+      box-shadow: var(--neu-out);
+      color: var(--text);
+      border-radius: 14px 14px 14px 3px;
+    }
+    .gpt-bubble.ai strong { color: var(--acc); }
+    .gpt-cursor { display: inline-block; width: 1.5px; height: 10px; background: var(--acc); margin-left: 1px; vertical-align: text-bottom; animation: blink .7s step-end infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    .gpt-input-row {
+      display: flex; gap: 6px; align-items: center;
+      margin-top: 12px; padding-top: 10px;
+      border-top: 1px solid rgba(166,171,189,.15);
+    }
+    .gpt-inp {
+      flex: 1; padding: 7px 12px; border-radius: 20px;
+      font-size: .65rem; color: var(--text3);
+      box-shadow: var(--neu-in); border: none; background: transparent;
+      font-family: 'Inter', sans-serif;
+    }
+    .gpt-send {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--acc); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 3px 10px rgba(109,122,255,.4);
+    }
+
+    /* Screen 3: Mandanten */
+    .mand-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .mand-title { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 700; }
+    .mand-count { font-size: .65rem; color: var(--text3); }
+    .mand-search {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 12px; border-radius: 20px;
+      box-shadow: var(--neu-in); font-size: .65rem; color: var(--text3);
+      margin-bottom: 10px;
+    }
+    .mand-list { display: flex; flex-direction: column; gap: 6px; }
+    .mand-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: 12px;
+      box-shadow: var(--neu-out);
+    }
+    .mand-av {
+      width: 30px; height: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .7rem; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .mand-name { font-size: .72rem; font-weight: 600; color: var(--text); }
+    .mand-type { font-size: .6rem; color: var(--text3); }
+    .mand-status {
+      margin-left: auto; font-size: .58rem; font-weight: 700;
+      padding: 3px 8px; border-radius: 10px;
+    }
+    .mand-status.aktiv { background: rgba(40,202,65,.12); color: #20a835; }
+    .mand-status.frist { background: rgba(255,180,0,.12); color: #d49000; }
+
+    /* Mockup tabs */
+    .mockup-tabs {
+      display: flex; justify-content: center; gap: 8px; margin-top: 20px;
+    }
+    .mockup-tab {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 18px; border-radius: 50px; cursor: pointer;
+      font-size: .78rem; font-weight: 600; color: var(--text2);
+      transition: all .25s;
+      box-shadow: var(--neu-out);
+      border: none; background: var(--bg);
+      font-family: 'Inter', sans-serif;
+    }
+    .mockup-tab.active { background: var(--acc); color: #fff; box-shadow: 0 4px 16px rgba(109,122,255,.4); }
+    .mockup-tab svg { opacity: .7; }
+    .mockup-tab.active svg { opacity: 1; }
+
+    /* ── FEATURES ── */
+    .section { padding: 100px 6%; }
+    .section-tag {
+      display: inline-block; font-size: .72rem; font-weight: 700;
+      color: var(--acc); text-transform: uppercase; letter-spacing: .1em;
+      margin-bottom: 14px;
+    }
+    .section h2 {
+      font-family: 'Poppins', sans-serif; font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 800; letter-spacing: -.03em; line-height: 1.15;
+      margin-bottom: 16px;
+    }
+    .section-sub { font-size: 1rem; color: var(--text2); line-height: 1.7; max-width: 560px; margin-bottom: 60px; }
+
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
+    .feature-card {
+      padding: 28px 26px; border-radius: 20px;
+      box-shadow: var(--neu-out);
+      transition: transform .2s;
+    }
+    .feature-card:hover { transform: translateY(-4px); }
+    .feature-icon {
+      width: 46px; height: 46px; border-radius: 14px;
+      background: rgba(109,122,255,.1);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 18px;
+    }
+    .feature-card h3 { font-family: 'Poppins', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 10px; }
+    .feature-card p { font-size: .85rem; color: var(--text2); line-height: 1.65; }
+
+    /* ── STATS ── */
+    .stats-section {
+      padding: 80px 6%;
+      background: linear-gradient(135deg, rgba(109,122,255,.08) 0%, transparent 60%);
+    }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    .stat-card {
+      padding: 32px 24px; border-radius: 20px;
+      box-shadow: var(--neu-out); text-align: center;
+    }
+    .stat-num {
+      font-family: 'Poppins', sans-serif; font-size: 2.4rem;
+      font-weight: 900; color: var(--acc); letter-spacing: -.04em;
+    }
+    .stat-lbl { font-size: .8rem; color: var(--text2); margin-top: 6px; line-height: 1.4; }
+
+    /* ── HOW IT WORKS ── */
+    .steps { display: flex; flex-direction: column; gap: 0; max-width: 700px; }
+    .step { display: flex; gap: 24px; padding: 32px 0; position: relative; }
+    .step:not(:last-child)::after {
+      content: ''; position: absolute; left: 22px; top: 72px; bottom: 0;
+      width: 2px; background: linear-gradient(to bottom, rgba(109,122,255,.3), transparent);
+    }
+    .step-num {
+      width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+      background: var(--acc); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 800;
+      box-shadow: 0 6px 20px rgba(109,122,255,.35);
+    }
+    .step-body h3 { font-family: 'Poppins', sans-serif; font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
+    .step-body p  { font-size: .88rem; color: var(--text2); line-height: 1.7; }
+
+    /* ── TESTIMONIAL ── */
+    .testimonial-section { padding: 100px 6%; }
+    .testimonial-card {
+      max-width: 720px; margin: 0 auto;
+      padding: 44px 48px; border-radius: 24px;
+      box-shadow: var(--neu-out); text-align: center;
+      position: relative;
+    }
+    .testimonial-card::before {
+      content: '"'; position: absolute; top: 16px; left: 32px;
+      font-size: 6rem; color: rgba(109,122,255,.12);
+      font-family: 'Poppins', sans-serif; font-weight: 900; line-height: 1;
+    }
+    .testimonial-text { font-size: 1.1rem; line-height: 1.75; color: var(--text2); margin-bottom: 28px; font-style: italic; }
+    .testimonial-author { display: flex; align-items: center; justify-content: center; gap: 14px; }
+    .t-avatar { width: 46px; height: 46px; border-radius: 50%; background: var(--acc); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .9rem; box-shadow: 0 4px 14px rgba(109,122,255,.35); }
+    .t-name { font-weight: 700; font-size: .9rem; }
+    .t-role { font-size: .78rem; color: var(--text3); }
+
+    /* ── CTA ── */
+    .cta-section {
+      padding: 100px 6%; text-align: center;
+    }
+    .cta-card {
+      max-width: 680px; margin: 0 auto;
+      padding: 60px 48px; border-radius: 28px;
+      background: linear-gradient(135deg, var(--acc) 0%, var(--acc2) 100%);
+      box-shadow: 0 20px 60px rgba(109,122,255,.4);
+    }
+    .cta-card h2 { font-family: 'Poppins', sans-serif; font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; color: #fff; margin-bottom: 16px; letter-spacing: -.03em; }
+    .cta-card p  { color: rgba(255,255,255,.8); font-size: .95rem; margin-bottom: 36px; line-height: 1.6; }
+    .btn-white {
+      background: #fff; color: var(--acc); border: none;
+      padding: 14px 34px; border-radius: 50px; font-size: .9rem;
+      font-weight: 700; cursor: pointer; transition: all .2s;
+      font-family: 'Inter', sans-serif;
+      box-shadow: 0 6px 20px rgba(0,0,0,.15);
+    }
+    .btn-white:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,.2); }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 40px 6%; border-top: 1px solid rgba(166,171,189,.2);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+    }
+    .footer-logo { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: .95rem; }
+    .footer-logo span { color: var(--acc); }
+    .footer-links { display: flex; gap: 28px; }
+    .footer-links a { font-size: .8rem; color: var(--text3); text-decoration: none; transition: color .2s; }
+    .footer-links a:hover { color: var(--text); }
+    .footer-copy { font-size: .78rem; color: var(--text3); }
+
+    @media (max-width: 900px) {
+      .hero { flex-direction: column; padding-top: 90px; }
+      .hero-right { width: 100%; }
+      .stats-grid { grid-template-columns: repeat(2,1fr); }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-logo">H&amp;K <span>automation</span></div>
+  <div class="nav-links">
+    <a href="#software">Software</a>
+    <a href="#features">Features</a>
+    <a href="#ablauf">Ablauf</a>
+    <a href="#kontakt">Kontakt</a>
+  </div>
+  <button class="nav-cta" onclick="document.getElementById('kontakt').scrollIntoView({behavior:'smooth'})">Demo anfragen</button>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-tag">Kanzleisoftware 2026</div>
+    <h1>Ihre Kanzlei.<br><em>Intelligent</em><br>automatisiert.</h1>
+    <p class="hero-sub">
+      Die einzige Software, die Mandantenmanagement, KI-Steuerberater und automatisierte Workflows in einer Oberfläche vereint — gebaut exklusiv für Steuerkanzleien.
+    </p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="document.getElementById('kontakt').scrollIntoView({behavior:'smooth'})">Demo anfragen</button>
+      <button class="btn-secondary" onclick="document.getElementById('software').scrollIntoView({behavior:'smooth'})">Software entdecken</button>
+    </div>
+    <div class="hero-trust">
+      <div class="trust-avatars">
+        <div class="trust-avatar">SM</div>
+        <div class="trust-avatar">PK</div>
+        <div class="trust-avatar">AH</div>
+        <div class="trust-avatar">+</div>
+      </div>
+      <div class="trust-text">
+        <strong>20+ Kanzleien</strong> vertrauen bereits<br>auf H&K Automation
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="mockup-glow"></div>
+    <div>
+      <div class="browser-wrap neu" id="software">
+        <div class="browser-bar">
+          <div class="browser-dots">
+            <div class="browser-dot"></div>
+            <div class="browser-dot"></div>
+            <div class="browser-dot"></div>
+          </div>
+          <div class="browser-url">app.hks-automation.de/kanzlei</div>
+        </div>
+        <div class="app-shell">
+          <!-- Mini Sidebar -->
+          <div class="mini-sidebar">
+            <div class="mini-logo">H&amp;K <span>auto</span></div>
+            <div class="mini-section-lbl">KI</div>
+            <div class="mini-item" id="ms-gpt">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              KanzleiGPT
+            </div>
+            <div class="mini-section-lbl">Übersicht</div>
+            <div class="mini-item" id="ms-dash">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              Dashboard
+            </div>
+            <div class="mini-section-lbl">Verwaltung</div>
+            <div class="mini-item" id="ms-mand">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Mandanten
+            </div>
+            <div class="mini-item">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Fristen
+              <span class="mini-badge">2</span>
+            </div>
+            <div class="mini-item">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Kalender
+            </div>
+            <div class="mini-section-lbl">Finanzen</div>
+            <div class="mini-item">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              Rechnungen
+            </div>
+          </div>
+
+          <!-- Content Area -->
+          <div class="mini-content">
+
+            <!-- Screen 1: Dashboard -->
+            <div class="mini-screen" id="screen-dash">
+              <div class="dash-stats">
+                <div class="dash-stat">
+                  <div class="dash-stat-num" id="stat-mand">0</div>
+                  <div class="dash-stat-lbl">Mandanten</div>
+                </div>
+                <div class="dash-stat">
+                  <div class="dash-stat-num" id="stat-fristen">0</div>
+                  <div class="dash-stat-lbl">Fristen</div>
+                </div>
+                <div class="dash-stat">
+                  <div class="dash-stat-num" id="stat-termine">0</div>
+                  <div class="dash-stat-lbl">Heute</div>
+                </div>
+              </div>
+              <div class="dash-section-title">Im Fokus</div>
+              <div class="dash-items">
+                <div class="dash-item">
+                  <div class="dash-avatar" style="background:#6d7aff">AB</div>
+                  <div>
+                    <div class="dash-name">Alexander Bauer</div>
+                    <div class="dash-sub">Jahresgespräch · EStG-Prüfung</div>
+                  </div>
+                  <div class="dash-date">Heute</div>
+                </div>
+                <div class="dash-item">
+                  <div class="dash-avatar" style="background:#5563e8">MH</div>
+                  <div>
+                    <div class="dash-name">Dr. Maximilian Huber</div>
+                    <div class="dash-sub">Bescheid analysieren · IAB</div>
+                  </div>
+                  <div class="dash-date">15:23</div>
+                </div>
+                <div class="dash-item">
+                  <div class="dash-avatar" style="background:#7c8bff">JK</div>
+                  <div>
+                    <div class="dash-name">Jochen Krause</div>
+                    <div class="dash-sub">Einspruchsfrist · 6d</div>
+                  </div>
+                  <div class="dash-date">6d</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Screen 2: KanzleiGPT -->
+            <div class="mini-screen" id="screen-gpt">
+              <div class="gpt-header">
+                <div class="gpt-icon">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </div>
+                <div>
+                  <div class="gpt-title">KanzleiGPT</div>
+                  <div class="gpt-sub">Spezialisiert · Präzise · Kanzlei-exklusiv</div>
+                </div>
+              </div>
+              <div class="gpt-msgs" id="gpt-msgs">
+                <div class="gpt-bubble user">Welcher Grundfreibetrag gilt 2025?</div>
+                <div class="gpt-bubble ai" id="gpt-ai-bubble"></div>
+              </div>
+              <div class="gpt-input-row">
+                <div class="gpt-inp">Frage stellen oder Auftrag eingeben…</div>
+                <button class="gpt-send">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Screen 3: Mandanten -->
+            <div class="mini-screen" id="screen-mand">
+              <div class="mand-header">
+                <div>
+                  <div class="mand-title">Mandanten</div>
+                  <div class="mand-count">50 gesamt · 3 neue diese Woche</div>
+                </div>
+              </div>
+              <div class="mand-search">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                Mandant suchen…
+              </div>
+              <div class="mand-list">
+                <div class="mand-item">
+                  <div class="mand-av" style="background:#6d7aff">AB</div>
+                  <div>
+                    <div class="mand-name">Alexander Bauer</div>
+                    <div class="mand-type">GmbH-Geschäftsführer</div>
+                  </div>
+                  <div class="mand-status aktiv">Aktiv</div>
+                </div>
+                <div class="mand-item">
+                  <div class="mand-av" style="background:#5563e8">MH</div>
+                  <div>
+                    <div class="mand-name">Dr. M. Huber</div>
+                    <div class="mand-type">Freiberufler · Arzt</div>
+                  </div>
+                  <div class="mand-status frist">Frist 6d</div>
+                </div>
+                <div class="mand-item">
+                  <div class="mand-av" style="background:#7c8bff">JV</div>
+                  <div>
+                    <div class="mand-name">Julia Vogel</div>
+                    <div class="mand-type">Selbstständig</div>
+                  </div>
+                  <div class="mand-status aktiv">Aktiv</div>
+                </div>
+                <div class="mand-item">
+                  <div class="mand-av" style="background:#4a52c8">FK</div>
+                  <div>
+                    <div class="mand-name">Felix Kramer</div>
+                    <div class="mand-type">Einzelunternehmer</div>
+                  </div>
+                  <div class="mand-status aktiv">Aktiv</div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /mini-content -->
+        </div><!-- /app-shell -->
+      </div><!-- /browser-wrap -->
+
+      <!-- Tabs -->
+      <div class="mockup-tabs">
+        <button class="mockup-tab" id="tab-dash" onclick="switchScreen('dash')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </button>
+        <button class="mockup-tab" id="tab-gpt" onclick="switchScreen('gpt')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          KanzleiGPT
+        </button>
+        <button class="mockup-tab" id="tab-mand" onclick="switchScreen('mand')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          Mandanten
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<section class="section" id="features">
+  <div class="fade-up">
+    <div class="section-tag">Was Sie erhalten</div>
+    <h2>Alles in einer<br>Oberfläche.</h2>
+    <p class="section-sub">Keine Tool-Flickenteppiche mehr. H&K Automation verbindet alle Kanzleiabläufe in einer durchdachten Software — mit KI als Kern.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card fade-up">
+      <div class="feature-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <h3>KanzleiGPT</h3>
+      <p>Ihr KI-Steuerberater mit Zugriff auf alle 26 deutschen Steuergesetze. Antwortet mit exakten Paragraphenzitaten (§ 32a EStG) — nie ohne Quelle.</p>
+    </div>
+    <div class="feature-card fade-up">
+      <div class="feature-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <h3>Mandantenverwaltung</h3>
+      <p>Vollständige Mandantenakte digital — Dokumente, Bescheide, Fristen, Kommunikation. Alles in Sekunden abrufbar, nichts verloren.</p>
+    </div>
+    <div class="feature-card fade-up">
+      <div class="feature-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <h3>Fristen & Kalender</h3>
+      <p>Automatische Fristberechnung, Erinnerungen und Terminmanagement. Kein Bescheid-Fristversäumnis mehr — die KI warnt Sie proaktiv.</p>
+    </div>
+    <div class="feature-card fade-up">
+      <div class="feature-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>
+      <h3>BWA-Analyse</h3>
+      <p>Betriebswirtschaftliche Auswertungen automatisch interpretiert. Die KI erkennt Anomalien und erklärt sie in verständlicher Sprache.</p>
+    </div>
+    <div class="feature-card fade-up">
+      <div class="feature-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      </div>
+      <h3>Dokumenten-Scanner</h3>
+      <p>Belege, Bescheide und Verträge hochladen — die KI liest, kategorisiert und ordnet automatisch der richtigen Mandantenakte zu.</p>
+    </div>
+    <div class="feature-card fade-up">
+      <div class="feature-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <h3>Team-Chat</h3>
+      <p>Interner Kanzlei-Chat mit @Mentions, direkt in der Software. Kein WhatsApp für Mandantenfälle mehr — sicher, dokumentiert, DSGVO-konform.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── STATS ── -->
+<div class="stats-section">
+  <div class="stats-grid">
+    <div class="stat-card fade-up">
+      <div class="stat-num">8h</div>
+      <div class="stat-lbl">durchschnittliche Zeitersparnis<br>pro Woche</div>
+    </div>
+    <div class="stat-card fade-up">
+      <div class="stat-num">26</div>
+      <div class="stat-lbl">deutsche Steuergesetze<br>im KI-Kern hinterlegt</div>
+    </div>
+    <div class="stat-card fade-up">
+      <div class="stat-num">0</div>
+      <div class="stat-lbl" id="stat-frist-lbl">Fristversäumnisse bei<br>unseren Kunden seit Start</div>
+    </div>
+    <div class="stat-card fade-up">
+      <div class="stat-num">&lt;3s</div>
+      <div class="stat-lbl">bis zur ersten KI-Antwort<br>mit Paragraphenzitat</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── HOW IT WORKS ── -->
+<section class="section" id="ablauf">
+  <div class="fade-up">
+    <div class="section-tag">Ablauf</div>
+    <h2>In 3 Schritten<br>live geschaltet.</h2>
+    <p class="section-sub">Kein monatelanger Rollout. Kein IT-Projektteam. Wir richten alles ein — Sie arbeiten ab Tag 1.</p>
+  </div>
+  <div class="steps">
+    <div class="step fade-up">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h3>Analyse-Call (60 Min.)</h3>
+        <p>Wir analysieren Ihre aktuellen Prozesse, identifizieren die größten Zeitfresser und zeigen live, wie die Software für Ihre Kanzlei konkret aussieht.</p>
+      </div>
+    </div>
+    <div class="step fade-up">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h3>Einrichtung & Daten-Import</h3>
+        <p>Wir richten die Software mit Ihren Mandantendaten, Kanzleistruktur und Team-Zugängen ein. Onboarding dauert typischerweise 2–3 Werktage.</p>
+      </div>
+    </div>
+    <div class="step fade-up">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h3>Partnerschaft & laufende Updates</h3>
+        <p>Wir sind kein Software-Anbieter — wir sind Ihr digitaler Partner. Monatliche Updates, direkter Support und kontinuierliche Optimierung inklusive.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TESTIMONIAL ── -->
+<section class="testimonial-section">
+  <div class="testimonial-card neu fade-up">
+    <p class="testimonial-text">
+      „Ich habe 15 Jahre lang mit Excel-Listen und Outlook-Erinnerungen gearbeitet. Seit H&K Automation läuft der Kanzleialltag wie von selbst. KanzleiGPT spart mir allein 2 Stunden täglich bei der Bescheid-Prüfung."
+    </p>
+    <div class="testimonial-author">
+      <div class="t-avatar">SK</div>
+      <div>
+        <div class="t-name">Steuerberater</div>
+        <div class="t-role">Kanzlei mit 180 Mandanten · München</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section class="cta-section" id="kontakt">
+  <div class="cta-card fade-up">
+    <h2>Bereit, Ihre Kanzlei zu transformieren?</h2>
+    <p>Vereinbaren Sie eine kostenlose Demo — wir zeigen Ihnen die Software live mit Ihren eigenen Fällen.</p>
+    <button class="btn-white" onclick="window.location.href='mailto:kontakt@hks-automation.de?subject=Demo%20anfragen'">Demo anfragen</button>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-logo">H&amp;K <span>automation</span></div>
+  <div class="footer-links">
+    <a href="#">Impressum</a>
+    <a href="#">Datenschutz</a>
+    <a href="#">Kontakt</a>
+  </div>
+  <div class="footer-copy">© 2026 H&K Automation GmbH</div>
+</footer>
+
+<script>
+  // ── SCREEN SWITCHER ──────────────────────────────────────────────
+  const screens = ['dash', 'gpt', 'mand'];
+  let currentScreen = 'dash';
+  let autoTimer = null;
+  let gptTypingTimer = null;
+
+  function switchScreen(name) {
+    // Clear old screen
+    document.getElementById('screen-' + currentScreen).classList.remove('active');
+    document.getElementById('tab-' + currentScreen).classList.remove('active');
+    // Update sidebar
+    ['ms-gpt','ms-dash','ms-mand'].forEach(id => document.getElementById(id)?.classList.remove('active'));
+
+    currentScreen = name;
+
+    document.getElementById('screen-' + name).classList.add('active');
+    document.getElementById('tab-' + name).classList.add('active');
+
+    if (name === 'dash') { document.getElementById('ms-dash').classList.add('active'); countUpStats(); }
+    if (name === 'gpt')  { document.getElementById('ms-gpt').classList.add('active');  startGptTyping(); }
+    if (name === 'mand') { document.getElementById('ms-mand').classList.add('active'); }
+
+    resetAutoplay();
+  }
+
+  function resetAutoplay() {
+    if (autoTimer) clearInterval(autoTimer);
+    autoTimer = setInterval(() => {
+      const idx = screens.indexOf(currentScreen);
+      switchScreen(screens[(idx + 1) % screens.length]);
+    }, 5500);
+  }
+
+  // ── COUNTER ─────────────────────────────────────────────────────
+  function countUp(el, target, duration) {
+    const start = performance.now();
+    const update = (now) => {
+      const progress = Math.min((now - start) / duration, 1);
+      el.textContent = Math.round(progress * target);
+      if (progress < 1) requestAnimationFrame(update);
+    };
+    requestAnimationFrame(update);
+  }
+
+  function countUpStats() {
+    countUp(document.getElementById('stat-mand'),    50, 900);
+    countUp(document.getElementById('stat-fristen'), 26, 900);
+    countUp(document.getElementById('stat-termine'),  2, 600);
+  }
+
+  // ── GPT TYPEWRITER ───────────────────────────────────────────────
+  const GPT_RESPONSE = `Nach § 32a Abs. 1 EStG beträgt der Grundfreibetrag 2025 **12.096 €** für Ledige (§ 32a Abs. 5 EStG: 24.192 € für Zusammenveranlagte). Unterhalb dieser Grenze fällt keine Einkommensteuer an.`;
+
+  function startGptTyping() {
+    if (gptTypingTimer) clearTimeout(gptTypingTimer);
+    const bubble = document.getElementById('gpt-ai-bubble');
+    bubble.innerHTML = '<span class="gpt-cursor"></span>';
+    let i = 0;
+
+    // Strip markdown for display (simple bold)
+    const plain = GPT_RESPONSE;
+
+    function typeChar() {
+      if (i < plain.length) {
+        const chunk = plain.slice(0, i + 1)
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        bubble.innerHTML = chunk + '<span class="gpt-cursor"></span>';
+        i++;
+        gptTypingTimer = setTimeout(typeChar, 22 + Math.random() * 18);
+      } else {
+        bubble.innerHTML = plain.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      }
+    }
+
+    gptTypingTimer = setTimeout(typeChar, 600);
+  }
+
+  // ── SCROLL FADE ──────────────────────────────────────────────────
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // ── INIT ─────────────────────────────────────────────────────────
+  switchScreen('dash');
+</script>
+</body>
+</html>
