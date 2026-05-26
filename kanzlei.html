@@ -1754,13 +1754,20 @@
     .ei-cell{background:rgba(109,122,255,.06);border-radius:10px;padding:10px 14px;}
     .ei-lbl{font-size:.62rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;}
     .ei-val{font-family:'JetBrains Mono','Courier New',monospace;font-size:.84rem;font-weight:700;margin-top:3px;}
-    .export-table{background:#fff;border-radius:12px;border:1px solid rgba(166,171,189,.25);font-size:.74rem;overflow:hidden;}
-    .et-head{display:grid;grid-template-columns:90px 1fr 90px 90px 100px 100px 80px;padding:10px 14px;font-size:.62rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid rgba(166,171,189,.2);background:#f7f8fa;}
-    .et-row{display:grid;grid-template-columns:90px 1fr 90px 90px 100px 100px 80px;padding:9px 14px;border-bottom:1px solid rgba(166,171,189,.12);font-family:'JetBrains Mono','Courier New',monospace;font-size:.72rem;align-items:center;}
+    .export-table{background:#fff;border-radius:12px;border:1px solid rgba(166,171,189,.25);font-size:.72rem;overflow:hidden;}
+    .et-head{display:grid;grid-template-columns:56px 110px 1fr 92px 28px 56px 86px 32px 70px 50px;gap:8px;padding:10px 14px;font-size:.58rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid rgba(166,171,189,.2);background:#f7f8fa;}
+    .et-row{display:grid;grid-template-columns:56px 110px 1fr 92px 28px 56px 86px 32px 70px 50px;gap:8px;padding:9px 14px;border-bottom:1px solid rgba(166,171,189,.12);font-family:'JetBrains Mono','SF Mono','Courier New',monospace;font-size:.7rem;align-items:center;}
     .et-row:last-child{border-bottom:none;}
-    .et-row b{color:var(--acc);}
+    .et-row b{color:var(--acc);font-weight:700;}
     .et-num{text-align:right;}
-    .et-tag{padding:2px 7px;border-radius:50px;font-size:.62rem;font-weight:700;background:rgba(16,185,129,.12);color:#10b981;text-align:center;font-family:'Inter',sans-serif;}
+    .et-num-strong{text-align:right;font-weight:700;color:var(--text);}
+    .et-sh{display:inline-block;width:22px;text-align:center;padding:2px 0;border-radius:4px;background:rgba(109,122,255,.12);color:var(--acc);font-weight:800;font-size:.66rem;}
+    .et-bu{display:inline-block;padding:2px 6px;border-radius:4px;background:rgba(245,158,11,.16);color:#d97706;font-weight:700;font-size:.66rem;text-align:center;}
+    .et-bu.standard{background:rgba(109,122,255,.12);color:var(--acc);}
+    .et-pk{font-size:.64rem;color:var(--text-3);font-family:'Inter',sans-serif;margin-top:1px;display:block;font-weight:500;}
+    .et-skonto{color:#10b981;font-weight:700;font-size:.68rem;text-align:right;}
+    .et-skonto-empty{color:rgba(166,171,189,.6);text-align:right;}
+    .et-tag{padding:2px 7px;border-radius:50px;font-size:.58rem;font-weight:700;background:rgba(16,185,129,.12);color:#10b981;text-align:center;font-family:'Inter',sans-serif;}
     .export-side{display:flex;flex-direction:column;gap:14px;}
     .es-card{background:var(--bg);border-radius:14px;box-shadow:-4px -4px 10px var(--sl,rgba(255,255,255,.9)),4px 4px 10px var(--sd2,rgba(166,171,189,.25));padding:18px 20px;}
     .es-card h4{font-family:'Poppins',sans-serif;font-size:.82rem;font-weight:700;margin-bottom:10px;}
@@ -2150,9 +2157,9 @@
       <span class="topbar-title">Wissensdatenbank <span style="color:var(--text-3);font-weight:500;font-size:.78rem;margin-left:8px">Lieferanten · Belegmuster · Buchungsregeln</span></span>
     </div>
     <div class="topbar" id="topbar-datev" style="display:none">
-      <span class="topbar-title">DATEV-Export <span style="color:var(--text-3);font-weight:500;font-size:.78rem;margin-left:8px">Mai 2026 · Beraternummer 1023456</span></span>
+      <span class="topbar-title">DATEV-Export <span style="color:var(--text-3);font-weight:500;font-size:.78rem;margin-left:8px">EXTF v9.0 · SKR 04 · Mandant 88421 · Periode 05 / 2026</span></span>
       <div class="topbar-actions">
-        <button class="btn btn-ghost btn-sm" onclick="alert('XML-Vorschau (Demo)')">XML vorschauen</button>
+        <button class="btn btn-ghost btn-sm" onclick="alert('CSV-Vorschau (Demo)')">CSV-Vorschau</button>
       </div>
     </div>
     <div class="topbar" id="topbar-cockpit" style="display:none">
@@ -2584,38 +2591,160 @@
         <div class="export-grid">
           <div class="export-main">
             <div class="export-head">
-              <div><h3>Buchungsstapel Mai 2026</h3><div class="meta">Erzeugt: 26.05.2026 09:14 · Format DATEV XML (KNE) v9 · 312 Buchungen</div></div>
+              <div>
+                <h3>Buchungsstapel Mai 2026</h3>
+                <div class="meta">Erzeugt: 26.05.2026 09:14 · Format <b style="color:var(--acc)">DATEV-Format (EXTF) v9.0</b> · Datei <span style="font-family:'JetBrains Mono','SF Mono',monospace">EXTF_Buchungsstapel.csv</span> · 312 Buchungen</div>
+              </div>
               <div class="lf-badge" style="background:rgba(16,185,129,.12);color:#10b981">Bereit zum Import</div>
             </div>
             <div class="export-info">
               <div class="ei-cell"><div class="ei-lbl">Beraternummer</div><div class="ei-val">1023456</div></div>
-              <div class="ei-cell"><div class="ei-lbl">Mandantennummer</div><div class="ei-val">88421</div></div>
+              <div class="ei-cell"><div class="ei-lbl">Mandant</div><div class="ei-val">88421</div></div>
+              <div class="ei-cell"><div class="ei-lbl">Kontenrahmen</div><div class="ei-val">SKR 04</div></div>
+              <div class="ei-cell"><div class="ei-lbl">Kontolänge</div><div class="ei-val">5-stellig</div></div>
               <div class="ei-cell"><div class="ei-lbl">WJ-Beginn</div><div class="ei-val">01.01.2026</div></div>
+              <div class="ei-cell"><div class="ei-lbl">Periode</div><div class="ei-val">5 / 2026</div></div>
+              <div class="ei-cell"><div class="ei-lbl">Erfassungsart</div><div class="ei-val">Brutto</div></div>
               <div class="ei-cell"><div class="ei-lbl">Buchungen</div><div class="ei-val">312</div></div>
             </div>
             <div class="export-table">
-              <div class="et-head"><div>Datum</div><div>Buchungstext</div><div class="et-num">Betrag</div><div class="et-num">USt</div><div>Sollkonto</div><div>Habenkonto</div><div>Status</div></div>
-              <div class="et-row"><div>14.05.</div><div>Bauzentrum Weber · RG 2026/0418</div><div class="et-num">5.462,10</div><div class="et-num">19 %</div><div><b>3400</b></div><div><b>70000</b></div><div class="et-tag">OK</div></div>
-              <div class="et-row"><div>14.05.</div><div>Holz Schäfer · R 2026-1142</div><div class="et-num">2.380,00</div><div class="et-num">19 %</div><div><b>3400</b></div><div><b>70128</b></div><div class="et-tag">OK</div></div>
-              <div class="et-row"><div>13.05.</div><div>Sika Deutschland · INV 2026-08144</div><div class="et-num">1.844,90</div><div class="et-num">19 %</div><div><b>3400</b></div><div><b>70044</b></div><div class="et-tag">OK</div></div>
-              <div class="et-row"><div>13.05.</div><div>Knauf AMF Italia · FT/2026/0233 · § 13b</div><div class="et-num">3.210,00</div><div class="et-num">RC</div><div><b>3425</b></div><div><b>70217</b></div><div class="et-tag">OK</div></div>
-              <div class="et-row"><div>12.05.</div><div>Stahlbau Müller AG · 2026/RE/0892</div><div class="et-num">14.280,00</div><div class="et-num">19 %</div><div><b>3400</b></div><div><b>70091</b></div><div class="et-tag">OK</div></div>
-              <div class="et-row"><div>12.05.</div><div>Café am Markt · Bewirtung 12.05.</div><div class="et-num">94,80</div><div class="et-num">19 %</div><div><b>4650</b></div><div><b>1200</b></div><div class="et-tag">OK</div></div>
-              <div class="et-row"><div>12.05.</div><div>Würth Industrie · 2026-471138</div><div class="et-num">412,50</div><div class="et-num">19 %</div><div><b>4980</b></div><div><b>70402</b></div><div class="et-tag">OK</div></div>
-              <div class="et-row"><div>11.05.</div><div>Caterpillar Vermietung · M 2026/04</div><div class="et-num">2.975,00</div><div class="et-num">19 %</div><div><b>4830</b></div><div><b>70302</b></div><div class="et-tag">OK</div></div>
-              <div class="et-row"><div>11.05.</div><div>Aral Tankstelle 12 · Bon 048</div><div class="et-num">182,40</div><div class="et-num">19 %</div><div><b>4530</b></div><div><b>1200</b></div><div class="et-tag">OK</div></div>
-              <div class="et-row" style="color:var(--text-3)"><div>…</div><div>+ 303 weitere Buchungen</div><div></div><div></div><div></div><div></div><div></div></div>
+              <div class="et-head"><div>Datum</div><div>Beleg-Nr.</div><div>Buchungstext</div><div class="et-num">Umsatz</div><div>S/H</div><div>Konto</div><div>Gegenkonto</div><div>BU</div><div class="et-num">Skonto</div><div>Status</div></div>
+
+              <div class="et-row">
+                <div>14.05.</div>
+                <div>RG 2026/0418</div>
+                <div>ER Bauzentrum Weber 04/18<span class="et-pk">Wareneingang 19 % VSt</span></div>
+                <div class="et-num-strong">5.462,10</div>
+                <div><span class="et-sh">S</span></div>
+                <div><b>5200</b></div>
+                <div><b>70042</b><span class="et-pk">Bauzentrum Weber GmbH</span></div>
+                <div><span class="et-bu standard">9</span></div>
+                <div class="et-skonto">91,80</div>
+                <div class="et-tag">OK</div>
+              </div>
+
+              <div class="et-row">
+                <div>14.05.</div>
+                <div>R 2026-1142</div>
+                <div>ER Holz Schäfer<span class="et-pk">Wareneingang 19 % VSt</span></div>
+                <div class="et-num-strong">2.380,00</div>
+                <div><span class="et-sh">S</span></div>
+                <div><b>5200</b></div>
+                <div><b>70128</b><span class="et-pk">Holz Schäfer KG</span></div>
+                <div><span class="et-bu standard">9</span></div>
+                <div class="et-skonto-empty">—</div>
+                <div class="et-tag">OK</div>
+              </div>
+
+              <div class="et-row">
+                <div>13.05.</div>
+                <div>INV 2026-08144</div>
+                <div>ER Sika Deutschland<span class="et-pk">Wareneingang 19 % VSt</span></div>
+                <div class="et-num-strong">1.844,90</div>
+                <div><span class="et-sh">S</span></div>
+                <div><b>5200</b></div>
+                <div><b>70044</b><span class="et-pk">Sika Deutschland GmbH</span></div>
+                <div><span class="et-bu standard">9</span></div>
+                <div class="et-skonto-empty">—</div>
+                <div class="et-tag">OK</div>
+              </div>
+
+              <div class="et-row">
+                <div>13.05.</div>
+                <div>FT/2026/0233</div>
+                <div>ER Knauf Italia § 13b<span class="et-pk">EG-Erwerb 19 % · Reverse Charge</span></div>
+                <div class="et-num-strong">3.210,00</div>
+                <div><span class="et-sh">S</span></div>
+                <div><b>5425</b></div>
+                <div><b>70217</b><span class="et-pk">Knauf AMF Italia S.r.l.</span></div>
+                <div><span class="et-bu">94</span></div>
+                <div class="et-skonto-empty">—</div>
+                <div class="et-tag">OK</div>
+              </div>
+
+              <div class="et-row">
+                <div>12.05.</div>
+                <div>2026/RE/0892</div>
+                <div>ER Stahlbau Müller Abschlag 3/4<span class="et-pk">Wareneingang 19 % VSt</span></div>
+                <div class="et-num-strong">14.280,00</div>
+                <div><span class="et-sh">S</span></div>
+                <div><b>5200</b></div>
+                <div><b>70091</b><span class="et-pk">Stahlbau Müller AG</span></div>
+                <div><span class="et-bu standard">9</span></div>
+                <div class="et-skonto-empty">—</div>
+                <div class="et-tag">OK</div>
+              </div>
+
+              <div class="et-row">
+                <div>12.05.</div>
+                <div>Bon 0418</div>
+                <div>Bewirtung Café am Markt<span class="et-pk">Bewirtungskosten 70 % abz.</span></div>
+                <div class="et-num-strong">94,80</div>
+                <div><span class="et-sh">S</span></div>
+                <div><b>6640</b></div>
+                <div><b>1600</b><span class="et-pk">Kasse</span></div>
+                <div><span class="et-bu standard">9</span></div>
+                <div class="et-skonto-empty">—</div>
+                <div class="et-tag">OK</div>
+              </div>
+
+              <div class="et-row">
+                <div>12.05.</div>
+                <div>2026-471138</div>
+                <div>Würth Werkzeug + Kleinmaterial<span class="et-pk">Werkzeuge / GWG</span></div>
+                <div class="et-num-strong">412,50</div>
+                <div><span class="et-sh">S</span></div>
+                <div><b>6845</b></div>
+                <div><b>70402</b><span class="et-pk">Würth Industrie GmbH</span></div>
+                <div><span class="et-bu standard">9</span></div>
+                <div class="et-skonto-empty">—</div>
+                <div class="et-tag">OK</div>
+              </div>
+
+              <div class="et-row">
+                <div>11.05.</div>
+                <div>M 2026/04</div>
+                <div>Caterpillar Geräte-Miete April<span class="et-pk">Mietleasing</span></div>
+                <div class="et-num-strong">2.975,00</div>
+                <div><span class="et-sh">S</span></div>
+                <div><b>6310</b></div>
+                <div><b>70302</b><span class="et-pk">Caterpillar Vermietung</span></div>
+                <div><span class="et-bu standard">9</span></div>
+                <div class="et-skonto-empty">—</div>
+                <div class="et-tag">OK</div>
+              </div>
+
+              <div class="et-row">
+                <div>11.05.</div>
+                <div>Bon 0480</div>
+                <div>Aral Diesel HD-RB 482<span class="et-pk">Kfz-Betriebskosten</span></div>
+                <div class="et-num-strong">182,40</div>
+                <div><span class="et-sh">S</span></div>
+                <div><b>6530</b></div>
+                <div><b>1600</b><span class="et-pk">Kasse</span></div>
+                <div><span class="et-bu standard">9</span></div>
+                <div class="et-skonto-empty">—</div>
+                <div class="et-tag">OK</div>
+              </div>
+
+              <div class="et-row" style="color:var(--text-3)">
+                <div>…</div>
+                <div>…</div>
+                <div>+ 303 weitere Buchungen<span class="et-pk">davon 8 mit Skonto, 12 § 13b, 2 GWG-Sammelposten</span></div>
+                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+              </div>
             </div>
           </div>
 
           <div class="export-side">
             <div class="es-card">
               <h4>Plausibilitätsprüfung</h4>
-              <div class="es-check"><div class="es-check-ok">✓</div><div><b>Kontenrahmen</b> SKR 03 vollständig</div></div>
-              <div class="es-check"><div class="es-check-ok">✓</div><div><b>Beraternummer</b> validiert</div></div>
-              <div class="es-check"><div class="es-check-ok">✓</div><div><b>Steuerschlüssel</b> stimmig</div></div>
-              <div class="es-check"><div class="es-check-ok">✓</div><div><b>Reverse Charge</b> markiert</div></div>
-              <div class="es-check"><div class="es-check-ok">✓</div><div><b>XML-Schema</b> KNE v9 valide</div></div>
+              <div class="es-check"><div class="es-check-ok">✓</div><div><b>Kontenrahmen</b> SKR 04 vollständig</div></div>
+              <div class="es-check"><div class="es-check-ok">✓</div><div><b>Beraternummer</b> 1023456 validiert</div></div>
+              <div class="es-check"><div class="es-check-ok">✓</div><div><b>BU-Schlüssel</b> 9 / 94 stimmig</div></div>
+              <div class="es-check"><div class="es-check-ok">✓</div><div><b>§ 13b</b> 12 Belege markiert</div></div>
+              <div class="es-check"><div class="es-check-ok">✓</div><div><b>EXTF v9.0</b> Header valide</div></div>
+              <div class="es-check"><div class="es-check-ok">✓</div><div><b>Summe Soll = Haben</b> · ± 0,00 €</div></div>
             </div>
             <div class="es-card">
               <h4>Zusammenfassung</h4>
