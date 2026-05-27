@@ -396,18 +396,27 @@
     .db-kpi-num { font-family:'Poppins',sans-serif; font-size:2.3rem; font-weight:700; line-height:1; color:var(--text); }
     .db-kpi-num.alert { color:var(--acc); }
     .db-kpi-lbl { font-size:.7rem; color:var(--text-3); font-weight:600; text-transform:uppercase; letter-spacing:.07em; }
-    .db-main-grid { display:grid; grid-template-columns:1fr 300px; gap:20px; flex:1; min-height:0; align-items:stretch; }
+    .db-main-grid { display:grid; grid-template-columns:1fr 340px; gap:24px; align-items:start; }
     .db-left { display:flex; flex-direction:column; gap:16px; min-width:0; min-height:0; }
     .db-right { display:flex; flex-direction:column; gap:16px; min-width:0; min-height:0; }
     .db-card { background:var(--bg); border-radius:18px; box-shadow:-3px -3px 8px var(--sl),3px 3px 8px var(--sd2); overflow:hidden; display:flex; flex-direction:column; }
     .db-fokus-card { flex:1; min-height:0; display:flex; flex-direction:column; }
     .db-fokus-card #db-fokus-list { flex:1; overflow-y:auto; min-height:0; }
     .db-chat-card { min-height:420px; display:flex; flex-direction:column; }
-    .db-card-head { display:flex; align-items:center; gap:9px; padding:15px 20px 13px; border-bottom:1px solid rgba(166,171,189,.12); flex-shrink:0; }
-    .db-card-title { font-family:'Poppins',sans-serif; font-size:.83rem; font-weight:700; color:var(--text); }
-    .db-card-sub { font-size:.7rem; color:var(--text-3); }
-    .db-card-btn { margin-left:auto; font-size:.71rem; font-weight:600; color:var(--acc); background:none; border:none; cursor:pointer; padding:2px 6px; border-radius:6px; }
+    .db-card-head { display:flex; align-items:center; gap:10px; padding:18px 24px 16px; border-bottom:1px solid rgba(166,171,189,.12); flex-shrink:0; }
+    .db-card-title { font-family:'Poppins',sans-serif; font-size:.98rem; font-weight:700; color:var(--text); }
+    .db-card-sub { font-size:.78rem; color:var(--text-3); }
+    .db-card-btn { margin-left:auto; font-size:.84rem; font-weight:600; color:var(--acc); background:none; border:none; cursor:pointer; padding:4px 10px; border-radius:6px; }
     .db-card-btn:hover { background:rgba(109,122,255,.09); }
+
+    /* KI-Radar Liste: Items vergroessern, gleichmaessig verteilen */
+    #ki-radar-list > div { padding: 24px 26px !important; gap: 18px !important; }
+    #ki-radar-list > div > div:first-child { width:48px !important; height:48px !important; border-radius:12px !important; font-size:.86rem !important; }
+    #ki-radar-list > div > div:nth-child(2) > div:first-child > span:first-child { font-size:1.02rem !important; font-weight:700 !important; }
+    #ki-radar-list > div > div:nth-child(2) > div:first-child > span:nth-child(2) { font-size:.74rem !important; padding:4px 12px !important; border-radius:14px !important; }
+    #ki-radar-list > div > div:nth-child(2) > p { font-size:.94rem !important; line-height:1.6 !important; }
+    #ki-radar-list > div > div:nth-child(2) > div:last-child { margin-top:10px !important; }
+    #ki-radar-list > div > div:nth-child(2) > div:last-child > span { font-size:.78rem !important; }
     .db-empty { color:var(--text-3); font-size:.8rem; padding:18px; text-align:center; }
     .db-fokus-item { display:flex; align-items:center; gap:13px; padding:15px 20px; border-bottom:1px solid rgba(166,171,189,.1); cursor:pointer; transition:.12s; }
     .db-fokus-item:last-child { border-bottom:none; }
@@ -1534,14 +1543,64 @@
        PITCH-MODE — BUCHHALTUNG (RBB & Partner)
     ════════════════════════════════════════════════ */
 
+    /* Beleg-View: Children einzeln auf max-width + auto-margin zentrieren
+       (content-area ist display:flex column — view-belege selbst kann nicht via margin:auto) */
+    #view-belege > .pipeline,
+    #view-belege > .buha-section-head,
+    #view-belege > .beleg-table{max-width:1030px !important;margin-left:auto !important;margin-right:auto !important;width:calc(100% - 32px);}
+
+    /* Beleg-Detail: Korrektur-Modus — KI-Werte + Buchungssatz inline editierbar */
+    .ap-panel.editing .ap-fact-val,
+    .ap-panel.editing .bs-konto,
+    .ap-panel.editing .bs-amount,
+    .ap-panel.editing .bs-text,
+    .ap-panel.editing .bs-meta-val{
+      outline:1.5px dashed rgba(109,122,255,.55);
+      outline-offset:4px;
+      border-radius:4px;
+      cursor:text;
+      transition:outline-color .15s, background .15s;
+    }
+    .ap-panel.editing .ap-fact-val:hover,
+    .ap-panel.editing .bs-konto:hover,
+    .ap-panel.editing .bs-amount:hover,
+    .ap-panel.editing .bs-text:hover,
+    .ap-panel.editing .bs-meta-val:hover{
+      outline-color:var(--acc);
+      background:rgba(109,122,255,.05);
+    }
+    .ap-panel.editing .ap-fact-val:focus,
+    .ap-panel.editing .bs-konto:focus,
+    .ap-panel.editing .bs-amount:focus,
+    .ap-panel.editing .bs-text:focus,
+    .ap-panel.editing .bs-meta-val:focus{
+      outline:2px solid var(--acc);
+      background:#fff;
+    }
+    /* Confidence-Badges + Icons im Edit-Mode dezent abgesetzt */
+    .ap-panel.editing .ap-conf-pct,
+    .ap-panel.editing .ap-conf-badge,
+    .ap-panel.editing .ap-fact-icon{opacity:.35;}
+    .ap-panel.editing .ap-header::after{
+      content:"Korrektur-Modus aktiv";
+      display:block;
+      width:100%;
+      margin-top:8px;
+      font-size:.7rem;
+      font-weight:700;
+      color:var(--acc);
+      letter-spacing:.06em;
+      text-transform:uppercase;
+    }
+
     /* Workflow-Pipeline — ruhiger */
-    .pipeline{display:flex;align-items:stretch;gap:0;background:var(--bg);border-radius:14px;padding:6px;box-shadow:-4px -4px 10px var(--sl,rgba(255,255,255,.9)),4px 4px 10px var(--sd2,rgba(166,171,189,.25));margin-bottom:18px;}
-    .pl-stage{flex:1;padding:10px 14px;display:flex;flex-direction:column;justify-content:center;border-radius:10px;cursor:pointer;position:relative;transition:.15s;}
+    .pipeline{display:flex;align-items:stretch;gap:0;background:var(--bg);border-radius:14px;padding:8px;box-shadow:-4px -4px 10px var(--sl,rgba(255,255,255,.9)),4px 4px 10px var(--sd2,rgba(166,171,189,.25));margin-bottom:20px;}
+    .pl-stage{flex:1;padding:12px 18px;display:flex;flex-direction:column;justify-content:center;border-radius:10px;cursor:pointer;position:relative;transition:.15s;}
     .pl-stage:hover{background:rgba(109,122,255,.04);}
     .pl-stage.active{background:rgba(109,122,255,.1);}
     .pl-stage.active .pl-num{color:var(--acc);}
-    .pl-lbl{font-size:.6rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;}
-    .pl-num{font-family:'Poppins',sans-serif;font-size:1.35rem;font-weight:700;line-height:1;margin-top:3px;}
+    .pl-lbl{font-size:.68rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;}
+    .pl-num{font-family:'Poppins',sans-serif;font-size:1.55rem;font-weight:800;line-height:1;margin-top:4px;}
     .pl-arrow{align-self:center;color:var(--text-3);font-size:1.1rem;font-weight:300;padding:0 4px;flex-shrink:0;pointer-events:none;opacity:.55;}
 
     .buha-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
@@ -1580,8 +1639,17 @@
 
     .beleg-table{background:var(--bg);border-radius:16px;box-shadow:-4px -4px 10px var(--sl,rgba(255,255,255,.9)),4px 4px 10px var(--sd2,rgba(166,171,189,.25));overflow:hidden;}
     /* 7 Spalten, mehr Luft */
-    .bt-head{display:grid;grid-template-columns:36px 92px 1fr 120px 80px 84px 70px;gap:14px;padding:16px 22px;font-size:.6rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid rgba(166,171,189,.18);}
-    .bt-row{display:grid;grid-template-columns:36px 92px 1fr 120px 80px 84px 70px;gap:14px;padding:18px 22px;align-items:center;border-bottom:1px solid rgba(166,171,189,.1);font-size:.84rem;cursor:pointer;transition:background .15s;}
+    .bt-head{display:grid;grid-template-columns:40px 100px 300px 110px 110px 110px 110px;gap:18px;padding:18px 26px 18px 14px;font-size:.68rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid rgba(166,171,189,.18);}
+    /* Datenspalten Header zentrieren (Betrag, Konto, Confidence) */
+    .bt-head > div:nth-child(4),
+    .bt-head > div:nth-child(5),
+    .bt-head > div:nth-child(7){text-align:center;}
+    .bt-row{display:grid;grid-template-columns:40px 100px 300px 110px 110px 110px 110px;gap:18px;padding:22px 26px 22px 14px;align-items:center;border-bottom:1px solid rgba(166,171,189,.1);font-size:.92rem;cursor:pointer;transition:background .15s;}
+    /* Datenspalten-Werte zentrieren */
+    .bt-row > div:nth-child(4),
+    .bt-row > div:nth-child(5),
+    .bt-row > div:nth-child(7),
+    .bt-row > div:nth-child(8){text-align:center;}
 
     /* Easy-Mode: Sub-Texte und BU-Spalte ausblenden (Daten bleiben fuers Detail) */
     .bt-amount-sub,
@@ -1592,16 +1660,15 @@
     .bt-row > div:nth-child(6) { display: none !important; }
     .bt-supplier-sub { font-size:.7rem; opacity:.55; margin-top:3px; font-weight:400; }
 
-    /* Belegart-Badge einheitlich neutral - dezenter Akzent statt bunte Farben */
-    .bt-type{background:rgba(166,171,189,.15) !important;color:var(--text-2) !important;font-weight:600 !important;letter-spacing:.04em !important;padding:5px 10px !important;font-size:.62rem !important;border-radius:6px !important;}
-    .bt-type.eu{background:rgba(109,122,255,.1) !important;color:var(--acc) !important;}
-    .bt-type.bw, .bt-type.gs{background:rgba(245,158,11,.12) !important;color:#b45309 !important;}
+    /* Belegart-Badge einheitlich neutral - mehr Business-Look, weniger Farben */
+    .bt-type{background:rgba(166,171,189,.15) !important;color:var(--text-2) !important;font-weight:700 !important;letter-spacing:.05em !important;padding:6px 12px !important;font-size:.7rem !important;border-radius:7px !important;}
+    .bt-type.eu, .bt-type.bw, .bt-type.gs, .bt-type.kb, .bt-type.dl{background:rgba(166,171,189,.15) !important;color:var(--text-2) !important;}
 
-    /* Confidence: nur ein dezenter Indikator */
-    .bt-conf-fields{display:flex;align-items:center;gap:8px;}
-    .bt-cf-warn{font-size:.74rem;font-weight:600;color:var(--text-2) !important;margin-left:0 !important;}
+    /* Confidence: nur Gruen oder Schwarz */
+    .bt-conf-fields{display:flex;align-items:center;justify-content:center;gap:8px;}
+    .bt-cf-warn{font-size:1.12rem;font-weight:600;color:var(--text) !important;margin-left:0 !important;white-space:nowrap;}
     .bt-cf-warn.bt-cf-warn-acc{color:#10b981 !important;}
-    .bt-cf-warn:not(.bt-cf-warn-acc){color:#d97706 !important;}
+    .bt-cf-warn:not(.bt-cf-warn-acc){color:var(--text) !important;}
 
     /* Belegart-Badge */
     .bt-type{display:flex;align-items:center;gap:6px;padding:4px 8px;border-radius:7px;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;}
@@ -1614,7 +1681,7 @@
     .bt-type.gs{background:rgba(239,68,68,.13);color:#dc2626;}
 
     /* Confidence pro Feld — Mini-Dots in der Liste */
-    .bt-conf-fields{display:flex;align-items:center;gap:6px;}
+    .bt-conf-fields{display:flex;align-items:center;justify-content:center;gap:6px;}
     .bt-cf-group{display:flex;align-items:center;gap:3px;}
     .bt-cf-dot{width:7px;height:7px;border-radius:50%;}
     .bt-cf-dot.high{background:#10b981;}
@@ -1625,11 +1692,11 @@
     .bt-row:last-child{border-bottom:none;}
     .bt-row:hover{background:rgba(109,122,255,.04);}
     .bt-thumb{width:32px;height:40px;border-radius:5px;background:linear-gradient(180deg,#fff 0%,#f3f4f8 100%);border:1px solid rgba(166,171,189,.3);display:flex;align-items:center;justify-content:center;font-size:.5rem;color:var(--text-3);font-weight:700;}
-    .bt-supplier{font-weight:600;}
-    .bt-supplier-sub{font-size:.7rem;color:var(--text-3);margin-top:2px;}
-    .bt-amount{font-family:'Poppins',sans-serif;font-weight:600;text-align:right;}
+    .bt-supplier{font-weight:600;font-size:.98rem;}
+    .bt-supplier-sub{font-size:.74rem;color:var(--text-3);margin-top:3px;}
+    .bt-amount{font-family:'Poppins',sans-serif;font-weight:600;font-size:.98rem;text-align:center;white-space:nowrap;}
     .bt-amount-sub{font-size:.68rem;color:var(--text-3);margin-top:2px;text-align:right;}
-    .bt-konto{font-family:'JetBrains Mono','Courier New',monospace;font-size:.74rem;font-weight:600;color:var(--acc);}
+    .bt-konto{font-family:'JetBrains Mono','Courier New',monospace;font-size:1rem;font-weight:600;color:var(--text);}
     .bt-konto-sub{font-size:.66rem;color:var(--text-3);margin-top:2px;}
     .bt-confidence{display:flex;align-items:center;gap:8px;}
     .bt-conf-bar{flex:1;height:6px;background:rgba(166,171,189,.25);border-radius:3px;overflow:hidden;}
@@ -1644,7 +1711,7 @@
     .bt-status.new{background:rgba(109,122,255,.14);color:var(--acc);}
     .bt-status.datev{background:rgba(100,116,139,.16);color:#475569;}
     .bt-status.error{background:rgba(239,68,68,.13);color:#dc2626;}
-    .bt-action{font-size:.7rem;font-weight:700;color:var(--acc);text-align:right;}
+    .bt-action{font-size:.85rem;font-weight:700;color:var(--acc);text-align:center;}
     .bt-action.muted{color:var(--text-3);}
 
     /* Zeile als 'bereits exportiert' visuell schwächer */
@@ -1769,6 +1836,12 @@
     .lf-rule-cell .acc{color:var(--acc);}
 
     /* Statistik-Footer */
+    .lf-rule-mini{font-family:'JetBrains Mono','Courier New',monospace;font-size:.86rem;color:var(--text-2);padding:10px 0;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+    .lf-rule-mini b{color:var(--text);font-weight:700;}
+    .lf-rule-mini .lf-arrow{color:var(--text-3);font-size:.9rem;}
+    .lf-rule-mini .lf-meta{color:var(--text-3);font-size:.74rem;font-family:'Inter',sans-serif;margin-left:auto;}
+    .lf-stats-mini{font-size:.76rem;color:var(--text-3);padding-top:10px;border-top:1px solid rgba(166,171,189,.18);}
+    .lf-stats-mini b{color:var(--text);font-weight:700;}
     .lf-stats-row{display:flex;gap:14px;font-size:.7rem;color:var(--text-3);margin-top:auto;padding-top:10px;border-top:1px solid rgba(166,171,189,.18);}
     .lf-stats-cell{display:flex;flex-direction:column;gap:1px;}
     .lf-stats-cell b{color:var(--text);font-weight:700;font-size:.86rem;font-family:'Poppins',sans-serif;}
@@ -1836,8 +1909,8 @@
     .ei-lbl{font-size:.62rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;}
     .ei-val{font-family:'JetBrains Mono','Courier New',monospace;font-size:.84rem;font-weight:700;margin-top:3px;}
     .export-table{background:#fff;border-radius:12px;border:1px solid rgba(166,171,189,.25);font-size:.72rem;overflow:hidden;}
-    .et-head{display:grid;grid-template-columns:56px 110px 1fr 92px 28px 56px 86px 32px 70px 50px;gap:8px;padding:10px 14px;font-size:.58rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid rgba(166,171,189,.2);background:#f7f8fa;}
-    .et-row{display:grid;grid-template-columns:56px 110px 1fr 92px 28px 56px 86px 32px 70px 50px;gap:8px;padding:9px 14px;border-bottom:1px solid rgba(166,171,189,.12);font-family:'JetBrains Mono','SF Mono','Courier New',monospace;font-size:.7rem;align-items:center;}
+    .et-head{display:grid;grid-template-columns:56px 110px 1fr 100px 28px 60px 100px 32px;gap:10px;padding:11px 14px;font-size:.6rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid rgba(166,171,189,.2);background:#f7f8fa;}
+    .et-row{display:grid;grid-template-columns:56px 110px 1fr 100px 28px 60px 100px 32px;gap:10px;padding:10px 14px;border-bottom:1px solid rgba(166,171,189,.12);font-family:'JetBrains Mono','SF Mono','Courier New',monospace;font-size:.72rem;align-items:center;}
     .et-row:last-child{border-bottom:none;}
     .et-row b{color:var(--acc);font-weight:700;}
     .et-num{text-align:right;}
@@ -1850,6 +1923,9 @@
     .et-skonto-empty{color:rgba(166,171,189,.6);text-align:right;}
     .et-tag{padding:2px 7px;border-radius:50px;font-size:.58rem;font-weight:700;background:rgba(16,185,129,.12);color:#10b981;text-align:center;font-family:'Inter',sans-serif;}
     .export-side{display:flex;flex-direction:column;gap:14px;}
+    .es-big-btn.loading{cursor:wait;opacity:.85;pointer-events:none;}
+    .es-big-btn .spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:datevSpin .8s linear infinite;margin-right:8px;vertical-align:-1px;}
+    @keyframes datevSpin{to{transform:rotate(360deg);}}
     .es-card{background:var(--bg);border-radius:14px;box-shadow:-4px -4px 10px var(--sl,rgba(255,255,255,.9)),4px 4px 10px var(--sd2,rgba(166,171,189,.25));padding:18px 20px;}
     .es-card h4{font-family:'Poppins',sans-serif;font-size:.82rem;font-weight:700;margin-bottom:10px;}
     .es-check{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:.78rem;color:var(--text-2);}
@@ -1859,9 +1935,16 @@
     .es-tiny{font-size:.7rem;color:var(--text-3);text-align:center;line-height:1.5;margin-top:6px;}
 
     /* Cockpit */
-    .dash-grid-buha{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
-    .dash-grid-buha.row2{margin-top:16px;}
-    .dash-card-buha{background:var(--bg);border-radius:16px;box-shadow:-4px -4px 10px var(--sl,rgba(255,255,255,.9)),4px 4px 10px var(--sd2,rgba(166,171,189,.25));padding:20px 22px;}
+    /* Cockpit: ganze Höhe füllen, Cards zentrieren ihren Inhalt */
+    #view-cockpit.active{display:flex;flex-direction:column;gap:18px;height:100%;}
+    .dash-grid-buha{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+    .dash-grid-buha.kpi-row{grid-template-columns:repeat(4,1fr);}
+    .dash-grid-buha.row2{margin-top:0;flex:1;min-height:0;grid-template-columns:1fr 1fr;}
+    .dash-card-buha{background:var(--bg);border-radius:16px;box-shadow:-4px -4px 10px var(--sl,rgba(255,255,255,.9)),4px 4px 10px var(--sd2,rgba(166,171,189,.25));padding:22px 24px;display:flex;flex-direction:column;}
+    .dash-grid-buha.kpi-row .dash-card-buha{min-height:180px;}
+    .dash-grid-buha.row2 .dash-card-buha{min-height:0;overflow:hidden;}
+    .dash-grid-buha.row2 .recent-list,
+    .dash-grid-buha.row2 .health-list{flex:1;overflow-y:auto;}
     .dash-card-buha h3{font-family:'Poppins',sans-serif;font-size:.86rem;font-weight:700;margin-bottom:4px;}
     .dash-card-buha .sub{font-size:.7rem;color:var(--text-3);margin-bottom:14px;}
     .gauge{position:relative;display:flex;flex-direction:column;align-items:center;padding:8px 0;}
@@ -1873,6 +1956,27 @@
     .big-num-sub{font-size:.74rem;color:var(--text-2);margin-top:6px;}
     .big-num-delta{display:inline-flex;align-items:center;gap:4px;background:rgba(16,185,129,.12);color:#10b981;padding:3px 8px;border-radius:50px;font-size:.66rem;font-weight:700;margin-top:10px;}
     .bar-chart{display:flex;align-items:flex-end;gap:6px;height:120px;margin:8px 0;}
+    .bar-chart-tall{flex:1;height:auto;min-height:120px;margin:14px 0 6px;}
+    .bar{position:relative;}
+    .bar-val{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:.66rem;font-weight:700;color:var(--text-2);font-family:'Poppins',sans-serif;}
+    .bar-foot{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding-top:14px;margin-top:6px;border-top:1px solid rgba(166,171,189,.18);}
+    .bar-foot-lbl{font-size:.62rem;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;font-weight:700;}
+    .bar-foot-val{font-family:'Poppins',sans-serif;font-size:1rem;font-weight:700;color:var(--text);margin-top:3px;}
+
+    /* Mandanten-Tabelle im Cockpit */
+    .mand-table{display:flex;flex-direction:column;flex:1;min-height:0;margin-top:4px;}
+    .mand-head{display:grid;grid-template-columns:1fr 70px 130px;gap:14px;padding:10px 0 8px;border-bottom:1px solid rgba(166,171,189,.2);font-size:.6rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;}
+    .mand-head .mand-num{text-align:right;}
+    .mand-row{display:grid;grid-template-columns:1fr 70px 130px;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid rgba(166,171,189,.1);}
+    .mand-row:last-child{border-bottom:none;}
+    .mand-name{font-size:.84rem;font-weight:600;color:var(--text);}
+    .mand-num{font-family:'Poppins',sans-serif;font-size:.86rem;font-weight:700;color:var(--text);text-align:right;}
+    .mand-auto{display:flex;align-items:center;gap:8px;}
+    .mand-auto .health-bar{flex:1;}
+    .mand-auto span{font-family:'Poppins',sans-serif;font-size:.78rem;font-weight:700;color:var(--acc);min-width:42px;text-align:right;}
+    .mand-foot{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding-top:12px;margin-top:8px;border-top:1px solid rgba(166,171,189,.18);}
+    .mand-foot-lbl{font-size:.62rem;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;font-weight:700;}
+    .mand-foot-val{font-family:'Poppins',sans-serif;font-size:1rem;font-weight:700;color:var(--text);margin-top:3px;}
     .bar{flex:1;background:linear-gradient(180deg,var(--acc) 0%,#5c6ae8 100%);border-radius:5px 5px 0 0;position:relative;min-height:6px;}
     .bar.muted{background:rgba(109,122,255,.25);}
     .bar-x{display:flex;gap:6px;font-size:.62rem;color:var(--text-3);text-transform:uppercase;letter-spacing:.04em;}
@@ -2131,6 +2235,25 @@
     </div>
 
     <div class="sb-section">
+      <div class="sb-section-lbl">KanzleiGPT</div>
+      <div class="sb-item gpt-main" id="nav-gpt" onclick="navigate('gpt')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        KanzleiGPT
+      </div>
+    </div>
+
+    <div class="sb-divider"></div>
+
+    <div class="sb-section">
+      <div class="sb-section-lbl">Übersicht</div>
+      <div class="sb-item" id="nav-dashboard" onclick="navigate('dashboard')">
+        <div class="sb-dot"></div> Dashboard
+      </div>
+    </div>
+
+    <div class="sb-divider"></div>
+
+    <div class="sb-section">
       <div class="sb-section-lbl">Buchhaltung</div>
       <div class="sb-item active" id="nav-belege" onclick="navigate('belege')">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h9l3 3v15H6V6l3-3z"/><path d="M9 3v3h6"/><path d="M9 13h6M9 17h6"/></svg>
@@ -2154,43 +2277,6 @@
     <div class="sb-divider"></div>
 
     <div class="sb-section">
-      <div class="sb-section-lbl">KanzleiGPT</div>
-      <div class="sb-item gpt-main" id="nav-gpt" onclick="navigate('gpt')">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        KanzleiGPT
-      </div>
-    </div>
-
-    <div class="sb-divider"></div>
-
-    <div class="sb-section">
-      <div class="sb-section-lbl">Übersicht</div>
-      <div class="sb-item" id="nav-dashboard" onclick="navigate('dashboard')">
-        <div class="sb-dot"></div> Dashboard
-      </div>
-    </div>
-
-    <div class="sb-divider"></div>
-
-    <div class="sb-section">
-      <div class="sb-section-lbl">Kanzlei-Tools</div>
-      <div class="sb-item" id="nav-gutachten" onclick="navigate('gutachten')">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        Gutachten erstellen
-      </div>
-      <div class="sb-item" id="nav-bwa" onclick="navigate('bwa')">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-        BWA
-      </div>
-      <div class="sb-item" id="nav-jahresabschluss" onclick="navigate('jahresabschluss')">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        Jahresabschluss
-      </div>
-    </div>
-
-    <div class="sb-divider"></div>
-
-    <div class="sb-section">
       <div class="sb-section-lbl">System</div>
       <div class="sb-item" id="nav-einstellungen" onclick="navigate('einstellungen')">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -2202,7 +2288,7 @@
       <div class="sb-user">
         <div class="sb-avatar">NG</div>
         <div>
-          <div class="sb-user-name">Nikolai Galozzi</div>
+          <div class="sb-user-name">Nikolai Galozi</div>
           <div class="sb-user-role">Geschäftsführer</div>
         </div>
         <button class="sb-logout-btn" onclick="doLogout()" title="Abmelden">Abmelden</button>
@@ -2223,43 +2309,31 @@
     <div class="topbar" id="topbar-belege">
       <span class="topbar-title">Beleg-Eingang <span style="color:var(--text-3);font-weight:500;font-size:.78rem;margin-left:8px">147 unverarbeitet · 312 heute eingegangen</span></span>
       <div class="topbar-actions">
-        <button class="btn btn-ghost btn-sm" onclick="alert('Filter (Demo)')">Filter</button>
-        <button class="btn btn-primary btn-sm" onclick="alert('Beleg-Upload (Demo)')">+ Beleg hochladen</button>
-      </div>
-    </div>
-    <div class="topbar" id="topbar-belegedetail" style="display:none">
-      <span class="topbar-title">Bauzentrum Weber GmbH · RG 2026/0418</span>
-      <div class="topbar-actions">
-        <button class="btn btn-ghost btn-sm" onclick="navigate('belege')">← Zurück zur Inbox</button>
-        <button class="btn btn-ghost btn-sm" onclick="alert('Nächster Beleg (Demo)')">Nächster Beleg →</button>
+        <button class="btn btn-ghost btn-sm">Filter</button>
+        <button class="btn btn-primary btn-sm">+ Beleg hochladen</button>
       </div>
     </div>
     <div class="topbar" id="topbar-wissensdb" style="display:none">
       <span class="topbar-title">Wissensdatenbank <span style="color:var(--text-3);font-weight:500;font-size:.78rem;margin-left:8px">Lieferanten · Belegmuster · Buchungsregeln</span></span>
     </div>
-    <div class="topbar" id="topbar-datev" style="display:none">
-      <span class="topbar-title">DATEV-Export <span style="color:var(--text-3);font-weight:500;font-size:.78rem;margin-left:8px">EXTF v9.0 · SKR 04 · Mandant 88421 · Periode 05 / 2026</span></span>
+    <div class="topbar" id="topbar-belegedetail" style="display:none">
+      <span class="topbar-title">Bauzentrum Weber GmbH · RG 2026/0418</span>
       <div class="topbar-actions">
-        <button class="btn btn-ghost btn-sm" onclick="alert('CSV-Vorschau (Demo)')">CSV-Vorschau</button>
+        <button class="btn btn-ghost btn-sm" onclick="navigate('belege')">← Zurück zur Inbox</button>
+        <button class="btn btn-ghost btn-sm">Nächster Beleg →</button>
       </div>
     </div>
+    <div class="topbar" id="topbar-datev" style="display:none">
+      <span class="topbar-title">DATEV-Export</span>
+    </div>
     <div class="topbar" id="topbar-cockpit" style="display:none">
-      <span class="topbar-title">Kanzlei-Cockpit <span style="color:var(--text-3);font-weight:500;font-size:.78rem;margin-left:8px">Live · Stand 26.05.2026 09:14 Uhr</span></span>
+      <span class="topbar-title">Kanzlei-Cockpit</span>
       <div class="topbar-actions">
-        <button class="btn btn-primary btn-sm" onclick="alert('Bericht erstellen (Demo)')">Bericht erstellen</button>
+        <button class="btn btn-primary btn-sm">Bericht erstellen</button>
       </div>
     </div>
     <div class="topbar" id="topbar-gpt" style="display:none">
       <span class="topbar-title">KanzleiGPT</span>
-    </div>
-    <div class="topbar" id="topbar-gutachten" style="display:none">
-      <span class="topbar-title">Gutachten erstellen</span>
-    </div>
-    <div class="topbar" id="topbar-bwa" style="display:none">
-      <span class="topbar-title">BWA</span>
-    </div>
-    <div class="topbar" id="topbar-jahresabschluss" style="display:none">
-      <span class="topbar-title">Jahresabschluss</span>
     </div>
     <div class="topbar" id="topbar-einstellungen" style="display:none">
       <span class="topbar-title">Einstellungen</span>
@@ -2398,15 +2472,57 @@
           </div>
 
           <!-- Nicht-lesbar-Beleg (sichtbar nur in 'Eingegangen') -->
-          <div class="bt-row" data-state="nicht_lesbar" onclick="alert('Beleg unleserlich (Demo) — System fragt nach erneutem Upload')">
+          <div class="bt-row" data-state="nicht_lesbar">
             <div class="bt-thumb" style="background:linear-gradient(180deg,#fee 0%,#fcc 100%);color:#dc2626">⚠</div>
             <div><div class="bt-type" style="background:rgba(239,68,68,.13);color:#dc2626;padding:4px 8px;border-radius:7px;font-size:.66rem;font-weight:700;text-transform:uppercase">Unleserlich</div></div>
             <div><div class="bt-supplier">scan_4823.jpg</div><div class="bt-supplier-sub">12.05.2026 09:14 · per E-Mail · Auflösung zu niedrig</div></div>
             <div><div class="bt-amount" style="color:var(--text-3)">—</div><div class="bt-amount-sub">nicht erkannt</div></div>
             <div><div class="bt-konto" style="color:var(--text-3)">—</div><div class="bt-konto-sub">—</div></div>
             <div><div class="bt-konto" style="color:var(--text-3)">—</div><div class="bt-konto-sub">—</div></div>
-            <div class="bt-conf-fields"><div class="bt-cf-group"><div class="bt-cf-dot low"></div><div class="bt-cf-dot low"></div><div class="bt-cf-dot low"></div><div class="bt-cf-dot low"></div></div><div class="bt-cf-warn" style="color:#dc2626">0 %</div></div>
-            <div class="bt-action" style="color:#dc2626">↺ Erneut</div>
+            <div class="bt-conf-fields"><div class="bt-cf-group"><div class="bt-cf-dot low"></div><div class="bt-cf-dot low"></div><div class="bt-cf-dot low"></div><div class="bt-cf-dot low"></div></div><div class="bt-cf-warn">0 %</div></div>
+            <div class="bt-action" style="display:flex;flex-direction:column;gap:6px;line-height:1.2">
+              <div style="color:#dc2626;cursor:pointer">↺ Erneut</div>
+              <div onclick="event.stopPropagation();openMandantContactMail()" style="color:var(--acc);font-size:.78rem;cursor:pointer">✉ Mandant</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- E-Mail an Mandant Modal -->
+      <div id="contactMandantModal" style="display:none;position:fixed;inset:0;background:rgba(20,22,40,.55);backdrop-filter:blur(4px);z-index:9999;align-items:center;justify-content:center;padding:24px">
+        <div style="background:var(--bg);border-radius:18px;max-width:620px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.35),0 8px 20px rgba(0,0,0,.15);overflow:hidden;display:flex;flex-direction:column">
+          <div style="display:flex;align-items:center;gap:12px;padding:20px 26px;border-bottom:1px solid rgba(166,171,189,.18)">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(109,122,255,.12);color:var(--acc);display:flex;align-items:center;justify-content:center;font-size:1.1rem">✉</div>
+            <div style="flex:1">
+              <div style="font-family:'Poppins',sans-serif;font-size:1rem;font-weight:700">E-Mail an Mandant</div>
+              <div style="font-size:.74rem;color:var(--text-3);margin-top:2px">Bauträger Müller GmbH &middot; vorgefüllt aus KI-Analyse</div>
+            </div>
+            <div onclick="closeMandantContactMail()" style="cursor:pointer;color:var(--text-3);font-size:1.4rem;padding:0 6px;line-height:1">×</div>
+          </div>
+          <div style="padding:22px 26px;display:flex;flex-direction:column;gap:14px">
+            <div>
+              <div style="font-size:.66rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">An</div>
+              <div style="background:var(--bg);border:1px solid rgba(166,171,189,.3);border-radius:10px;padding:10px 14px;font-size:.86rem;color:var(--text)">buchhaltung@bautraeger-mueller.de</div>
+            </div>
+            <div>
+              <div style="font-size:.66rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Betreff</div>
+              <div style="background:var(--bg);border:1px solid rgba(166,171,189,.3);border-radius:10px;padding:10px 14px;font-size:.86rem;color:var(--text);font-weight:600">Beleg nicht lesbar &mdash; bitte erneut hochladen</div>
+            </div>
+            <div>
+              <div style="font-size:.66rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Nachricht</div>
+              <textarea style="width:100%;box-sizing:border-box;background:#fff;border:1px solid rgba(166,171,189,.3);border-radius:10px;padding:14px 16px;font-family:'Inter',sans-serif;font-size:.86rem;line-height:1.6;color:var(--text);resize:vertical;min-height:180px">Sehr geehrte Damen und Herren,
+
+der am 12.05.2026 per E-Mail übermittelte Beleg „scan_4823.jpg" konnte von unserer Buchhaltung nicht ausgelesen werden — die Auflösung des Scans ist zu niedrig.
+
+Bitte senden Sie uns den Beleg erneut zu, idealerweise als PDF mit 300 dpi oder als Foto bei guter Beleuchtung.
+
+Vielen Dank und beste Grüße
+RBB &amp; Partner</textarea>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:10px;padding:18px 26px;border-top:1px solid rgba(166,171,189,.18);background:rgba(166,171,189,.05)">
+            <button onclick="closeMandantContactMail()" style="background:none;border:1px solid rgba(166,171,189,.4);border-radius:10px;padding:10px 20px;font-size:.85rem;font-weight:600;color:var(--text-2);cursor:pointer">Abbrechen</button>
+            <button onclick="sendMandantContactMail()" style="background:var(--acc);border:none;border-radius:10px;padding:10px 22px;font-size:.85rem;font-weight:700;color:#fff;cursor:pointer">Senden</button>
           </div>
         </div>
       </div>
@@ -2435,14 +2551,12 @@
             <div class="bp-row" style="color:#666;"><span>USt 19 %</span><span>872,10 €</span></div>
             <div class="bp-total"><span>Gesamt</span><span>5.462,10 €</span></div>
             <div class="bp-skonto">Zahlbar 30 Tage netto oder mit 2 % Skonto bei Zahlung binnen 10 Tagen.</div>
-            <div class="bp-stamp">GEBUCHT</div>
           </div>
 
           <div class="ap-panel">
             <div class="ap-header">
               <div>
                 <div class="ap-title">Vision AI · <span>Analyse</span></div>
-                <div class="ap-time">Verarbeitet in <b>1,8 s</b> · Claude Opus 4.7</div>
               </div>
               <div class="ap-conf-badge">98 % Confidence</div>
             </div>
@@ -2452,7 +2566,6 @@
               <div class="ap-fact-body">
                 <div class="ap-fact-lbl">Lieferant <span class="ap-conf-pct high">99 %</span></div>
                 <div class="ap-fact-val">Bauzentrum Weber GmbH, Heilbronn</div>
-                <div class="ap-fact-note">Bekannt seit Januar 2024 · 47 Vorbelege · Kreditor 70042</div>
               </div>
             </div>
 
@@ -2469,7 +2582,6 @@
               <div class="ap-fact-body">
                 <div class="ap-fact-lbl">Beträge <span class="ap-conf-pct high">100 %</span></div>
                 <div class="ap-fact-val">4.590,00 € netto · 872,10 € VSt (19 %) · 5.462,10 € brutto</div>
-                <div class="ap-fact-note">Rechnerisch geprüft · netto × 1,19 = brutto ✓</div>
               </div>
             </div>
 
@@ -2478,7 +2590,6 @@
               <div class="ap-fact-body">
                 <div class="ap-fact-lbl">Skonto-Klausel <span class="ap-conf-pct mid">87 %</span></div>
                 <div class="ap-fact-val"><b>2 % Skonto bei Zahlung binnen 10 Tagen</b> erkannt</div>
-                <div class="ap-fact-note">Vorsteuerkorrektur § 17 UStG vorbereitet · greift bei Zahlung bis 24.05.2026</div>
               </div>
             </div>
 
@@ -2487,7 +2598,6 @@
               <div class="ap-fact-body">
                 <div class="ap-fact-lbl">Kontierung <span class="ap-conf-pct high">96 %</span></div>
                 <div class="ap-fact-val">SKR 04 · <b>5200</b> Wareneingang 19 % gegen <b>70042</b> Kreditor</div>
-                <div class="ap-fact-note">Steuerschlüssel 9 · DATEV-Periode 05/2026</div>
               </div>
             </div>
 
@@ -2501,37 +2611,15 @@
               <div class="bs-line"><div class="bs-side">Soll</div><div class="bs-konto">1406</div><div class="bs-text">Abziehbare Vorsteuer 19 %</div><div class="bs-amount">872,10</div></div>
               <div class="bs-line haben"><div class="bs-side">Haben</div><div class="bs-konto">70042</div><div class="bs-text">Bauzentrum Weber GmbH<small>Kreditor · Personenkonto</small></div><div class="bs-amount">5.462,10</div></div>
               <div class="bs-meta">
-                <div class="bs-meta-row"><span class="bs-meta-lbl">Steuerschlüssel</span><span class="bs-meta-val">9 · VSt 19 %</span></div>
                 <div class="bs-meta-row"><span class="bs-meta-lbl">Belegfeld 1</span><span class="bs-meta-val">RG 2026/0418</span></div>
                 <div class="bs-meta-row"><span class="bs-meta-lbl">Beleg­datum</span><span class="bs-meta-val">14.05.2026</span></div>
-                <div class="bs-meta-row"><span class="bs-meta-lbl">Buchungs­periode</span><span class="bs-meta-val">05/2026</span></div>
-                <div class="bs-meta-row"><span class="bs-meta-lbl">Buchungs­text</span><span class="bs-meta-val">ER Bauzentrum Weber 04/18</span></div>
                 <div class="bs-meta-row"><span class="bs-meta-lbl">Fälligkeit</span><span class="bs-meta-val">13.06.2026</span></div>
               </div>
             </div>
 
-            <div class="ap-memory">
-              <b>Aus eurer Wissensdatenbank:</b> Bauzentrum Weber wurde 47 Mal auf Konto 3400 gebucht, immer mit 19 % VSt. Layout 100 % bekannt, auch der Skonto-Hinweis ist immer an dieser Stelle.
-            </div>
-
-            <div class="ap-learn">
-              <div class="ap-learn-head">
-                <div class="ap-learn-pulse"></div>
-                <div class="ap-learn-title">Wenn du jetzt bestätigst, lernt das System dazu</div>
-              </div>
-              <div class="ap-learn-body">
-                Diese Regel wird dauerhaft gespeichert und automatisch auf alle künftigen Belege dieses Lieferanten angewendet:
-              </div>
-              <div class="ap-learn-list">
-                <div class="ap-learn-li"><span><b>Bauzentrum Weber GmbH</b> → immer Konto <b>3400</b> Wareneingang gegen <b>1576</b> Vorsteuer 19 %</span></div>
-                <div class="ap-learn-li"><span>Skonto-Klausel wird ab sofort auch ohne Rückfrage erkannt und vorgemerkt</span></div>
-                <div class="ap-learn-li"><span>Confidence steigt von <b>98 %</b> auf <b>99,5 %</b> · ab Beleg 50 läuft der Lieferant vollautomatisch</span></div>
-              </div>
-            </div>
-
             <div class="ap-actions">
-              <div class="ap-btn ghost" onclick="navigate('belege')">Korrigieren</div>
-              <div class="ap-btn primary" onclick="confirmBookingAndLearn()">Bestätigen &amp; Regel speichern ›</div>
+              <div class="ap-btn ghost" id="ap-btn-ghost" onclick="toggleCorrectMode()">Korrigieren</div>
+              <div class="ap-btn primary" id="ap-btn-primary" onclick="confirmBookingAndLearn()">Bestätigen &amp; Regel speichern ›</div>
             </div>
           </div>
         </div>
@@ -2551,12 +2639,6 @@
            WISSENSDATENBANK
       ════════════════════════════════════════════ -->
       <div class="view" id="view-wissensdb">
-        <div class="lf-stats">
-          <div class="lf-stat"><div class="lf-stat-icon">LF</div><div class="lf-stat-num">1.247</div><div class="lf-stat-lbl">Lieferanten erkannt · alle Mandanten</div></div>
-          <div class="lf-stat"><div class="lf-stat-icon">RE</div><div class="lf-stat-num">312</div><div class="lf-stat-lbl">aktive Buchungsregeln</div></div>
-          <div class="lf-stat"><div class="lf-stat-icon">%</div><div class="lf-stat-num" style="color:var(--acc)">87 %</div><div class="lf-stat-lbl">automatisch korrekt seit 11 Wochen</div></div>
-        </div>
-
         <div class="buha-section-head">
           <h2>Lieferanten · Bauträger Müller GmbH</h2>
           <div class="buha-filter-tabs">
@@ -2567,100 +2649,40 @@
         </div>
 
         <div class="lf-grid">
-          <div class="lf-card" onclick="alert('Regel-Editor (Demo)')">
-            <div class="lf-card-head"><div><div class="lf-name">Bauzentrum Weber GmbH</div><div class="lf-name-sub">Heilbronn · DE 138 472 851 · Kreditor 70042</div></div><div class="lf-badge">Auto · 100 %</div></div>
-            <div class="lf-rule-grid">
-              <div class="lf-rule-tag">Wenn</div>
-              <div class="lf-rule-cell">Lieferant <b>"Bauzentrum Weber"</b> oder USt-ID <b>DE 138 472 851</b> · Belegart <b>ER Inland</b></div>
-              <div class="lf-rule-tag dann">Dann</div>
-              <div class="lf-rule-cell">Soll <b class="acc">5200</b> Wareneingang · Haben <b class="acc">70042</b> · Steuerschl. <b class="acc">9</b><br/>+ Skonto-Klausel automatisch erkennen, §17 UStG-Korrektur vorbereiten</div>
-            </div>
-            <div class="lf-stats-row">
-              <div class="lf-stats-cell green"><b>47×</b> bestätigt</div>
-              <div class="lf-stats-cell"><b>0×</b> korrigiert</div>
-              <div class="lf-stats-cell"><b>99,5 %</b> Confidence</div>
-              <div class="lf-stats-cell" style="margin-left:auto;text-align:right"><b style="font-size:.74rem">heute</b>letzter Beleg</div>
-            </div>
+          <div class="lf-card">
+            <div class="lf-card-head"><div><div class="lf-name">Bauzentrum Weber GmbH</div><div class="lf-name-sub">Heilbronn · Kreditor 70042</div></div><div class="lf-badge">Auto · 100 %</div></div>
+            <div class="lf-rule-mini">Soll <b>5200</b> <span class="lf-arrow">→</span> Haben <b>70042</b> <span class="lf-meta">Steuerschl. 9</span></div>
+            <div class="lf-stats-mini"><b>47×</b> bestätigt &middot; <b>99,5 %</b> Confidence</div>
           </div>
 
-          <div class="lf-card" onclick="alert('Regel-Editor (Demo)')">
-            <div class="lf-card-head"><div><div class="lf-name">Holz Schäfer KG</div><div class="lf-name-sub">Stuttgart · DE 813 994 122 · Kreditor 70128</div></div><div class="lf-badge">Auto · 100 %</div></div>
-            <div class="lf-rule-grid">
-              <div class="lf-rule-tag">Wenn</div>
-              <div class="lf-rule-cell">Lieferant <b>"Holz Schäfer"</b> · Belegart <b>ER Inland</b></div>
-              <div class="lf-rule-tag dann">Dann</div>
-              <div class="lf-rule-cell">Soll <b class="acc">5200</b> Wareneingang · Haben <b class="acc">70128</b> · Steuerschl. <b class="acc">9</b></div>
-            </div>
-            <div class="lf-stats-row">
-              <div class="lf-stats-cell green"><b>32×</b> bestätigt</div>
-              <div class="lf-stats-cell"><b>0×</b> korrigiert</div>
-              <div class="lf-stats-cell"><b>99,2 %</b> Confidence</div>
-              <div class="lf-stats-cell" style="margin-left:auto;text-align:right"><b style="font-size:.74rem">heute</b>letzter Beleg</div>
-            </div>
+          <div class="lf-card">
+            <div class="lf-card-head"><div><div class="lf-name">Holz Schäfer KG</div><div class="lf-name-sub">Stuttgart · Kreditor 70128</div></div><div class="lf-badge">Auto · 100 %</div></div>
+            <div class="lf-rule-mini">Soll <b>5200</b> <span class="lf-arrow">→</span> Haben <b>70128</b> <span class="lf-meta">Steuerschl. 9</span></div>
+            <div class="lf-stats-mini"><b>32×</b> bestätigt &middot; <b>99,2 %</b> Confidence</div>
           </div>
 
-          <div class="lf-card" onclick="alert('Regel-Editor (Demo)')">
-            <div class="lf-card-head"><div><div class="lf-name">Knauf AMF Italia S.r.l.</div><div class="lf-name-sub">Mailand, IT · IT 02 938 412 099 · Kreditor 70217</div></div><div class="lf-badge" style="background:rgba(245,158,11,.14);color:#d97706">§ 13b · lernt noch</div></div>
-            <div class="lf-rule-grid">
-              <div class="lf-rule-tag">Wenn</div>
-              <div class="lf-rule-cell">USt-ID beginnt mit <b>"IT"</b> · Belegart <b>ER EU</b> · Hinweis "Reverse Charge" oder "soggetto a inversione contabile"</div>
-              <div class="lf-rule-tag dann">Dann</div>
-              <div class="lf-rule-cell">Soll <b class="acc">5425</b> EG-Erwerb 19 % · Haben <b class="acc">70217</b> · Steuerschl. <b class="acc">94</b> (§13b UStG)<br/>+ Gegenbuchung VSt/USt automatisch erzeugen</div>
-            </div>
-            <div class="lf-stats-row">
-              <div class="lf-stats-cell green"><b>9×</b> bestätigt</div>
-              <div class="lf-stats-cell red"><b>1×</b> korrigiert</div>
-              <div class="lf-stats-cell"><b>89 %</b> Confidence</div>
-              <div class="lf-stats-cell" style="margin-left:auto;text-align:right"><b style="font-size:.74rem">Feb 26</b>seit</div>
-            </div>
+          <div class="lf-card">
+            <div class="lf-card-head"><div><div class="lf-name">Knauf AMF Italia S.r.l.</div><div class="lf-name-sub">Mailand, IT · Kreditor 70217</div></div><div class="lf-badge" style="background:rgba(245,158,11,.14);color:#d97706">§ 13b · lernt noch</div></div>
+            <div class="lf-rule-mini">Soll <b>5425</b> <span class="lf-arrow">→</span> Haben <b>70217</b> <span class="lf-meta">Steuerschl. 94 · §13b</span></div>
+            <div class="lf-stats-mini"><b>9×</b> bestätigt &middot; <b>89 %</b> Confidence</div>
           </div>
 
-          <div class="lf-card" onclick="alert('Regel-Editor (Demo)')">
-            <div class="lf-card-head"><div><div class="lf-name">Sika Deutschland GmbH</div><div class="lf-name-sub">Stuttgart · DE 147 819 522 · Kreditor 70044</div></div><div class="lf-badge">Auto · 100 %</div></div>
-            <div class="lf-rule-grid">
-              <div class="lf-rule-tag">Wenn</div>
-              <div class="lf-rule-cell">Lieferant <b>"Sika Deutschland"</b> · Belegart <b>ER Inland</b> oder <b>Gutschrift</b></div>
-              <div class="lf-rule-tag dann">Dann</div>
-              <div class="lf-rule-cell">Soll <b class="acc">5200</b> · Haben <b class="acc">70044</b> · Steuerschl. <b class="acc">9</b><br/>+ Bei Gutschrift: Beträge automatisch negativ</div>
-            </div>
-            <div class="lf-stats-row">
-              <div class="lf-stats-cell green"><b>28×</b> bestätigt</div>
-              <div class="lf-stats-cell"><b>0×</b> korrigiert</div>
-              <div class="lf-stats-cell"><b>99,8 %</b> Confidence</div>
-              <div class="lf-stats-cell" style="margin-left:auto;text-align:right"><b style="font-size:.74rem">heute</b>letzter Beleg</div>
-            </div>
+          <div class="lf-card">
+            <div class="lf-card-head"><div><div class="lf-name">Sika Deutschland GmbH</div><div class="lf-name-sub">Stuttgart · Kreditor 70044</div></div><div class="lf-badge">Auto · 100 %</div></div>
+            <div class="lf-rule-mini">Soll <b>5200</b> <span class="lf-arrow">→</span> Haben <b>70044</b> <span class="lf-meta">Steuerschl. 9</span></div>
+            <div class="lf-stats-mini"><b>28×</b> bestätigt &middot; <b>99,8 %</b> Confidence</div>
           </div>
 
-          <div class="lf-card" onclick="alert('Regel-Editor (Demo)')">
-            <div class="lf-card-head"><div><div class="lf-name">Stahlbau Müller AG</div><div class="lf-name-sub">Karlsruhe · DE 226 711 408 · Kreditor 70091</div></div><div class="lf-badge">Auto · 100 %</div></div>
-            <div class="lf-rule-grid">
-              <div class="lf-rule-tag">Wenn</div>
-              <div class="lf-rule-cell">Lieferant <b>"Stahlbau Müller"</b> · Belegart <b>ER Inland</b></div>
-              <div class="lf-rule-tag dann">Dann</div>
-              <div class="lf-rule-cell">Soll <b class="acc">5200</b> · Haben <b class="acc">70091</b> · Steuerschl. <b class="acc">9</b><br/>+ Abschlagsrechnungen separat: <b class="acc">1518</b> Anzahlungen erkennen</div>
-            </div>
-            <div class="lf-stats-row">
-              <div class="lf-stats-cell green"><b>18×</b> bestätigt</div>
-              <div class="lf-stats-cell"><b>0×</b> korrigiert</div>
-              <div class="lf-stats-cell"><b>99,1 %</b> Confidence</div>
-              <div class="lf-stats-cell" style="margin-left:auto;text-align:right"><b style="font-size:.74rem">12.05.</b>letzter Beleg</div>
-            </div>
+          <div class="lf-card">
+            <div class="lf-card-head"><div><div class="lf-name">Stahlbau Müller AG</div><div class="lf-name-sub">Karlsruhe · Kreditor 70091</div></div><div class="lf-badge">Auto · 100 %</div></div>
+            <div class="lf-rule-mini">Soll <b>5200</b> <span class="lf-arrow">→</span> Haben <b>70091</b> <span class="lf-meta">Steuerschl. 9</span></div>
+            <div class="lf-stats-mini"><b>18×</b> bestätigt &middot; <b>99,1 %</b> Confidence</div>
           </div>
 
-          <div class="lf-card" onclick="alert('Regel-Editor (Demo)')">
-            <div class="lf-card-head"><div><div class="lf-name">Würth Industrie GmbH</div><div class="lf-name-sub">Künzelsau · DE 145 871 309 · Kreditor 70402</div></div><div class="lf-badge">Auto · 100 %</div></div>
-            <div class="lf-rule-grid">
-              <div class="lf-rule-tag">Wenn</div>
-              <div class="lf-rule-cell">Lieferant <b>"Würth Industrie"</b> · Belegart <b>ER Inland</b> · Kleinmaterial-Position</div>
-              <div class="lf-rule-tag dann">Dann</div>
-              <div class="lf-rule-cell">Soll <b class="acc">6845</b> Werkzeug/Kleinmat. · Haben <b class="acc">70402</b> · Steuerschl. <b class="acc">9</b></div>
-            </div>
-            <div class="lf-stats-row">
-              <div class="lf-stats-cell green"><b>54×</b> bestätigt</div>
-              <div class="lf-stats-cell"><b>0×</b> korrigiert</div>
-              <div class="lf-stats-cell"><b>99,4 %</b> Confidence</div>
-              <div class="lf-stats-cell" style="margin-left:auto;text-align:right"><b style="font-size:.74rem">heute</b>letzter Beleg</div>
-            </div>
+          <div class="lf-card">
+            <div class="lf-card-head"><div><div class="lf-name">Würth Industrie GmbH</div><div class="lf-name-sub">Künzelsau · Kreditor 70402</div></div><div class="lf-badge">Auto · 100 %</div></div>
+            <div class="lf-rule-mini">Soll <b>6845</b> <span class="lf-arrow">→</span> Haben <b>70402</b> <span class="lf-meta">Steuerschl. 9</span></div>
+            <div class="lf-stats-mini"><b>54×</b> bestätigt &middot; <b>99,4 %</b> Confidence</div>
           </div>
         </div>
       </div>
@@ -2674,9 +2696,7 @@
             <div class="export-head">
               <div>
                 <h3>Buchungsstapel Mai 2026</h3>
-                <div class="meta">Erzeugt: 26.05.2026 09:14 · Format <b style="color:var(--acc)">DATEV-Format (EXTF) v9.0</b> · Datei <span style="font-family:'JetBrains Mono','SF Mono',monospace">EXTF_Buchungsstapel.csv</span> · 312 Buchungen</div>
               </div>
-              <div class="lf-badge" style="background:rgba(16,185,129,.12);color:#10b981">Bereit zum Import</div>
             </div>
             <div class="export-info">
               <div class="ei-cell"><div class="ei-lbl">Beraternummer</div><div class="ei-val">1023456</div></div>
@@ -2689,7 +2709,7 @@
               <div class="ei-cell"><div class="ei-lbl">Buchungen</div><div class="ei-val">312</div></div>
             </div>
             <div class="export-table">
-              <div class="et-head"><div>Datum</div><div>Beleg-Nr.</div><div>Buchungstext</div><div class="et-num">Umsatz</div><div>S/H</div><div>Konto</div><div>Gegenkonto</div><div>BU</div><div class="et-num">Skonto</div><div>Status</div></div>
+              <div class="et-head"><div>Datum</div><div>Beleg-Nr.</div><div>Buchungstext</div><div class="et-num">Umsatz</div><div>S/H</div><div>Konto</div><div>Gegenkonto</div><div>BU</div></div>
 
               <div class="et-row">
                 <div>14.05.</div>
@@ -2699,10 +2719,7 @@
                 <div><span class="et-sh">S</span></div>
                 <div><b>5200</b></div>
                 <div><b>70042</b><span class="et-pk">Bauzentrum Weber GmbH</span></div>
-                <div><span class="et-bu standard">9</span></div>
-                <div class="et-skonto">91,80</div>
-                <div class="et-tag">OK</div>
-              </div>
+                <div><span class="et-bu standard">9</span></div>              </div>
 
               <div class="et-row">
                 <div>14.05.</div>
@@ -2712,10 +2729,7 @@
                 <div><span class="et-sh">S</span></div>
                 <div><b>5200</b></div>
                 <div><b>70128</b><span class="et-pk">Holz Schäfer KG</span></div>
-                <div><span class="et-bu standard">9</span></div>
-                <div class="et-skonto-empty">—</div>
-                <div class="et-tag">OK</div>
-              </div>
+                <div><span class="et-bu standard">9</span></div>              </div>
 
               <div class="et-row">
                 <div>13.05.</div>
@@ -2725,10 +2739,7 @@
                 <div><span class="et-sh">S</span></div>
                 <div><b>5200</b></div>
                 <div><b>70044</b><span class="et-pk">Sika Deutschland GmbH</span></div>
-                <div><span class="et-bu standard">9</span></div>
-                <div class="et-skonto-empty">—</div>
-                <div class="et-tag">OK</div>
-              </div>
+                <div><span class="et-bu standard">9</span></div>              </div>
 
               <div class="et-row">
                 <div>13.05.</div>
@@ -2738,10 +2749,7 @@
                 <div><span class="et-sh">S</span></div>
                 <div><b>5425</b></div>
                 <div><b>70217</b><span class="et-pk">Knauf AMF Italia S.r.l.</span></div>
-                <div><span class="et-bu">94</span></div>
-                <div class="et-skonto-empty">—</div>
-                <div class="et-tag">OK</div>
-              </div>
+                <div><span class="et-bu">94</span></div>              </div>
 
               <div class="et-row">
                 <div>12.05.</div>
@@ -2751,10 +2759,7 @@
                 <div><span class="et-sh">S</span></div>
                 <div><b>5200</b></div>
                 <div><b>70091</b><span class="et-pk">Stahlbau Müller AG</span></div>
-                <div><span class="et-bu standard">9</span></div>
-                <div class="et-skonto-empty">—</div>
-                <div class="et-tag">OK</div>
-              </div>
+                <div><span class="et-bu standard">9</span></div>              </div>
 
               <div class="et-row">
                 <div>12.05.</div>
@@ -2764,10 +2769,7 @@
                 <div><span class="et-sh">S</span></div>
                 <div><b>6640</b></div>
                 <div><b>1600</b><span class="et-pk">Kasse</span></div>
-                <div><span class="et-bu standard">9</span></div>
-                <div class="et-skonto-empty">—</div>
-                <div class="et-tag">OK</div>
-              </div>
+                <div><span class="et-bu standard">9</span></div>              </div>
 
               <div class="et-row">
                 <div>12.05.</div>
@@ -2777,10 +2779,7 @@
                 <div><span class="et-sh">S</span></div>
                 <div><b>6845</b></div>
                 <div><b>70402</b><span class="et-pk">Würth Industrie GmbH</span></div>
-                <div><span class="et-bu standard">9</span></div>
-                <div class="et-skonto-empty">—</div>
-                <div class="et-tag">OK</div>
-              </div>
+                <div><span class="et-bu standard">9</span></div>              </div>
 
               <div class="et-row">
                 <div>11.05.</div>
@@ -2790,10 +2789,7 @@
                 <div><span class="et-sh">S</span></div>
                 <div><b>6310</b></div>
                 <div><b>70302</b><span class="et-pk">Caterpillar Vermietung</span></div>
-                <div><span class="et-bu standard">9</span></div>
-                <div class="et-skonto-empty">—</div>
-                <div class="et-tag">OK</div>
-              </div>
+                <div><span class="et-bu standard">9</span></div>              </div>
 
               <div class="et-row">
                 <div>11.05.</div>
@@ -2803,16 +2799,13 @@
                 <div><span class="et-sh">S</span></div>
                 <div><b>6530</b></div>
                 <div><b>1600</b><span class="et-pk">Kasse</span></div>
-                <div><span class="et-bu standard">9</span></div>
-                <div class="et-skonto-empty">—</div>
-                <div class="et-tag">OK</div>
-              </div>
+                <div><span class="et-bu standard">9</span></div>              </div>
 
               <div class="et-row" style="color:var(--text-3)">
                 <div>…</div>
                 <div>…</div>
                 <div>+ 303 weitere Buchungen<span class="et-pk">davon 8 mit Skonto, 12 § 13b, 2 GWG-Sammelposten</span></div>
-                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                <div></div><div></div><div></div><div></div><div></div>
               </div>
             </div>
           </div>
@@ -2833,7 +2826,7 @@
               <div style="padding:6px 0"><div style="font-size:.7rem;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em">USt 19 %</div><div style="font-family:Poppins,sans-serif;font-size:1.1rem;font-weight:700">78.439,63 €</div></div>
               <div style="padding:6px 0"><div style="font-size:.7rem;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em">Reverse Charge</div><div style="font-family:Poppins,sans-serif;font-size:1.1rem;font-weight:700">28.640,00 €</div></div>
             </div>
-            <div class="es-big-btn" onclick="alert('DATEV-XML exportiert (Demo)')">↓ DATEV-XML exportieren</div>
+            <div class="es-big-btn" id="datevExportBtn" onclick="exportDatevDemo()">↓ DATEV-XML exportieren</div>
             <div class="es-tiny">Direkt in DATEV Unternehmen Online · oder lokal als Datei speichern</div>
           </div>
         </div>
@@ -2843,7 +2836,7 @@
            KANZLEI-COCKPIT
       ════════════════════════════════════════════ -->
       <div class="view" id="view-cockpit">
-        <div class="dash-grid-buha">
+        <div class="dash-grid-buha kpi-row">
           <div class="dash-card-buha">
             <h3>Automatisierungsgrad</h3>
             <div class="sub">Alle Mandanten · letzte 30 Tage</div>
@@ -2854,21 +2847,24 @@
               </svg>
               <div class="gauge-val">87 %</div>
             </div>
-            <div class="gauge-lbl">+ 23 Prozentpunkte vs. Finmatics</div>
+            <div class="gauge-lbl">davon <b style="color:#10b981">1.617 automatisch</b></div>
           </div>
           <div class="dash-card-buha">
             <h3>Belege diese Woche</h3>
             <div class="sub">Mo bis heute · alle Mandanten</div>
             <div class="big-num">1.847</div>
-            <div class="big-num-sub">davon <b style="color:#10b981">1.617 automatisch</b>, 230 zur Prüfung</div>
-            <div class="big-num-delta">▲ 19 % vs. Vorwoche</div>
+          </div>
+          <div class="dash-card-buha">
+            <h3>Offene Prüffälle</h3>
+            <div class="sub">Heute · alle Mandanten</div>
+            <div class="big-num">230</div>
+            <div class="big-num-sub">12,5 % vom Wochenvolumen</div>
           </div>
           <div class="dash-card-buha">
             <h3>Eingesparte Zeit</h3>
             <div class="sub">Diese Woche · alle Mitarbeiter</div>
             <div class="big-num"><span>~</span> 67<span> h</span></div>
             <div class="big-num-sub">≈ 1,7 Vollzeit-Wochen Beratung freigespielt</div>
-            <div class="big-num-delta">Im Mai bisher: 248 h</div>
           </div>
         </div>
 
@@ -2876,37 +2872,56 @@
           <div class="dash-card-buha">
             <h3>Belege pro Tag</h3>
             <div class="sub">Letzte 7 Tage</div>
-            <div class="bar-chart">
-              <div class="bar muted" style="height:48%"></div>
-              <div class="bar" style="height:62%"></div>
-              <div class="bar" style="height:78%"></div>
-              <div class="bar" style="height:71%"></div>
-              <div class="bar" style="height:84%"></div>
-              <div class="bar" style="height:69%"></div>
-              <div class="bar" style="height:92%"></div>
+            <div class="bar-chart bar-chart-tall">
+              <div class="bar muted" style="height:48%"><span class="bar-val">198</span></div>
+              <div class="bar" style="height:62%"><span class="bar-val">256</span></div>
+              <div class="bar" style="height:78%"><span class="bar-val">322</span></div>
+              <div class="bar" style="height:71%"><span class="bar-val">294</span></div>
+              <div class="bar" style="height:84%"><span class="bar-val">347</span></div>
+              <div class="bar" style="height:69%"><span class="bar-val">285</span></div>
+              <div class="bar" style="height:92%"><span class="bar-val">381</span></div>
             </div>
             <div class="bar-x"><span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span></div>
-          </div>
-          <div class="dash-card-buha">
-            <h3>Aktivität · Live-Feed</h3>
-            <div class="sub">Letzte Minuten</div>
-            <div class="recent-list">
-              <div class="recent-item"><div class="recent-dot green"></div><div class="recent-txt">12 Belege Bauträger Müller automatisch gebucht</div><div class="recent-meta">vor 2 min</div></div>
-              <div class="recent-item"><div class="recent-dot acc"></div><div class="recent-txt">Knauf AMF Italia · § 13b · neue Regel gelernt</div><div class="recent-meta">vor 6 min</div></div>
-              <div class="recent-item"><div class="recent-dot green"></div><div class="recent-txt">DATEV-XML Mandant Schneider exportiert</div><div class="recent-meta">vor 14 min</div></div>
-              <div class="recent-item"><div class="recent-dot orange"></div><div class="recent-txt">Café am Markt · Anlass fehlt · zur Prüfung</div><div class="recent-meta">vor 18 min</div></div>
-              <div class="recent-item"><div class="recent-dot green"></div><div class="recent-txt">47 Belege gestern Nacht automatisch verarbeitet</div><div class="recent-meta">heute 06:00</div></div>
+            <div class="bar-foot">
+              <div><div class="bar-foot-lbl">Wochensumme</div><div class="bar-foot-val">2.083</div></div>
+              <div><div class="bar-foot-lbl">Ø pro Tag</div><div class="bar-foot-val">298</div></div>
+              <div><div class="bar-foot-lbl">Spitzentag</div><div class="bar-foot-val">So &middot; 381</div></div>
             </div>
           </div>
           <div class="dash-card-buha">
             <h3>Mandanten · Automatisierung</h3>
             <div class="sub">Top 5 nach Belegvolumen</div>
-            <div class="health-list">
-              <div><div class="health-row-head"><div class="health-lbl">Bauträger Müller GmbH</div><div class="health-val">92 %</div></div><div class="health-bar"><div class="health-fill" style="width:92%"></div></div></div>
-              <div><div class="health-row-head"><div class="health-lbl">Schneider Hochbau GmbH</div><div class="health-val">89 %</div></div><div class="health-bar"><div class="health-fill" style="width:89%"></div></div></div>
-              <div><div class="health-row-head"><div class="health-lbl">Architekturbüro Vogel</div><div class="health-val">85 %</div></div><div class="health-bar"><div class="health-fill" style="width:85%"></div></div></div>
-              <div><div class="health-row-head"><div class="health-lbl">Ingenieurbüro Klein KG</div><div class="health-val">81 %</div></div><div class="health-bar"><div class="health-fill" style="width:81%"></div></div></div>
-              <div><div class="health-row-head"><div class="health-lbl">Bauer &amp; Söhne OHG</div><div class="health-val">76 %</div></div><div class="health-bar"><div class="health-fill" style="width:76%"></div></div></div>
+            <div class="mand-table">
+              <div class="mand-head"><div>Mandant</div><div class="mand-num">Belege</div><div class="mand-num">Auto.</div></div>
+              <div class="mand-row">
+                <div class="mand-name">Bauträger Müller GmbH</div>
+                <div class="mand-num">312</div>
+                <div class="mand-auto"><div class="health-bar"><div class="health-fill" style="width:92%"></div></div><span>92 %</span></div>
+              </div>
+              <div class="mand-row">
+                <div class="mand-name">Schneider Hochbau GmbH</div>
+                <div class="mand-num">428</div>
+                <div class="mand-auto"><div class="health-bar"><div class="health-fill" style="width:89%"></div></div><span>89 %</span></div>
+              </div>
+              <div class="mand-row">
+                <div class="mand-name">Architekturbüro Vogel</div>
+                <div class="mand-num">78</div>
+                <div class="mand-auto"><div class="health-bar"><div class="health-fill" style="width:85%"></div></div><span>85 %</span></div>
+              </div>
+              <div class="mand-row">
+                <div class="mand-name">Ingenieurbüro Klein KG</div>
+                <div class="mand-num">142</div>
+                <div class="mand-auto"><div class="health-bar"><div class="health-fill" style="width:81%"></div></div><span>81 %</span></div>
+              </div>
+              <div class="mand-row">
+                <div class="mand-name">Bauer &amp; Söhne OHG</div>
+                <div class="mand-num">198</div>
+                <div class="mand-auto"><div class="health-bar"><div class="health-fill" style="width:76%"></div></div><span>76 %</span></div>
+              </div>
+            </div>
+            <div class="mand-foot">
+              <div><div class="mand-foot-lbl">Gesamt-Belege</div><div class="mand-foot-val">1.158</div></div>
+              <div><div class="mand-foot-lbl">Ø Automatisierung</div><div class="mand-foot-val">84,6 %</div></div>
             </div>
           </div>
         </div>
@@ -2920,75 +2935,75 @@
 
           <!-- LINKE SPALTE: KI-Radar -->
           <div class="db-left">
-            <div class="db-card" style="flex:1">
+            <div class="db-card ki-radar-card" style="flex:1">
               <div class="db-card-head">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/></svg>
                 <span class="db-card-title">KI-Radar</span>
                 <span class="db-card-sub">Heute &middot; Aus allen Datenquellen</span>
                 <button class="db-card-btn" id="dashboardRefreshBtn" onclick="dashboardRefresh()">Aktualisieren</button>
               </div>
-              <div style="display:flex;flex-direction:column;overflow-y:auto;flex:1">
+              <div id="ki-radar-list" style="display:flex;flex-direction:column;overflow-y:auto;flex:1">
 
-                <!-- Auffälligkeit: Bauer KG — Vorsteuer -->
+                <!-- Auffälligkeit: Bauträger Müller — Vorsteuer-Sprung -->
                 <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;border-bottom:1px solid rgba(166,171,189,.1);cursor:pointer;transition:.12s" onmouseover="this.style.background='rgba(109,122,255,.04)'" onmouseout="this.style.background=''">
-                  <div style="width:36px;height:36px;border-radius:10px;background:rgba(239,68,68,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#dc2626;font-family:'Poppins',sans-serif;font-size:.68rem;font-weight:800">BK</div>
+                  <div style="width:36px;height:36px;border-radius:10px;background:rgba(239,68,68,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#dc2626;font-family:'Poppins',sans-serif;font-size:.68rem;font-weight:800">BM</div>
                   <div style="flex:1;min-width:0">
                     <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
-                      <span style="font-size:.84rem;font-weight:600">Bauer KG</span>
+                      <span style="font-size:.84rem;font-weight:600">Bauträger Müller GmbH</span>
                       <span style="font-size:.63rem;font-weight:700;padding:2px 8px;border-radius:12px;background:rgba(239,68,68,.1);color:#dc2626;white-space:nowrap">Auffälligkeit</span>
                     </div>
-                    <p style="font-size:.78rem;color:var(--text-2);margin:0;line-height:1.55">Vorsteuer März 2026 um 38 % höher als Vorquartal — mögliche Großinvestition oder Buchungsfehler. Eigenkapitalquote weiterhin bei 12,4 % (Branchenschnitt: 18–22 %).</p>
+                    <p style="font-size:.78rem;color:var(--text-2);margin:0;line-height:1.55">Vorsteuer Mai 2026 um 38 % höher als Vorquartal — 12 Eingangsrechnungen Bauzentrum Weber GmbH ohne erkannte Skonto-Buchung. Sammelfreigabe vor DATEV-Export prüfen.</p>
                     <div style="display:flex;align-items:center;gap:6px;margin-top:7px">
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2.5" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
-                      <span style="font-size:.67rem;color:var(--text-3)">DATEV BWA März 2026</span>
+                      <span style="font-size:.67rem;color:var(--text-3)">Beleg-Eingang &middot; 147 zu prüfen</span>
                     </div>
                   </div>
                 </div>
 
-                <!-- Auffälligkeit: Schneider — offene Forderung -->
+                <!-- Auffälligkeit: Schneider Hochbau — Buchungs-Nr-Lücke -->
                 <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;border-bottom:1px solid rgba(166,171,189,.1);cursor:pointer;transition:.12s" onmouseover="this.style.background='rgba(109,122,255,.04)'" onmouseout="this.style.background=''">
-                  <div style="width:36px;height:36px;border-radius:10px;background:rgba(234,179,8,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#b45309;font-family:'Poppins',sans-serif;font-size:.68rem;font-weight:800">SB</div>
+                  <div style="width:36px;height:36px;border-radius:10px;background:rgba(234,179,8,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#b45309;font-family:'Poppins',sans-serif;font-size:.68rem;font-weight:800">SH</div>
                   <div style="flex:1;min-width:0">
                     <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
-                      <span style="font-size:.84rem;font-weight:600">Schneider Beteiligungs GmbH</span>
+                      <span style="font-size:.84rem;font-weight:600">Schneider Hochbau GmbH</span>
                       <span style="font-size:.63rem;font-weight:700;padding:2px 8px;border-radius:12px;background:rgba(234,179,8,.15);color:#b45309;white-space:nowrap">Auffälligkeit</span>
                     </div>
-                    <p style="font-size:.78rem;color:var(--text-2);margin:0;line-height:1.55">Offene Forderung Immobilientochter gegenüber Dritter GmbH: 142.000 € seit 97 Tagen offen. Abschreibungsrisiko vor Jahresabschluss prüfen.</p>
+                    <p style="font-size:.78rem;color:var(--text-2);margin:0;line-height:1.55">Eingangsrechnung Stahlbau Müller AG (2026/RE/0892, 14.280 €) ist Abschlag 3/4 — Vorgänger-Belege RE/0890 und RE/0891 fehlen im Stapel. Doppelerfassung möglich, manuell prüfen.</p>
                     <div style="display:flex;align-items:center;gap:6px;margin-top:7px">
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2.5" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
-                      <span style="font-size:.67rem;color:var(--text-3)">DATEV Offene Posten &middot; Mai 2026</span>
+                      <span style="font-size:.67rem;color:var(--text-3)">DATEV Buchungsstapel &middot; 14.05.2026</span>
                     </div>
                   </div>
                 </div>
 
-                <!-- Prüfhinweis: Müller — stille Reserven + Verkaufsabsicht -->
+                <!-- Prüfhinweis: Ingenieurbüro Klein — Bewirtungsbeleg ohne Anlass -->
                 <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;border-bottom:1px solid rgba(166,171,189,.1);cursor:pointer;transition:.12s" onmouseover="this.style.background='rgba(109,122,255,.04)'" onmouseout="this.style.background=''">
-                  <div style="width:36px;height:36px;border-radius:10px;background:rgba(109,122,255,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--acc);font-family:'Poppins',sans-serif;font-size:.68rem;font-weight:800">MM</div>
+                  <div style="width:36px;height:36px;border-radius:10px;background:rgba(109,122,255,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--acc);font-family:'Poppins',sans-serif;font-size:.68rem;font-weight:800">IK</div>
                   <div style="flex:1;min-width:0">
                     <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
-                      <span style="font-size:.84rem;font-weight:600">Müller Maschinenbau GmbH</span>
+                      <span style="font-size:.84rem;font-weight:600">Ingenieurbüro Klein KG</span>
                       <span style="font-size:.63rem;font-weight:700;padding:2px 8px;border-radius:12px;background:rgba(109,122,255,.12);color:var(--acc);white-space:nowrap">Prüfhinweis</span>
                     </div>
-                    <p style="font-size:.78rem;color:var(--text-2);margin:0;line-height:1.55">Bilanz zeigt stille Reserven ca. 1,8 Mio. €. E-Mail vom 12.05. erwähnt geplanten Anteilsverkauf. Gestaltung via § 8b KStG vor Sperrfristablauf möglicherweise relevant — bitte prüfen.</p>
+                    <p style="font-size:.78rem;color:var(--text-2);margin:0;line-height:1.55">Bewirtungsbeleg Café am Markt (94,80 €, Bon 0418) ohne Anlass und Teilnehmerangabe — Konto 6640 nur bei vollständigem Eigenbeleg abzugsfähig. Mandant kontaktieren.</p>
                     <div style="display:flex;align-items:center;gap:6px;margin-top:7px">
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2.5" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
-                      <span style="font-size:.67rem;color:var(--text-3)">DATEV-Export &middot; Outlook 12.05.2026</span>
+                      <span style="font-size:.67rem;color:var(--text-3)">Beleg-Eingang &middot; 12.05.2026</span>
                     </div>
                   </div>
                 </div>
 
-                <!-- Prüfhinweis: Bauer KG — Notartermin + EK-Quote -->
+                <!-- Prüfhinweis: Architekturbüro Vogel — §13b Reverse Charge -->
                 <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;cursor:pointer;transition:.12s" onmouseover="this.style.background='rgba(109,122,255,.04)'" onmouseout="this.style.background=''">
-                  <div style="width:36px;height:36px;border-radius:10px;background:rgba(109,122,255,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--acc);font-family:'Poppins',sans-serif;font-size:.68rem;font-weight:800">BK</div>
+                  <div style="width:36px;height:36px;border-radius:10px;background:rgba(109,122,255,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--acc);font-family:'Poppins',sans-serif;font-size:.68rem;font-weight:800">AV</div>
                   <div style="flex:1;min-width:0">
                     <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
-                      <span style="font-size:.84rem;font-weight:600">Bauer KG</span>
+                      <span style="font-size:.84rem;font-weight:600">Architekturbüro Vogel</span>
                       <span style="font-size:.63rem;font-weight:700;padding:2px 8px;border-radius:12px;background:rgba(109,122,255,.12);color:var(--acc);white-space:nowrap">Prüfhinweis</span>
                     </div>
-                    <p style="font-size:.78rem;color:var(--text-2);margin:0;line-height:1.55">Notarvertrag setzt Übergabe auf 01.07.2026 (Dokument vom 14.05.). Aktuelle EK-Quote 12,4 % ist kritisch für Finanzierungsgespräche — Übergabegespräch zeitnah empfohlen.</p>
+                    <p style="font-size:.78rem;color:var(--text-2);margin:0;line-height:1.55">Eingangsrechnung Knauf AMF Italia S.r.l. (3.210 €) als §13b UStG Reverse Charge erkannt — SKR 03 Konto 5425 mit Steuerschlüssel 94 vor DATEV-Export gegenprüfen.</p>
                     <div style="display:flex;align-items:center;gap:6px;margin-top:7px">
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2.5" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
-                      <span style="font-size:.67rem;color:var(--text-3)">Dokumente-Ordner &middot; DATEV BWA</span>
+                      <span style="font-size:.67rem;color:var(--text-3)">DATEV-Export &middot; Periode 05 / 2026</span>
                     </div>
                   </div>
                 </div>
@@ -3007,31 +3022,31 @@
                 <span class="db-card-title">Zuletzt bearbeitet</span>
               </div>
               <div style="display:flex;flex-direction:column">
-                <div style="display:flex;align-items:center;gap:12px;padding:11px 18px;border-bottom:1px solid rgba(166,171,189,.08);cursor:pointer;transition:.12s" onclick="navigate('bwa')" onmouseover="this.style.background='rgba(109,122,255,.04)'" onmouseout="this.style.background=''">
-                  <div style="width:30px;height:30px;border-radius:8px;background:rgba(109,122,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                <div style="display:flex;align-items:center;gap:13px;padding:14px 22px;border-bottom:1px solid rgba(166,171,189,.08);cursor:pointer;transition:.12s" onclick="navigate('belege')" onmouseover="this.style.background='rgba(109,122,255,.04)'" onmouseout="this.style.background=''">
+                  <div style="width:36px;height:36px;border-radius:9px;background:rgba(109,122,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2.5" stroke-linecap="round"><path d="M9 3h9l3 3v15H6V6l3-3z"/><path d="M9 3v3h6"/></svg>
                   </div>
                   <div style="flex:1;min-width:0">
-                    <div style="font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Müller GmbH &middot; BWA März</div>
-                    <div style="font-size:.68rem;color:var(--text-3);margin-top:1px">heute, 09:14 Uhr</div>
+                    <div style="font-size:.92rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Bauträger Müller &middot; 147 Belege zu prüfen</div>
+                    <div style="font-size:.78rem;color:var(--text-3);margin-top:4px">heute, 09:14 Uhr</div>
                   </div>
                 </div>
-                <div style="display:flex;align-items:center;gap:12px;padding:11px 18px;border-bottom:1px solid rgba(166,171,189,.08);cursor:pointer;transition:.12s" onclick="navigate('gutachten')" onmouseover="this.style.background='rgba(109,122,255,.04)'" onmouseout="this.style.background=''">
-                  <div style="width:30px;height:30px;border-radius:8px;background:rgba(109,122,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <div style="display:flex;align-items:center;gap:13px;padding:14px 22px;border-bottom:1px solid rgba(166,171,189,.08);cursor:pointer;transition:.12s" onclick="navigate('datev')" onmouseover="this.style.background='rgba(109,122,255,.04)'" onmouseout="this.style.background=''">
+                  <div style="width:36px;height:36px;border-radius:9px;background:rgba(109,122,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                   </div>
                   <div style="flex:1;min-width:0">
-                    <div style="font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Bauer KG &middot; Gutachten</div>
-                    <div style="font-size:.68rem;color:var(--text-3);margin-top:1px">gestern, 16:42 Uhr</div>
+                    <div style="font-size:.92rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">DATEV-Export &middot; Periode 04 / 2026</div>
+                    <div style="font-size:.78rem;color:var(--text-3);margin-top:4px">gestern, 16:42 Uhr</div>
                   </div>
                 </div>
-                <div style="display:flex;align-items:center;gap:12px;padding:11px 18px;cursor:pointer;transition:.12s" onclick="navigate('jahresabschluss')" onmouseover="this.style.background='rgba(109,122,255,.04)'" onmouseout="this.style.background=''">
-                  <div style="width:30px;height:30px;border-radius:8px;background:rgba(109,122,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <div style="display:flex;align-items:center;gap:13px;padding:14px 22px;cursor:pointer;transition:.12s" onclick="navigate('wissensdb')" onmouseover="this.style.background='rgba(109,122,255,.04)'" onmouseout="this.style.background=''">
+                  <div style="width:36px;height:36px;border-radius:9px;background:rgba(109,122,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2.5" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                   </div>
                   <div style="flex:1;min-width:0">
-                    <div style="font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Schneider &middot; Jahresabschluss</div>
-                    <div style="font-size:.68rem;color:var(--text-3);margin-top:1px">16.05.2026, 11:05 Uhr</div>
+                    <div style="font-size:.92rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Wissensdatenbank &middot; 3 neue Buchungsregeln</div>
+                    <div style="font-size:.78rem;color:var(--text-3);margin-top:4px">16.05.2026, 11:05 Uhr</div>
                   </div>
                 </div>
               </div>
@@ -3044,53 +3059,41 @@
                 <span class="db-card-title">Datenquellen</span>
               </div>
               <div style="display:flex;flex-direction:column">
-                <div style="display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid rgba(166,171,189,.1)">
+                <div style="display:flex;align-items:center;gap:12px;padding:16px 22px;border-bottom:1px solid rgba(166,171,189,.1)">
                   <div style="width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0"></div>
                   <div style="flex:1;min-width:0">
-                    <div style="font-size:.81rem;font-weight:600">DATEV</div>
+                    <div style="font-size:.92rem;font-weight:700">DATEV</div>
                     <div style="font-size:.68rem;color:var(--text-3);margin-top:2px">847 Datensätze &middot; Sync 15.05.2026</div>
                   </div>
-                  <span style="font-size:.65rem;font-weight:700;color:#15803d;background:rgba(34,197,94,.1);padding:2px 8px;border-radius:8px;white-space:nowrap">Verbunden</span>
+                  <span style="font-size:.74rem;font-weight:700;color:#15803d;background:rgba(34,197,94,.1);padding:2px 8px;border-radius:8px;white-space:nowrap">Verbunden</span>
                 </div>
-                <div style="display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid rgba(166,171,189,.1)">
+                <div style="display:flex;align-items:center;gap:12px;padding:16px 22px;border-bottom:1px solid rgba(166,171,189,.1)">
                   <div style="width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0"></div>
                   <div style="flex:1;min-width:0">
-                    <div style="font-size:.81rem;font-weight:600">E-Mail (Outlook)</div>
+                    <div style="font-size:.92rem;font-weight:700">E-Mail (Outlook)</div>
                     <div style="font-size:.68rem;color:var(--text-3);margin-top:2px">1.847 Mails indexiert</div>
                   </div>
-                  <span style="font-size:.65rem;font-weight:700;color:#15803d;background:rgba(34,197,94,.1);padding:2px 8px;border-radius:8px;white-space:nowrap">Verbunden</span>
+                  <span style="font-size:.74rem;font-weight:700;color:#15803d;background:rgba(34,197,94,.1);padding:2px 8px;border-radius:8px;white-space:nowrap">Verbunden</span>
                 </div>
-                <div style="display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid rgba(166,171,189,.1)">
+                <div style="display:flex;align-items:center;gap:12px;padding:16px 22px;border-bottom:1px solid rgba(166,171,189,.1)">
                   <div style="width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0"></div>
                   <div style="flex:1;min-width:0">
-                    <div style="font-size:.81rem;font-weight:600">Dokumente &amp; Ordner</div>
+                    <div style="font-size:.92rem;font-weight:700">Dokumente &amp; Ordner</div>
                     <div style="font-size:.68rem;color:var(--text-3);margin-top:2px">312 Dokumente &middot; 4 Ordner</div>
                   </div>
-                  <span style="font-size:.65rem;font-weight:700;color:#15803d;background:rgba(34,197,94,.1);padding:2px 8px;border-radius:8px;white-space:nowrap">Verbunden</span>
+                  <span style="font-size:.74rem;font-weight:700;color:#15803d;background:rgba(34,197,94,.1);padding:2px 8px;border-radius:8px;white-space:nowrap">Verbunden</span>
                 </div>
-                <div style="display:flex;align-items:center;gap:12px;padding:13px 18px">
+                <div style="display:flex;align-items:center;gap:12px;padding:16px 22px">
                   <div style="width:8px;height:8px;border-radius:50%;background:var(--text-3);flex-shrink:0"></div>
                   <div style="flex:1;min-width:0">
-                    <div style="font-size:.81rem;font-weight:600">Sprachjournal</div>
+                    <div style="font-size:.92rem;font-weight:700">Sprachjournal</div>
                     <div style="font-size:.68rem;color:var(--text-3);margin-top:2px">Noch nicht genutzt</div>
                   </div>
-                  <span style="font-size:.65rem;font-weight:700;color:var(--text-3);background:rgba(166,171,189,.15);padding:2px 8px;border-radius:8px;white-space:nowrap">Bereit</span>
+                  <span style="font-size:.74rem;font-weight:700;color:var(--text-3);background:rgba(166,171,189,.15);padding:2px 8px;border-radius:8px;white-space:nowrap">Bereit</span>
                 </div>
               </div>
             </div>
 
-          </div>
-        </div>
-
-        <!-- FRISTEN — volle Breite -->
-        <div class="db-card" style="flex-shrink:0;margin-bottom:4px">
-          <div class="db-card-head">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2.5" stroke-linecap="round"><polyline points="12 8 12 12 14 14"/><circle cx="12" cy="12" r="10"/></svg>
-            <span class="db-card-title">Fristen</span>
-            <button class="db-card-btn" onclick="navigate('fristen')">Alle anzeigen →</button>
-          </div>
-          <div id="dash-fristen-mini" style="display:flex;flex-direction:column;padding:4px 0">
-            <div style="color:var(--text-3);font-size:.8rem;padding:16px 20px">Fristen werden geladen…</div>
           </div>
         </div>
 
@@ -4835,7 +4838,7 @@ const SS_KEY = 'hk_kanzlei_v2';
   if (!localStorage.getItem(SS_KEY)) {
     localStorage.setItem(SS_KEY, JSON.stringify({
       token: 'demo-rbb-token',
-      name: 'Nikolai Galozzi',
+      name: 'Nikolai Galozi',
       role: 'admin',
       staffId: 1
     }));
@@ -4861,12 +4864,12 @@ const SS_KEY = 'hk_kanzlei_v2';
 
     // Auth / Staff
     if (u.endsWith('/api/kanzlei/staff/me'))
-      return ok({ name:'Nikolai Galozzi', role:'admin', staffId:1, email:'nikolai.galozzi@rbb-partner.de' });
+      return ok({ name:'Nikolai Galozi', role:'admin', staffId:1, email:'nikolai.galozzi@rbb-partner.de' });
     if (u.endsWith('/api/kanzlei/staff/login'))
-      return ok({ token:'demo-rbb-token', name:'Nikolai Galozzi', role:'admin', staffId:1 });
+      return ok({ token:'demo-rbb-token', name:'Nikolai Galozi', role:'admin', staffId:1 });
     if (u.endsWith('/api/kanzlei/staff/list'))
       return ok([
-        { id:1, name:'Nikolai Galozzi', email:'nikolai.galozzi@rbb-partner.de', role:'admin' },
+        { id:1, name:'Nikolai Galozi', email:'nikolai.galozzi@rbb-partner.de', role:'admin' },
         { id:2, name:'Eva Roth', email:'eva.roth@rbb-partner.de', role:'staff' },
         { id:3, name:'Markus Beier', email:'markus.beier@rbb-partner.de', role:'staff' },
         { id:4, name:'Tina Brandt', email:'tina.brandt@rbb-partner.de', role:'staff' }
@@ -5000,6 +5003,111 @@ const SS_KEY = 'hk_kanzlei_v2';
       t.classList.remove('visible');
       setTimeout(() => { if (typeof navigate === 'function') navigate('belege'); }, 250);
     }, 2400);
+  };
+
+  // Korrektur-Modus: KI-Werte + Buchungssatz inline editierbar machen
+  window.toggleCorrectMode = function(){
+    const panel = document.querySelector('#view-belegedetail .ap-panel');
+    if (!panel) return;
+    const isEditing = !panel.classList.contains('editing');
+    panel.classList.toggle('editing', isEditing);
+
+    const editables = panel.querySelectorAll('.ap-fact-val, .bs-konto, .bs-amount, .bs-text, .bs-meta-val');
+    editables.forEach(el => {
+      if (isEditing) {
+        el.setAttribute('contenteditable', 'true');
+        el.setAttribute('spellcheck', 'false');
+      } else {
+        el.removeAttribute('contenteditable');
+        el.removeAttribute('spellcheck');
+      }
+    });
+
+    const ghostBtn = document.getElementById('ap-btn-ghost');
+    const primaryBtn = document.getElementById('ap-btn-primary');
+    if (isEditing) {
+      ghostBtn.textContent = 'Abbrechen';
+      primaryBtn.innerHTML = 'Korrektur speichern ›';
+      primaryBtn.setAttribute('onclick', 'saveCorrection()');
+      // Fokus auf erstes Feld
+      const first = panel.querySelector('.ap-fact-val');
+      if (first) setTimeout(() => first.focus(), 50);
+    } else {
+      ghostBtn.textContent = 'Korrigieren';
+      primaryBtn.innerHTML = 'Bestätigen &amp; Regel speichern ›';
+      primaryBtn.setAttribute('onclick', 'confirmBookingAndLearn()');
+    }
+  };
+
+  // Korrektur speichern: Edit-Modus verlassen + Toast
+  window.saveCorrection = function(){
+    window.toggleCorrectMode();
+    if (typeof showToast === 'function') {
+      showToast('Korrektur gespeichert · Vision AI lernt mit', '#10b981');
+    }
+  };
+
+  // Mandant kontaktieren: E-Mail-Modal öffnen/schließen/senden
+  window.openMandantContactMail = function(){
+    const m = document.getElementById('contactMandantModal');
+    if (m) m.style.display = 'flex';
+  };
+  window.closeMandantContactMail = function(){
+    const m = document.getElementById('contactMandantModal');
+    if (m) m.style.display = 'none';
+  };
+  window.sendMandantContactMail = function(){
+    window.closeMandantContactMail();
+    if (typeof showToast === 'function') {
+      showToast('E-Mail an Mandant gesendet ✓', '#10b981');
+    }
+  };
+
+  // DATEV-Export Demo: Lade-Animation + simulierter Datei-Download
+  window.exportDatevDemo = function(){
+    const btn = document.getElementById('datevExportBtn');
+    if (!btn || btn.classList.contains('loading')) return;
+    const originalHTML = btn.innerHTML;
+    const originalBG = btn.style.background;
+    btn.classList.add('loading');
+    btn.innerHTML = '<span class="spin"></span>EXTF-Datei wird erzeugt …';
+
+    setTimeout(() => {
+      // Realistische DATEV EXTF v9.0 CSV erzeugen
+      const header = '"EXTF";510;21;"Buchungsstapel";9;' +
+        new Date().toISOString().replace(/[-:T]/g,'').slice(0,14) +
+        ';;"RBB";"";"";1023456;88421;20260101;5;20260501;20260531;"Mai 2026";"";1;0;0;"EUR";"";"";"";"";"";"";"";"";"";""\r\n' +
+        '"Umsatz";"Soll/Haben-Kennzeichen";"WKZ Umsatz";"Kurs";"Basis-Umsatz";"WKZ Basis-Umsatz";"Konto";"Gegenkonto";"BU-Schlüssel";"Belegdatum";"Belegfeld 1";"Belegfeld 2";"Skonto";"Buchungstext"\r\n';
+      const rows = [
+        '"5462,10";"S";"EUR";"";"";"";"5200";"70042";"9";"1405";"RG 2026/0418";"";"91,80";"ER Bauzentrum Weber 04/18"',
+        '"2380,00";"S";"EUR";"";"";"";"5200";"70128";"9";"1405";"R 2026-1142";"";"";"ER Holz Schäfer"',
+        '"1844,90";"S";"EUR";"";"";"";"5200";"70044";"9";"1305";"INV 2026-08144";"";"";"ER Sika Deutschland"',
+        '"3210,00";"S";"EUR";"";"";"";"5425";"70217";"94";"1305";"FT/2026/0233";"";"";"ER Knauf Italia §13b"',
+        '"14280,00";"S";"EUR";"";"";"";"5200";"70091";"9";"1205";"2026/RE/0892";"";"";"ER Stahlbau Müller Abschlag 3/4"',
+        '"94,80";"S";"EUR";"";"";"";"6640";"1600";"9";"1205";"Bon 0418";"";"";"Bewirtung Café am Markt"',
+        '"412,50";"S";"EUR";"";"";"";"6845";"70402";"9";"1205";"2026-471138";"";"";"Würth Werkzeug + Kleinmaterial"',
+        '"2975,00";"S";"EUR";"";"";"";"6310";"70302";"9";"1105";"M 2026/04";"";"";"Caterpillar Geräte-Miete April"',
+        '"182,40";"S";"EUR";"";"";"";"6530";"1600";"9";"1105";"Bon 0480";"";"";"Aral Diesel HD-RB 482"'
+      ].join('\r\n');
+
+      const csv = '﻿' + header + rows + '\r\n';
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'EXTF_Buchungsstapel_05_2026.csv';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(a.href); }, 1500);
+
+      btn.innerHTML = '✓ Exportiert';
+      btn.style.background = '#10b981';
+      btn.classList.remove('loading');
+
+      setTimeout(() => {
+        btn.innerHTML = originalHTML;
+        btn.style.background = originalBG;
+      }, 2200);
+    }, 1800);
   };
 })();
 function getToken()      { try { return JSON.parse(localStorage.getItem(SS_KEY)||'null')?.token||null; } catch { return null; } }
@@ -8706,7 +8814,7 @@ async function loadDemoKontoauszug(event, category) {
     await loadKontoauszuege(_currentUserId);
     analyzeKontoauszug(id, demo.filename);
   } catch(err) {
-    alert('Demo-Fehler: ' + err.message);
+    console.error('Fehler:', err.message);
   } finally {
     btn.disabled = false; btn.textContent = origText;
   }
